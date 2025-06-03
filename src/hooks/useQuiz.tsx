@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
 
 export interface Quiz {
   id: string;
@@ -11,6 +11,7 @@ export interface Quiz {
   is_public: boolean;
   created_at: string;
   questions: Question[];
+  pdf_name?: string;
 }
 
 export interface Question {
@@ -107,7 +108,7 @@ export const useQuiz = () => {
     }
   };
 
-  const createQuiz = async (title: string, questionCount: number) => {
+  const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string) => {
     if (!user) throw new Error('User not authenticated');
     
     setLoading(true);
@@ -117,9 +118,10 @@ export const useQuiz = () => {
         .from('quizzes')
         .insert({
           title,
-          description: `Quiz com ${questionCount} questões`,
+          description: description || `Quiz com ${questionCount} questões`,
           creator_id: user.id,
           is_public: true,
+          pdf_name: pdfName,
         })
         .select()
         .single();
@@ -179,15 +181,21 @@ export const useQuiz = () => {
           .eq('user_id', user.id)
           .eq('question_id', questionId);
       } else {
-        // Upsert answer
+        // Upsert answer com onConflict
         const { error } = await supabase
           .from('user_answers')
-          .upsert({
-            user_id: user.id,
-            question_id: questionId,
-            user_answer: status,
-            is_correct: status === 'correct',
-          });
+          .upsert(
+            {
+              user_id: user.id,
+              question_id: questionId,
+              user_answer: status,
+              is_correct: status === 'correct',
+            },
+            {
+              onConflict: 'user_id,question_id',
+              ignoreDuplicates: false
+            }
+          );
 
         if (error) throw error;
       }
@@ -214,6 +222,27 @@ export const useQuiz = () => {
 
   const saveResults = async () => {
     if (!user || !currentQuiz) return;
+
+    // Verifica se o quiz já foi salvo
+    const { data: existingResults, error: checkError } = await supabase
+      .from('quiz_results')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('quiz_id', currentQuiz.id)
+      .single();
+
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 é o código de "não encontrado"
+      throw checkError;
+    }
+
+    if (existingResults) {
+      toast({
+        title: "Quiz já salvo",
+        description: "Este quiz já foi salvo anteriormente.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const correct = currentQuiz.questions.filter(q => q.status === 'correct').length;
     const incorrect = currentQuiz.questions.filter(q => q.status === 'incorrect').length;
