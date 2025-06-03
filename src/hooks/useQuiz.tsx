@@ -108,6 +108,82 @@ export const useQuiz = () => {
     }
   };
 
+  const deleteQuizHistory = async (resultId: string) => {
+    if (!user) {
+      toast({
+        title: "Erro ao remover quiz",
+        description: "Usuário não autenticado",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      console.log('Iniciando deleção do quiz:', resultId);
+      console.log('Usuário atual:', user.id);
+
+      // Primeiro, verifica se o resultado existe e pertence ao usuário
+      const { data: existingResult, error: checkError } = await supabase
+        .from('quiz_results')
+        .select('*')
+        .eq('id', resultId)
+        .eq('user_id', user.id)
+        .single();
+
+      console.log('Resultado da verificação:', { existingResult, checkError });
+
+      if (checkError) {
+        console.error('Erro na verificação:', checkError);
+        throw new Error('Não foi possível verificar o resultado do quiz');
+      }
+
+      if (!existingResult) {
+        throw new Error('Quiz não encontrado ou não pertence ao usuário');
+      }
+
+      // Deleta as respostas do usuário relacionadas a este quiz
+      const { error: deleteAnswersError } = await supabase
+        .from('user_answers')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('question_id', existingResult.quiz_id);
+
+      if (deleteAnswersError) {
+        console.error('Erro ao deletar respostas:', deleteAnswersError);
+        throw new Error('Erro ao deletar respostas do usuário');
+      }
+
+      // Deleta o resultado do quiz
+      const { error: deleteError } = await supabase
+        .from('quiz_results')
+        .delete()
+        .eq('id', resultId)
+        .eq('user_id', user.id);
+
+      console.log('Resultado da deleção:', { deleteError });
+
+      if (deleteError) {
+        console.error('Erro na deleção:', deleteError);
+        throw deleteError;
+      }
+
+      // Atualiza o histórico local
+      setQuizHistory(prev => prev.filter(result => result.id !== resultId));
+      
+      toast({
+        title: "Quiz removido",
+        description: "O quiz foi removido do seu histórico com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao deletar quiz:', error);
+      toast({
+        title: "Erro ao remover quiz",
+        description: error instanceof Error ? error.message : "Ocorreu um erro ao remover o quiz",
+        variant: "destructive",
+      });
+    }
+  };
+
   const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string) => {
     if (!user) throw new Error('User not authenticated');
     
@@ -305,5 +381,6 @@ export const useQuiz = () => {
     getResults,
     fetchQuizHistory,
     fetchAllResults,
+    deleteQuizHistory,
   };
 };
