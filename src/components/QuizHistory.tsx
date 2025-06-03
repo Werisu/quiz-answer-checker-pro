@@ -1,17 +1,27 @@
-
-import React, { useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { useQuiz } from '@/hooks/useQuiz';
-import { History, Calendar, Target, TrendingUp } from 'lucide-react';
+import { Calendar, History, Target, Trash2, TrendingUp } from 'lucide-react';
+import React, { useEffect } from 'react';
 
 interface QuizHistoryProps {
   onBack: () => void;
 }
 
 export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
-  const { quizHistory, fetchQuizHistory, loading } = useQuiz();
+  const { quizHistory, fetchQuizHistory, loading, deleteQuizHistory } = useQuiz();
 
   useEffect(() => {
     fetchQuizHistory();
@@ -65,9 +75,21 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
               <Card key={result.id} className="p-4 bg-white/60 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800 mb-2">
+                    <h3 className="font-semibold text-gray-800 mb-1">
                       {result.quiz?.title || 'Quiz'}
                     </h3>
+                    <div className="space-y-1 mb-2">
+                      {result.quiz?.description && (
+                        <p className="text-sm text-gray-600">
+                          {result.quiz.description}
+                        </p>
+                      )}
+                      {result.quiz?.pdf_name && (
+                        <p className="text-sm text-blue-600">
+                          PDF: {result.quiz.pdf_name}
+                        </p>
+                      )}
+                    </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
@@ -97,7 +119,37 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                         {result.percentage.toFixed(1)}%
                       </div>
                     </div>
-                    {getPerformanceBadge(result.percentage)}
+                    <div className="flex items-center justify-end gap-2">
+                      {getPerformanceBadge(result.percentage)}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remover Quiz do Histórico</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja remover este quiz do seu histórico? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteQuizHistory(result.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Remover
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 </div>
               </Card>
