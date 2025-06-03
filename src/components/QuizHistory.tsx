@@ -75,9 +75,21 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
               <Card key={result.id} className="p-4 bg-white/60 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800 mb-2">
+                    <h3 className="font-semibold text-gray-800 mb-1">
                       {result.quiz?.title || 'Quiz'}
                     </h3>
+                    <div className="space-y-1 mb-2">
+                      {result.quiz?.description && (
+                        <p className="text-sm text-gray-600">
+                          {result.quiz.description}
+                        </p>
+                      )}
+                      {result.quiz?.pdf_name && (
+                        <p className="text-sm text-blue-600">
+                          PDF: {result.quiz.pdf_name}
+                        </p>
+                      )}
+                    </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />

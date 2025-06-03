@@ -41,7 +41,11 @@ export interface QuizResult {
   total_questions: number;
   percentage: number;
   completed_at: string;
-  quiz?: { title: string };
+  quiz?: {
+    title: string;
+    description: string | null;
+    pdf_name: string | null;
+  };
   profiles?: { name: string };
 }
 
@@ -63,7 +67,11 @@ export const useQuiz = () => {
         .from('quiz_results')
         .select(`
           *,
-          quiz:quizzes(title)
+          quiz:quizzes (
+            title,
+            description,
+            pdf_name
+          )
         `)
         .eq('user_id', user.id)
         .order('completed_at', { ascending: false });
