@@ -6,13 +6,18 @@ import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
 import { Results } from '@/components/Results';
 import { AuthModal } from '@/components/AuthModal';
+import { QuizHistory } from '@/components/QuizHistory';
+import { AdminPanel } from '@/components/AdminPanel';
 import { Button } from '@/components/ui/button';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, History, Settings } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const MainContent = () => {
   const [showResults, setShowResults] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { user, signOut, loading: authLoading } = useAuth();
+  const [showHistory, setShowHistory] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const { user, signOut, loading: authLoading, userProfile } = useAuth();
   const {
     currentQuiz,
     loading: quizLoading,
@@ -64,6 +69,14 @@ const MainContent = () => {
     );
   }
 
+  if (showHistory) {
+    return <QuizHistory onBack={() => setShowHistory(false)} />;
+  }
+
+  if (showAdminPanel) {
+    return <AdminPanel onBack={() => setShowAdminPanel(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-6">
@@ -75,16 +88,43 @@ const MainContent = () => {
                 <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-lg">
                   <User className="w-4 h-4 text-gray-600" />
                   <span className="text-sm text-gray-700">{user.email}</span>
+                  {userProfile?.role === 'admin' && (
+                    <Badge variant="destructive" className="bg-red-100 text-red-800 text-xs">
+                      ADMIN
+                    </Badge>
+                  )}
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={signOut}
-                  className="bg-white/80"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sair
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowHistory(true)}
+                    className="bg-white/80"
+                  >
+                    <History className="w-4 h-4 mr-2" />
+                    Histórico
+                  </Button>
+                  {userProfile?.role === 'admin' && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setShowAdminPanel(true)}
+                      className="bg-white/80"
+                    >
+                      <Settings className="w-4 h-4 mr-2" />
+                      Admin
+                    </Button>
+                  )}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={signOut}
+                    className="bg-white/80"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sair
+                  </Button>
+                </div>
               </>
             ) : (
               <Button 

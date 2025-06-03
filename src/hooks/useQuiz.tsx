@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,12 +31,81 @@ export interface UserAnswer {
   answered_at: string;
 }
 
+export interface QuizResult {
+  id: string;
+  user_id: string;
+  quiz_id: string;
+  correct_answers: number;
+  wrong_answers: number;
+  total_questions: number;
+  percentage: number;
+  completed_at: string;
+  quiz?: { title: string };
+  profiles?: { name: string };
+}
+
 export const useQuiz = () => {
   const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
   const [loading, setLoading] = useState(false);
+  const [quizHistory, setQuizHistory] = useState<QuizResult[]>([]);
+  const [allResults, setAllResults] = useState<QuizResult[]>([]);
   const { user } = useAuth();
   const { toast } = useToast();
+
+  const fetchQuizHistory = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('quiz_results')
+        .select(`
+          *,
+          quiz:quizzes(title)
+        `)
+        .eq('user_id', user.id)
+        .order('completed_at', { ascending: false });
+
+      if (error) throw error;
+      setQuizHistory(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao carregar histórico",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllResults = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('quiz_results')
+        .select(`
+          *,
+          quiz:quizzes(title),
+          profiles(name)
+        `)
+        .order('completed_at', { ascending: false });
+
+      if (error) throw error;
+      setAllResults(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao carregar resultados",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const createQuiz = async (title: string, questionCount: number) => {
     if (!user) throw new Error('User not authenticated');
@@ -199,10 +267,14 @@ export const useQuiz = () => {
   return {
     currentQuiz,
     loading,
+    quizHistory,
+    allResults,
     createQuiz,
     updateAnswer,
     saveResults,
     resetQuiz,
     getResults,
+    fetchQuizHistory,
+    fetchAllResults,
   };
 };
