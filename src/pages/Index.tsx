@@ -1,16 +1,15 @@
-
-import React, { useState } from 'react';
-import { AuthProvider, useAuth } from '@/hooks/useAuth';
-import { useQuiz } from '@/hooks/useQuiz';
+import { AdminPanel } from '@/components/AdminPanel';
+import { AuthModal } from '@/components/AuthModal';
 import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
-import { Results } from '@/components/Results';
-import { AuthModal } from '@/components/AuthModal';
 import { QuizHistory } from '@/components/QuizHistory';
-import { AdminPanel } from '@/components/AdminPanel';
-import { Button } from '@/components/ui/button';
-import { LogOut, User, History, Settings } from 'lucide-react';
+import { Results } from '@/components/Results';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import { useQuiz } from '@/hooks/useQuiz';
+import { History, LogOut, Settings, User } from 'lucide-react';
+import { useState } from 'react';
 
 const MainContent = () => {
   const [showResults, setShowResults] = useState(false);
@@ -28,19 +27,19 @@ const MainContent = () => {
     getResults,
   } = useQuiz();
 
-  const handleInitialize = async (count: number) => {
+  const handleInitialize = async (count: number, pdfName: string, description: string) => {
     if (!user) {
       setShowAuthModal(true);
       return;
     }
-    await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count);
+    await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count, pdfName, description);
   };
 
-  const handleShowResults = async () => {
+  const handleSave = async () => {
     if (currentQuiz) {
       await saveResults();
+      setShowResults(true);
     }
-    setShowResults(true);
   };
 
   const handleReset = () => {
@@ -141,7 +140,7 @@ const MainContent = () => {
         <Header
           onInitialize={handleInitialize}
           onReset={handleReset}
-          onShowResults={handleShowResults}
+          onSave={handleSave}
           hasQuestions={!!currentQuiz}
           results={results}
         />
@@ -152,13 +151,15 @@ const MainContent = () => {
             onBack={() => setShowResults(false)}
           />
         ) : currentQuiz ? (
-          <QuestionTracker
-            questions={currentQuiz.questions.map(q => ({
-              id: q.question_number,
-              status: q.status,
-            }))}
-            onUpdateStatus={handleUpdateStatus}
-          />
+          <div className="mt-6">
+            <QuestionTracker
+              questions={currentQuiz.questions.map(q => ({
+                id: q.question_number,
+                status: q.status,
+              }))}
+              onUpdateStatus={handleUpdateStatus}
+            />
+          </div>
         ) : (
           <div className="text-center py-12">
             <div className="bg-white/80 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">

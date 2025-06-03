@@ -11,6 +11,7 @@ export interface Quiz {
   is_public: boolean;
   created_at: string;
   questions: Question[];
+  pdf_name?: string;
 }
 
 export interface Question {
@@ -107,7 +108,7 @@ export const useQuiz = () => {
     }
   };
 
-  const createQuiz = async (title: string, questionCount: number) => {
+  const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string) => {
     if (!user) throw new Error('User not authenticated');
     
     setLoading(true);
@@ -117,9 +118,10 @@ export const useQuiz = () => {
         .from('quizzes')
         .insert({
           title,
-          description: `Quiz com ${questionCount} questões`,
+          description: description || `Quiz com ${questionCount} questões`,
           creator_id: user.id,
           is_public: true,
+          pdf_name: pdfName,
         })
         .select()
         .single();
