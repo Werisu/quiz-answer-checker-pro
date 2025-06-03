@@ -223,6 +223,27 @@ export const useQuiz = () => {
   const saveResults = async () => {
     if (!user || !currentQuiz) return;
 
+    // Verifica se o quiz já foi salvo
+    const { data: existingResults, error: checkError } = await supabase
+      .from('quiz_results')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('quiz_id', currentQuiz.id)
+      .single();
+
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 é o código de "não encontrado"
+      throw checkError;
+    }
+
+    if (existingResults) {
+      toast({
+        title: "Quiz já salvo",
+        description: "Este quiz já foi salvo anteriormente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const correct = currentQuiz.questions.filter(q => q.status === 'correct').length;
     const incorrect = currentQuiz.questions.filter(q => q.status === 'incorrect').length;
     const total = currentQuiz.questions.length;
