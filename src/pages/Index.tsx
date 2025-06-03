@@ -78,27 +78,27 @@ const MainContent = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 space-y-6">
         {/* User Info */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             {user ? (
               <>
-                <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-lg">
+                <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-lg w-full sm:w-auto">
                   <User className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm text-gray-700">{user.email}</span>
+                  <span className="text-sm text-gray-700 truncate">{user.email}</span>
                   {userProfile?.role === 'admin' && (
                     <Badge variant="destructive" className="bg-red-100 text-red-800 text-xs">
                       ADMIN
                     </Badge>
                   )}
                 </div>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full sm:w-auto">
                   <Button 
                     variant="outline" 
                     size="sm" 
                     onClick={() => setShowHistory(true)}
-                    className="bg-white/80"
+                    className="bg-white/80 w-full"
                   >
                     <History className="w-4 h-4 mr-2" />
                     Histórico
@@ -108,7 +108,7 @@ const MainContent = () => {
                       variant="outline" 
                       size="sm" 
                       onClick={() => setShowAdminPanel(true)}
-                      className="bg-white/80"
+                      className="bg-white/80 w-full"
                     >
                       <Settings className="w-4 h-4 mr-2" />
                       Admin
@@ -118,7 +118,7 @@ const MainContent = () => {
                     variant="outline" 
                     size="sm" 
                     onClick={signOut}
-                    className="bg-white/80"
+                    className="bg-white/80 w-full"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Sair
@@ -128,7 +128,7 @@ const MainContent = () => {
             ) : (
               <Button 
                 onClick={() => setShowAuthModal(true)}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
               >
                 <User className="w-4 h-4 mr-2" />
                 Entrar / Cadastrar
@@ -161,8 +161,8 @@ const MainContent = () => {
             />
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
+          <div className="text-center py-8 sm:py-12">
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 sm:p-8 max-w-md mx-auto">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
                 Bem-vindo ao Gabarito Digital
               </h2>
@@ -175,7 +175,7 @@ const MainContent = () => {
               {!user && (
                 <Button 
                   onClick={() => setShowAuthModal(true)}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
                 >
                   Entrar / Cadastrar
                 </Button>
