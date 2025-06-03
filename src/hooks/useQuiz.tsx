@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
 
 export interface Quiz {
   id: string;
@@ -179,15 +179,21 @@ export const useQuiz = () => {
           .eq('user_id', user.id)
           .eq('question_id', questionId);
       } else {
-        // Upsert answer
+        // Upsert answer com onConflict
         const { error } = await supabase
           .from('user_answers')
-          .upsert({
-            user_id: user.id,
-            question_id: questionId,
-            user_answer: status,
-            is_correct: status === 'correct',
-          });
+          .upsert(
+            {
+              user_id: user.id,
+              question_id: questionId,
+              user_answer: status,
+              is_correct: status === 'correct',
+            },
+            {
+              onConflict: 'user_id,question_id',
+              ignoreDuplicates: false
+            }
+          );
 
         if (error) throw error;
       }

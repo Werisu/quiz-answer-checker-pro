@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { RotateCcw, Play, BarChart3 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { BarChart3, Play, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface HeaderProps {
   onInitialize: (count: number) => void;
