@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -6,8 +5,9 @@ interface QuestionTrackerProps {
   questions: Array<{
     id: number;
     status: 'correct' | 'incorrect' | 'unanswered';
+    legend?: 'circle' | 'star' | 'question' | 'exclamation' | null;
   }>;
-  onUpdateStatus: (questionId: number, status: 'correct' | 'incorrect' | 'unanswered') => void;
+  onUpdateStatus: (questionId: number, status: 'correct' | 'incorrect' | 'unanswered', legend?: 'circle' | 'star' | 'question' | 'exclamation' | null) => void;
 }
 
 export const QuestionTracker: React.FC<QuestionTrackerProps> = ({
@@ -25,7 +25,8 @@ export const QuestionTracker: React.FC<QuestionTrackerProps> = ({
             question_number: question.id,
             text: null,
             correct_answer: null,
-            status: question.status
+            status: question.status,
+            legend: question.legend
           }}
           onUpdateStatus={onUpdateStatus}
         />

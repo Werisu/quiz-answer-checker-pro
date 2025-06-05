@@ -21,6 +21,7 @@ export interface Question {
   text: string | null;
   correct_answer: string | null;
   status: 'correct' | 'incorrect' | 'unanswered';
+  legend?: 'circle' | 'star' | 'question' | 'exclamation' | null;
 }
 
 export interface UserAnswer {
@@ -253,7 +254,7 @@ export const useQuiz = () => {
     }
   };
 
-  const updateAnswer = async (questionId: string, status: 'correct' | 'incorrect' | 'unanswered') => {
+  const updateAnswer = async (questionId: string, status: 'correct' | 'incorrect' | 'unanswered', legend?: 'circle' | 'star' | 'question' | 'exclamation' | null) => {
     if (!user || !currentQuiz) return;
 
     try {
@@ -274,6 +275,7 @@ export const useQuiz = () => {
               question_id: questionId,
               user_answer: status,
               is_correct: status === 'correct',
+              legend: legend || null,
             },
             {
               onConflict: 'user_id,question_id',
@@ -290,7 +292,7 @@ export const useQuiz = () => {
         return {
           ...prev,
           questions: prev.questions.map(q =>
-            q.id === questionId ? { ...q, status } : q
+            q.id === questionId ? { ...q, status, legend } : q
           ),
         };
       });

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Play, RotateCcw, Save } from 'lucide-react';
+import { AlertCircle, Circle, HelpCircle, Play, RotateCcw, Save, Star } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface HeaderProps {
@@ -107,6 +107,30 @@ export const Header: React.FC<HeaderProps> = ({
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Reiniciar
               </Button>
+            </div>
+          </div>
+        )}
+
+        {hasQuestions && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Legenda:</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+              <div className="flex items-center gap-2">
+                <Circle className="w-4 h-4 text-blue-500" />
+                <span className="text-gray-600">Não sabe, não responde</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 text-yellow-500" />
+                <span className="text-gray-600">Tem certeza, responde</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-purple-500" />
+                <span className="text-gray-600">Em dúvida, mas sabe a matéria</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-orange-500" />
+                <span className="text-gray-600">Sabe, mas precisa de mais tempo</span>
+              </div>
             </div>
           </div>
         )}
