@@ -45,9 +45,10 @@ export interface QuizResult {
   quiz?: {
     title: string;
     description: string | null;
-    pdf_name: string | null;
   };
-  profiles?: { name: string };
+  profiles?: {
+    name: string;
+  };
 }
 
 export const useQuiz = () => {
@@ -56,6 +57,7 @@ export const useQuiz = () => {
   const [loading, setLoading] = useState(false);
   const [quizHistory, setQuizHistory] = useState<QuizResult[]>([]);
   const [allResults, setAllResults] = useState<QuizResult[]>([]);
+  const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -70,19 +72,30 @@ export const useQuiz = () => {
           *,
           quiz:quizzes (
             title,
-            description,
-            pdf_name
+            description
           )
         `)
         .eq('user_id', user.id)
         .order('completed_at', { ascending: false });
 
       if (error) throw error;
-      setQuizHistory(data || []);
-    } catch (error: any) {
+      
+      // Garantir que os dados retornados correspondam ao tipo QuizResult
+      const typedData = data?.map(result => ({
+        ...result,
+        quiz: {
+          title: result.quiz?.title || '',
+          description: result.quiz?.description || null,
+          pdf_name: null, // Campo não existe mais na tabela
+        }
+      })) as QuizResult[];
+
+      setQuizHistory(typedData);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao carregar histórico",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -99,17 +112,35 @@ export const useQuiz = () => {
         .from('quiz_results')
         .select(`
           *,
-          quiz:quizzes(title),
+          quiz:quizzes (
+            title,
+            description
+          ),
           profiles(name)
         `)
         .order('completed_at', { ascending: false });
 
       if (error) throw error;
-      setAllResults(data || []);
-    } catch (error: any) {
+      
+      // Garantir que os dados retornados correspondam ao tipo QuizResult
+      const typedData = data?.map(result => ({
+        ...result,
+        quiz: {
+          title: result.quiz?.title || '',
+          description: result.quiz?.description || null,
+          pdf_name: null, // Campo não existe mais na tabela
+        },
+        profiles: {
+          name: result.profiles?.name || ''
+        }
+      })) as QuizResult[];
+
+      setAllResults(typedData);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao carregar resultados",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -379,11 +410,76 @@ export const useQuiz = () => {
     return { correct, incorrect, unanswered, total };
   };
 
+  const fetchQuizQuestions = async (quizId: string) => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      console.log('Iniciando busca de questões para o quiz:', quizId);
+      
+      // Primeiro, buscar o quiz_result para obter o quiz_id correto
+      const { data: quizResult, error: quizResultError } = await supabase
+        .from('quiz_results')
+        .select('quiz_id')
+        .eq('id', quizId)
+        .single();
+
+      if (quizResultError) throw quizResultError;
+      console.log('Quiz result encontrado:', quizResult);
+
+      if (!quizResult?.quiz_id) {
+        throw new Error('Quiz não encontrado');
+      }
+
+      const { data: questionsData, error: questionsError } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('quiz_id', quizResult.quiz_id)
+        .order('question_number', { ascending: true });
+
+      if (questionsError) throw questionsError;
+      console.log('Questões encontradas:', questionsData);
+
+      // Buscar as respostas do usuário para este quiz
+      const { data: userAnswersData, error: userAnswersError } = await supabase
+        .from('user_answers')
+        .select('*')
+        .eq('user_id', user.id)
+        .in('question_id', questionsData?.map(q => q.id) || []);
+
+      if (userAnswersError) throw userAnswersError;
+      console.log('Respostas do usuário encontradas:', userAnswersData);
+
+      // Mapear as questões com o status baseado nas respostas do usuário
+      const questionsWithStatus = questionsData?.map(question => {
+        const userAnswer = userAnswersData?.find(a => a.question_id === question.id);
+        return {
+          ...question,
+          status: userAnswer ? (userAnswer.is_correct ? 'correct' : 'incorrect') : 'unanswered' as const,
+        };
+      }) || [];
+
+      console.log('Questões com status:', questionsWithStatus);
+      setQuizQuestions(questionsWithStatus as Question[]);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      console.error('Erro ao buscar questões:', errorMessage);
+      toast({
+        title: "Erro ao carregar questões",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     currentQuiz,
     loading,
     quizHistory,
     allResults,
+    quizQuestions,
     createQuiz,
     updateAnswer,
     saveResults,
@@ -392,5 +488,6 @@ export const useQuiz = () => {
     fetchQuizHistory,
     fetchAllResults,
     deleteQuizHistory,
+    fetchQuizQuestions,
   };
 };

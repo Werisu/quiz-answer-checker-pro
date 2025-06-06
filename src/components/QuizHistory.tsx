@@ -13,19 +13,28 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useQuiz } from '@/hooks/useQuiz';
-import { Calendar, History, Target, Trash2, TrendingUp } from 'lucide-react';
-import React, { useEffect } from 'react';
+import { Calendar, Eye, History, Target, Trash2, TrendingUp } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { QuestionCard } from './QuestionCard';
 
 interface QuizHistoryProps {
   onBack: () => void;
 }
 
 export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
-  const { quizHistory, fetchQuizHistory, loading, deleteQuizHistory } = useQuiz();
+  const { quizHistory, fetchQuizHistory, loading, deleteQuizHistory, quizQuestions, fetchQuizQuestions } = useQuiz();
+  const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchQuizHistory();
   }, []);
+
+  useEffect(() => {
+    if (selectedQuizId) {
+      console.log('Buscando questões para o quiz:', selectedQuizId);
+      fetchQuizQuestions(selectedQuizId);
+    }
+  }, [selectedQuizId]);
 
   const getPerformanceBadge = (percentage: number) => {
     if (percentage >= 80) {
@@ -45,6 +54,8 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
       </div>
     );
   }
+
+  const selectedQuiz = quizHistory.find(q => q.id === selectedQuizId);
 
   return (
     <div className="space-y-6">
@@ -84,11 +95,6 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                           {result.quiz.description}
                         </p>
                       )}
-                      {result.quiz?.pdf_name && (
-                        <p className="text-sm text-blue-600">
-                          PDF: {result.quiz.pdf_name}
-                        </p>
-                      )}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
@@ -121,6 +127,14 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                     </div>
                     <div className="flex items-center justify-end gap-2">
                       {getPerformanceBadge(result.percentage)}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+                        onClick={() => setSelectedQuizId(result.id)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
@@ -152,6 +166,41 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                     </div>
                   </div>
                 </div>
+
+                {selectedQuizId === result.id && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-semibold text-gray-800">Questões do Quiz</h4>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedQuizId(null)}
+                      >
+                        Fechar
+                      </Button>
+                    </div>
+                    {loading ? (
+                      <div className="text-center py-4">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                        <p className="text-sm text-gray-600">Carregando questões...</p>
+                      </div>
+                    ) : quizQuestions.length === 0 ? (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-gray-600">Nenhuma questão encontrada</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                        {quizQuestions.map((question) => (
+                          <QuestionCard
+                            key={question.id}
+                            question={question}
+                            onUpdateStatus={() => {}}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </Card>
             ))}
             
