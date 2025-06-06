@@ -263,6 +263,7 @@ export const useQuiz = () => {
         questions: createdQuestions.map(q => ({
           ...q,
           status: 'unanswered' as const,
+          legend: null,
         })),
       };
 
@@ -456,6 +457,7 @@ export const useQuiz = () => {
         return {
           ...question,
           status: userAnswer ? (userAnswer.is_correct ? 'correct' : 'incorrect') : 'unanswered' as const,
+          legend: userAnswer?.legend || null,
         };
       }) || [];
 
