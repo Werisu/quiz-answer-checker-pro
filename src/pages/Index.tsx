@@ -47,11 +47,11 @@ const MainContent = () => {
     setShowResults(false);
   };
 
-  const handleUpdateStatus = (questionId: number, status: 'correct' | 'incorrect' | 'unanswered') => {
+  const handleUpdateStatus = (questionId: number, status: 'correct' | 'incorrect' | 'unanswered', legend?: 'circle' | 'star' | 'question' | 'exclamation' | null) => {
     if (!currentQuiz) return;
     const question = currentQuiz.questions.find(q => q.question_number === questionId);
     if (question) {
-      updateAnswer(question.id, status);
+      updateAnswer(question.id, status, legend);
     }
   };
 
@@ -156,6 +156,7 @@ const MainContent = () => {
               questions={currentQuiz.questions.map(q => ({
                 id: q.question_number,
                 status: q.status,
+                legend: q.legend
               }))}
               onUpdateStatus={handleUpdateStatus}
             />
