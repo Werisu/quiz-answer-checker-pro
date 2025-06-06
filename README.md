@@ -1,73 +1,89 @@
-# Welcome to your Lovable project
+# Quiz Answer Checker Pro
 
-## Project info
+Um sistema moderno e eficiente para verificação de respostas de quiz, desenvolvido com tecnologias web atuais.
 
-**URL**: https://lovable.dev/projects/53027b99-e1fa-4a6f-8139-23c81a2f8920
+## 🚀 Funcionalidades
 
-## How can I edit this code?
+- Interface moderna e responsiva
+- Verificação rápida e precisa de respostas
+- Suporte a diferentes tipos de questões
+- Feedback imediato para os usuários
+- Sistema de pontuação integrado
 
-There are several ways of editing your application.
+## 🛠️ Tecnologias Utilizadas
 
-**Use Lovable**
+- **Frontend**:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/53027b99-e1fa-4a6f-8139-23c81a2f8920) and start prompting.
+  - React
+  - TypeScript
+  - Vite
+  - Tailwind CSS
+  - shadcn/ui
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Backend**:
+  - Supabase
 
-**Use your preferred IDE**
+## 📋 Pré-requisitos
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (versão 18 ou superior)
+- npm ou bun
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🔧 Instalação
 
-Follow these steps:
+1. Clone o repositório:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+git clone https://github.com/seu-usuario/quiz-answer-checker-pro.git
 ```
 
-**Edit a file directly in GitHub**
+2. Instale as dependências:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm install
+# ou
+bun install
+```
 
-**Use GitHub Codespaces**
+3. Configure as variáveis de ambiente:
+   Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```env
+VITE_SUPABASE_URL=sua_url_do_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+```
 
-## What technologies are used for this project?
+4. Inicie o servidor de desenvolvimento:
 
-This project is built with:
+```bash
+npm run dev
+# ou
+bun dev
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🏗️ Estrutura do Projeto
 
-## How can I deploy this project?
+```
+quiz-answer-checker-pro/
+├── src/              # Código fonte principal
+├── public/           # Arquivos estáticos
+├── supabase/         # Configurações do Supabase
+└── ...
+```
 
-Simply open [Lovable](https://lovable.dev/projects/53027b99-e1fa-4a6f-8139-23c81a2f8920) and click on Share -> Publish.
+## 🤝 Contribuindo
 
-## Can I connect a custom domain to my Lovable project?
+1. Faça um Fork do projeto
+2. Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
+3. Faça o Commit das suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Faça o Push para a Branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-Yes, you can!
+## 📝 Licença
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📧 Contato
+
+Seu Nome - [@seu_twitter](https://twitter.com/seu_twitter) - email@exemplo.com
+
+Link do Projeto: [https://github.com/seu-usuario/quiz-answer-checker-pro](https://github.com/seu-usuario/quiz-answer-checker-pro)
