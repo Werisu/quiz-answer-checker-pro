@@ -1,19 +1,19 @@
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useQuiz } from '@/hooks/useQuiz';
-import { Calendar, Eye, History, Target, Trash2, TrendingUp } from 'lucide-react';
+import { Calendar, Circle, Eye, HelpCircle, History, Star, Target, Trash2, TrendingUp } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -184,20 +184,63 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
                         <p className="text-sm text-gray-600">Carregando questões...</p>
                       </div>
-                    ) : quizQuestions.length === 0 ? (
+                    ) : !quizQuestions || quizQuestions.length === 0 ? (
                       <div className="text-center py-4">
                         <p className="text-sm text-gray-600">Nenhuma questão encontrada</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                        {quizQuestions.map((question) => (
-                          <QuestionCard
-                            key={question.id}
-                            question={question}
-                            onUpdateStatus={() => {}}
-                          />
-                        ))}
-                      </div>
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                          <div className="bg-yellow-50 p-4 rounded-lg">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Star className="w-5 h-5 text-yellow-600" />
+                              <h5 className="font-semibold text-yellow-800">Questões com Certeza</h5>
+                            </div>
+                            <div className="text-sm">
+                              <p className="text-yellow-700">
+                                Total: {result.legendStats?.star?.total || 0} questões
+                              </p>
+                              <p className="text-red-600">
+                                Erradas: {result.legendStats?.star?.wrong || 0} questões
+                              </p>
+                            </div>
+                          </div>
+                          <div className="bg-blue-50 p-4 rounded-lg">
+                            <div className="flex items-center gap-2 mb-2">
+                              <HelpCircle className="w-5 h-5 text-blue-600" />
+                              <h5 className="font-semibold text-blue-800">Questões em Dúvida</h5>
+                            </div>
+                            <div className="text-sm">
+                              <p className="text-blue-700">
+                                Total: {result.legendStats?.question?.total || 0} questões
+                              </p>
+                              <p className="text-green-600">
+                                Acertadas: {result.legendStats?.question?.correct || 0} questões
+                              </p>
+                            </div>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-lg">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Circle className="w-5 h-5 text-gray-600" />
+                              <h5 className="font-semibold text-gray-800">Questões sem Conhecimento</h5>
+                            </div>
+                            <div className="text-sm">
+                              <p className="text-gray-700">
+                                Total: {result.legendStats?.circle?.total || 0} questões
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                          {quizQuestions.map((question) => (
+                            <QuestionCard
+                              key={question.id}
+                              question={question}
+                              onUpdateStatus={() => {}}
+                            />
+                          ))}
+                        </div>
+                      </>
                     )}
                   </div>
                 )}
