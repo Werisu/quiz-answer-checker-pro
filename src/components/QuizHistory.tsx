@@ -1,13 +1,13 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -119,6 +119,10 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                         {' • '}
                         <span className="text-red-600 font-medium">
                           {result.wrong_answers} erros
+                        </span>
+                        {' • '}
+                        <span className={`font-medium ${result.correct_answers - result.wrong_answers >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {result.correct_answers - result.wrong_answers} pontos líquidos
                         </span>
                       </div>
                       <div className="text-xl font-bold text-gray-800">
@@ -274,6 +278,12 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                     <span className="text-gray-600">Total de Questões:</span>
                     <div className="font-semibold text-gray-800">
                       {quizHistory.reduce((acc, r) => acc + r.total_questions, 0)}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Total de Pontos Líquidos:</span>
+                    <div className="font-semibold text-gray-800">
+                      {quizHistory.reduce((acc, r) => acc + (r.correct_answers - r.wrong_answers), 0)}
                     </div>
                   </div>
                 </div>
