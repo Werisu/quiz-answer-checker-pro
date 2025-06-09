@@ -97,12 +97,10 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-              {allQuestionsAnswered && (
-                <Button onClick={onSave} className="w-full bg-green-600 hover:bg-green-700">
-                  <Save className="w-4 h-4 mr-2" />
-                  Salvar
-                </Button>
-              )}
+              <Button onClick={onSave} className="w-full bg-green-600 hover:bg-green-700">
+                <Save className="w-4 h-4 mr-2" />
+                Salvar
+              </Button>
               <Button variant="outline" onClick={onReset} className="w-full">
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Reiniciar
