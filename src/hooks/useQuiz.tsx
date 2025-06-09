@@ -49,6 +49,19 @@ export interface QuizResult {
   profiles?: {
     name: string;
   };
+  legendStats?: {
+    star: {
+      total: number;
+      wrong: number;
+    };
+    question: {
+      total: number;
+      correct: number;
+    };
+    circle: {
+      total: number;
+    };
+  };
 }
 
 export const useQuiz = () => {
@@ -80,17 +93,53 @@ export const useQuiz = () => {
 
       if (error) throw error;
       
-      // Garantir que os dados retornados correspondam ao tipo QuizResult
-      const typedData = data?.map(result => ({
-        ...result,
-        quiz: {
-          title: result.quiz?.title || '',
-          description: result.quiz?.description || null,
-          pdf_name: null, // Campo não existe mais na tabela
-        }
-      })) as QuizResult[];
+      // Buscar as respostas do usuário para cada quiz
+      const resultsWithStats = await Promise.all(
+        data?.map(async (result) => {
+          // Primeiro, buscar as questões do quiz
+          const { data: questions, error: questionsError } = await supabase
+            .from('questions')
+            .select('id')
+            .eq('quiz_id', result.quiz_id);
 
-      setQuizHistory(typedData);
+          if (questionsError) throw questionsError;
+
+          // Depois, buscar as respostas do usuário para essas questões
+          const { data: userAnswers, error: userAnswersError } = await supabase
+            .from('user_answers')
+            .select('*')
+            .eq('user_id', user.id)
+            .in('question_id', questions?.map(q => q.id) || []);
+
+          if (userAnswersError) throw userAnswersError;
+
+          // Calcular estatísticas das legendas
+          const legendStats = {
+            star: {
+              total: userAnswers?.filter(a => a.legend === 'star').length || 0,
+              wrong: userAnswers?.filter(a => a.legend === 'star' && !a.is_correct).length || 0,
+            },
+            question: {
+              total: userAnswers?.filter(a => a.legend === 'question').length || 0,
+              correct: userAnswers?.filter(a => a.legend === 'question' && a.is_correct).length || 0,
+            },
+            circle: {
+              total: userAnswers?.filter(a => a.legend === 'circle').length || 0,
+            },
+          };
+
+          return {
+            ...result,
+            quiz: {
+              title: result.quiz?.title || '',
+              description: result.quiz?.description || null,
+            },
+            legendStats,
+          };
+        }) || []
+      );
+
+      setQuizHistory(resultsWithStats as QuizResult[]);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
