@@ -505,6 +505,7 @@ export const useQuiz = () => {
         return {
           ...question,
           status: userAnswer ? (userAnswer.is_correct ? 'correct' : 'incorrect') : 'unanswered' as const,
+          legend: userAnswer?.legend || null,
         };
       }) || [];
 
