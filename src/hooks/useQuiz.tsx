@@ -71,6 +71,12 @@ export const useQuiz = () => {
   const [quizHistory, setQuizHistory] = useState<QuizResult[]>([]);
   const [allResults, setAllResults] = useState<QuizResult[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
+  const [currentResults, setCurrentResults] = useState({
+    correct: 0,
+    incorrect: 0,
+    unanswered: 0,
+    total: 0
+  });
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -460,13 +466,36 @@ export const useQuiz = () => {
     return { correct, incorrect, unanswered, total };
   };
 
+  const calculateCurrentResults = (questions: Question[]) => {
+    const results = {
+      correct: 0,
+      incorrect: 0,
+      unanswered: 0,
+      total: questions.length
+    };
+
+    questions.forEach(question => {
+      switch (question.status) {
+        case 'correct':
+          results.correct++;
+          break;
+        case 'incorrect':
+          results.incorrect++;
+          break;
+        default:
+          results.unanswered++;
+      }
+    });
+
+    setCurrentResults(results);
+    return results;
+  };
+
   const fetchQuizQuestions = async (quizId: string) => {
     if (!user) return;
     
     setLoading(true);
     try {
-      console.log('Iniciando busca de questões para o quiz:', quizId);
-      
       // Primeiro, buscar o quiz_result para obter o quiz_id correto
       const { data: quizResult, error: quizResultError } = await supabase
         .from('quiz_results')
@@ -475,22 +504,21 @@ export const useQuiz = () => {
         .single();
 
       if (quizResultError) throw quizResultError;
-      console.log('Quiz result encontrado:', quizResult);
 
       if (!quizResult?.quiz_id) {
         throw new Error('Quiz não encontrado');
       }
 
+      // Buscar questões do quiz
       const { data: questionsData, error: questionsError } = await supabase
         .from('questions')
         .select('*')
         .eq('quiz_id', quizResult.quiz_id)
-        .order('question_number', { ascending: true });
+        .order('question_number');
 
       if (questionsError) throw questionsError;
-      console.log('Questões encontradas:', questionsData);
 
-      // Buscar as respostas do usuário para este quiz
+      // Buscar respostas do usuário
       const { data: userAnswersData, error: userAnswersError } = await supabase
         .from('user_answers')
         .select('*')
@@ -498,7 +526,6 @@ export const useQuiz = () => {
         .in('question_id', questionsData?.map(q => q.id) || []);
 
       if (userAnswersError) throw userAnswersError;
-      console.log('Respostas do usuário encontradas:', userAnswersData);
 
       // Mapear as questões com o status baseado nas respostas do usuário
       const questionsWithStatus = questionsData?.map(question => {
@@ -510,8 +537,9 @@ export const useQuiz = () => {
         };
       }) || [];
 
-      console.log('Questões com status:', questionsWithStatus);
       setQuizQuestions(questionsWithStatus as Question[]);
+      calculateCurrentResults(questionsWithStatus as Question[]);
+
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       console.error('Erro ao buscar questões:', errorMessage);
@@ -525,12 +553,122 @@ export const useQuiz = () => {
     }
   };
 
+  const updateQuestionStatus = async (quizId: string, questionId: string, status: 'correct' | 'incorrect' | 'unanswered', legend?: 'circle' | 'star' | 'question' | 'exclamation' | null) => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      
+      // Primeiro, buscar o quiz_result para obter o quiz_id correto
+      const { data: quizResult, error: quizResultError } = await supabase
+        .from('quiz_results')
+        .select('quiz_id')
+        .eq('id', quizId)
+        .single();
+
+      if (quizResultError) throw quizResultError;
+
+      if (!quizResult?.quiz_id) {
+        throw new Error('Quiz não encontrado');
+      }
+
+      if (status === 'unanswered') {
+        // Remove answer
+        await supabase
+          .from('user_answers')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('question_id', questionId);
+      } else {
+        // Upsert answer
+        const { error } = await supabase
+          .from('user_answers')
+          .upsert(
+            {
+              user_id: user.id,
+              question_id: questionId,
+              user_answer: status,
+              is_correct: status === 'correct',
+              legend: legend || null,
+            },
+            {
+              onConflict: 'user_id,question_id',
+              ignoreDuplicates: false
+            }
+          );
+
+        if (error) throw error;
+      }
+
+      // Buscar todas as respostas do usuário para este quiz
+      const { data: userAnswers, error: userAnswersError } = await supabase
+        .from('user_answers')
+        .select('*')
+        .eq('user_id', user.id)
+        .in('question_id', (await supabase
+          .from('questions')
+          .select('id')
+          .eq('quiz_id', quizResult.quiz_id)
+        ).data?.map(q => q.id) || []);
+
+      if (userAnswersError) throw userAnswersError;
+
+      // Calcular novos totais
+      const correctAnswers = userAnswers?.filter(a => a.is_correct).length || 0;
+      const wrongAnswers = userAnswers?.filter(a => !a.is_correct).length || 0;
+      const totalQuestions = (await supabase
+        .from('questions')
+        .select('id', { count: 'exact' })
+        .eq('quiz_id', quizResult.quiz_id)
+      ).count || 0;
+
+      // Atualizar quiz_results
+      const { error: updateError } = await supabase
+        .from('quiz_results')
+        .update({
+          correct_answers: correctAnswers,
+          wrong_answers: wrongAnswers,
+          total_questions: totalQuestions,
+          percentage: totalQuestions > 0 ? ((correctAnswers + wrongAnswers) / totalQuestions) * 100 : 0
+        })
+        .eq('id', quizId);
+
+      if (updateError) throw updateError;
+
+      // Atualizar as questões locais
+      await fetchQuizQuestions(quizId);
+      
+      // Recalcular estatísticas do quiz
+      await fetchQuizHistory();
+
+      // Atualizar resultados atuais
+      if (quizQuestions.length > 0) {
+        calculateCurrentResults(quizQuestions);
+      }
+
+      toast({
+        title: "Questão atualizada",
+        description: "As alterações foram salvas com sucesso.",
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar questão",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     currentQuiz,
     loading,
     quizHistory,
     allResults,
     quizQuestions,
+    currentResults,
     createQuiz,
     updateAnswer,
     saveResults,
@@ -540,5 +678,6 @@ export const useQuiz = () => {
     fetchAllResults,
     deleteQuizHistory,
     fetchQuizQuestions,
+    updateQuestionStatus,
   };
 };

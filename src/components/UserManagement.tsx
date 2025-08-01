@@ -1,13 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { User, Shield, ShieldCheck } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { Shield, ShieldCheck, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Profile {
   id: string;
@@ -20,6 +20,7 @@ export const UserManagement: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { userProfile } = useAuth();
 
   const fetchProfiles = async () => {
     setLoading(true);
@@ -29,7 +30,10 @@ export const UserManagement: React.FC = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+      
       setProfiles(data || []);
     } catch (error: any) {
       toast({
@@ -71,8 +75,19 @@ export const UserManagement: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchProfiles();
-  }, []);
+    if (userProfile?.role === 'admin') {
+      fetchProfiles();
+    }
+  }, [userProfile]);
+
+  if (!userProfile || userProfile.role !== 'admin') {
+    return (
+      <div className="text-center py-8">
+        <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-600">Acesso negado. Apenas administradores podem gerenciar usuários.</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

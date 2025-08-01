@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useQuiz } from '@/hooks/useQuiz';
-import { Calendar, Circle, Eye, HelpCircle, History, Star, Target, Trash2, TrendingUp } from 'lucide-react';
+import { Calendar, Circle, Edit2, Eye, HelpCircle, History, Star, Target, Trash2, TrendingUp } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -22,8 +22,18 @@ interface QuizHistoryProps {
 }
 
 export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
-  const { quizHistory, fetchQuizHistory, loading, deleteQuizHistory, quizQuestions, fetchQuizQuestions } = useQuiz();
+  const { 
+    quizHistory, 
+    fetchQuizHistory, 
+    loading, 
+    deleteQuizHistory, 
+    quizQuestions, 
+    fetchQuizQuestions, 
+    updateQuestionStatus,
+    currentResults 
+  } = useQuiz();
   const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchQuizHistory();
@@ -107,6 +117,25 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                           minute: '2-digit'
                         })}
                       </div>
+                      {selectedQuizId === result.id && (
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span className="text-gray-600">{currentResults.correct}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                            <span className="text-gray-600">{currentResults.incorrect}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                            <span className="text-gray-600">{currentResults.unanswered}</span>
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">
+                            {((currentResults.correct + currentResults.incorrect) / currentResults.total * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -138,6 +167,14 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                         onClick={() => setSelectedQuizId(result.id)}
                       >
                         <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-500 hover:text-yellow-600 hover:bg-yellow-50"
+                        onClick={() => setEditingQuestionId(result.id)}
+                      >
+                        <Edit2 className="h-4 w-4" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -175,13 +212,31 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="font-semibold text-gray-800">Questões do Quiz</h4>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedQuizId(null)}
-                      >
-                        Fechar
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {editingQuestionId === selectedQuizId && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => {
+                              setEditingQuestionId(null);
+                              fetchQuizHistory();
+                            }}
+                          >
+                            Salvar Alterações
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedQuizId(null);
+                            setEditingQuestionId(null);
+                          }}
+                        >
+                          Fechar
+                        </Button>
+                      </div>
                     </div>
                     {loading ? (
                       <div className="text-center py-4">
@@ -240,7 +295,12 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                             <QuestionCard
                               key={question.id}
                               question={question}
-                              onUpdateStatus={() => {}}
+                              onUpdateStatus={(questionId, status, legend) => {
+                                if (selectedQuizId) {
+                                  updateQuestionStatus(selectedQuizId, question.id, status, legend);
+                                }
+                              }}
+                              isEditing={editingQuestionId === selectedQuizId}
                             />
                           ))}
                         </div>

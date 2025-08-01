@@ -7,9 +7,10 @@ import React from 'react';
 interface QuestionCardProps {
   question: Question;
   onUpdateStatus: (questionId: number, status: 'correct' | 'incorrect' | 'unanswered', legend?: 'circle' | 'star' | 'question' | 'exclamation' | null) => void;
+  isEditing?: boolean;
 }
 
-export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateStatus }) => {
+export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateStatus, isEditing = false }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'correct': return 'bg-green-500 hover:bg-green-600';
@@ -70,6 +71,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateSt
                   : 'bg-gray-200 hover:bg-green-100'
               }`}
               onClick={() => onUpdateStatus(question.question_number, 'correct', question.legend)}
+              disabled={!isEditing}
             >
               <Check className="w-4 h-4" />
             </Button>
@@ -82,6 +84,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateSt
                   : 'bg-gray-200 hover:bg-red-100'
               }`}
               onClick={() => onUpdateStatus(question.question_number, 'incorrect', question.legend)}
+              disabled={!isEditing}
             >
               <X className="w-4 h-4" />
             </Button>
@@ -94,6 +97,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateSt
                   : 'bg-gray-200 hover:bg-gray-300'
               }`}
               onClick={() => onUpdateStatus(question.question_number, 'unanswered', question.legend)}
+              disabled={!isEditing}
             >
               <Minus className="w-4 h-4" />
             </Button>
@@ -104,6 +108,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateSt
               size="sm"
               className={`flex-1 sm:flex-none w-full sm:w-10 h-10 rounded-full ${getLegendColor(question.legend === 'circle' ? 'circle' : null)}`}
               onClick={() => onUpdateStatus(question.question_number, question.status, 'circle')}
+              disabled={!isEditing}
             >
               <Circle className="w-4 h-4" />
             </Button>
@@ -112,6 +117,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateSt
               size="sm"
               className={`flex-1 sm:flex-none w-full sm:w-10 h-10 rounded-full ${getLegendColor(question.legend === 'star' ? 'star' : null)}`}
               onClick={() => onUpdateStatus(question.question_number, question.status, 'star')}
+              disabled={!isEditing}
             >
               <Star className="w-4 h-4" />
             </Button>
@@ -120,6 +126,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateSt
               size="sm"
               className={`flex-1 sm:flex-none w-full sm:w-10 h-10 rounded-full ${getLegendColor(question.legend === 'question' ? 'question' : null)}`}
               onClick={() => onUpdateStatus(question.question_number, question.status, 'question')}
+              disabled={!isEditing}
             >
               <HelpCircle className="w-4 h-4" />
             </Button>
@@ -128,6 +135,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateSt
               size="sm"
               className={`flex-1 sm:flex-none w-full sm:w-10 h-10 rounded-full ${getLegendColor(question.legend === 'exclamation' ? 'exclamation' : null)}`}
               onClick={() => onUpdateStatus(question.question_number, question.status, 'exclamation')}
+              disabled={!isEditing}
             >
               <AlertCircle className="w-4 h-4" />
             </Button>
