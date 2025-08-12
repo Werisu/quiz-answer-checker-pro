@@ -1,18 +1,43 @@
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useQuiz } from '@/hooks/useQuiz';
 import { useCadernos } from '@/hooks/useCadernos';
-import { format, subDays, subMonths, startOfDay, endOfDay } from 'date-fns';
+import { useQuiz } from '@/hooks/useQuiz';
+import { format, subDays, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { TrendingUp, Calendar, Target, Award, BarChart3, PieChart as PieChartIcon } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import { Award, BarChart3, PieChart as PieChartIcon, Target, TrendingUp } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from 'recharts';
 
 interface AdvancedStatsProps {
   onBack: () => void;
 }
 
 type TimeRange = '7d' | '30d' | '3m' | '1y';
+
+// Cores para os gráficos
+const CHART_COLORS = {
+  primary: '#3b82f6',
+  secondary: '#10b981',
+  accent: '#8b5cf6',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  neutral: '#6b7280',
+};
 
 export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
   const { quizHistory } = useQuiz();
@@ -30,9 +55,9 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
       case '30d':
         return { start: subDays(now, 30), end: now };
       case '3m':
-        return { start: subMonths(now, 3), end: now };
+        return { start: subDays(now, 3), end: now };
       case '1y':
-        return { start: subMonths(now, 12), end: now };
+        return { start: subDays(now, 12), end: now };
       default:
         return { start: subDays(now, 30), end: now };
     }
@@ -74,6 +99,7 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
         date: format(date, 'dd/MM', { locale: ptBR }),
         percentage: Math.round(avgPercentage * 10) / 10,
         quizzes: dayResults.length,
+        fullDate: date,
       });
     }
     
@@ -86,7 +112,6 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
     
     filteredData.forEach(result => {
       const cadernoId = result.quiz?.caderno_id || 'sem-caderno';
-      const cadernoName = result.quiz?.cadernos?.nome || 'Sem Caderno';
       
       if (!cadernoStats.has(cadernoId)) {
         cadernoStats.set(cadernoId, { total: 0, avgPercentage: 0, quizzes: 0 });
@@ -120,10 +145,10 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
     });
     
     return [
-      { name: 'Estrela (Certeza)', value: legendas.star, color: '#fbbf24' },
-      { name: 'Interrogação (Dúvida)', value: legendas.question, color: '#3b82f6' },
-      { name: 'Círculo (Sem Conhecimento)', value: legendas.circle, color: '#6b7280' },
-      { name: 'Exclamação (Tempo)', value: legendas.exclamation, color: '#f97316' },
+      { name: 'Estrela (Certeza)', value: legendas.star, color: CHART_COLORS.warning },
+      { name: 'Interrogação (Dúvida)', value: legendas.question, color: CHART_COLORS.primary },
+      { name: 'Círculo (Sem Conhecimento)', value: legendas.circle, color: CHART_COLORS.neutral },
+      { name: 'Exclamação (Tempo)', value: legendas.exclamation, color: CHART_COLORS.danger },
     ].filter(item => item.value > 0);
   }, [filteredData]);
 
@@ -165,6 +190,24 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
       trend: Math.round(trend * 10) / 10,
     };
   }, [filteredData]);
+
+  // Custom Tooltip para o gráfico de progresso
+  const CustomTooltip = ({ active, payload, label }: {
+    active?: boolean;
+    payload?: Array<{ value: number; dataKey: string }>;
+    label?: string;
+  }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-800">{`Data: ${label}`}</p>
+          <p className="text-blue-600">{`Média: ${payload[0].value}%`}</p>
+          <p className="text-green-600">{`Quizzes: ${payload[1]?.value || 0}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -292,14 +335,53 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Progresso ao Longo do Tempo</h3>
               <div className="h-96 w-full">
-                {/* Aqui vamos implementar o gráfico de linha */}
-                <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
-                  <div className="text-center">
-                    <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Gráfico de Progresso</p>
-                    <p className="text-sm text-gray-500">Implementando com Recharts...</p>
+                {progressData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={progressData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="#6b7280"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis 
+                        stroke="#6b7280"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        domain={[0, 100]}
+                        tickFormatter={(value) => `${value}%`}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Line 
+                        type="monotone" 
+                        dataKey="percentage" 
+                        stroke={CHART_COLORS.primary} 
+                        strokeWidth={3}
+                        dot={{ fill: CHART_COLORS.primary, strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, stroke: CHART_COLORS.primary, strokeWidth: 2 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="quizzes" 
+                        stroke={CHART_COLORS.secondary} 
+                        strokeWidth={2}
+                        dot={{ fill: CHART_COLORS.secondary, strokeWidth: 2, r: 3 }}
+                        activeDot={{ r: 5, stroke: CHART_COLORS.secondary, strokeWidth: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                    <div className="text-center">
+                      <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Nenhum dado para exibir</p>
+                      <p className="text-sm text-gray-500">Complete quizzes no período selecionado</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </Card>
           )}
@@ -309,14 +391,52 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Performance por Caderno</h3>
               <div className="h-96 w-full">
-                {/* Aqui vamos implementar o gráfico de barras */}
-                <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
-                  <div className="text-center">
-                    <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Gráfico de Cadernos</p>
-                    <p className="text-sm text-gray-500">Implementando com Recharts...</p>
+                {cadernosData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={cadernosData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="name" 
+                        stroke="#6b7280"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis 
+                        stroke="#6b7280"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        domain={[0, 100]}
+                        tickFormatter={(value) => `${value}%`}
+                      />
+                      <Tooltip 
+                        formatter={(value: number, name: string) => [
+                          `${value}%`, 
+                          name === 'media' ? 'Média' : 'Quizzes'
+                        ]}
+                        labelStyle={{ color: '#374151' }}
+                      />
+                      <Bar 
+                        dataKey="media" 
+                        fill={CHART_COLORS.primary}
+                        radius={[4, 4, 0, 0]}
+                        name="Média"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                    <div className="text-center">
+                      <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Nenhum dado para exibir</p>
+                      <p className="text-sm text-gray-500">Complete quizzes no período selecionado</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </Card>
           )}
@@ -326,14 +446,39 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Distribuição de Legendas</h3>
               <div className="h-96 w-full">
-                {/* Aqui vamos implementar o gráfico de pizza */}
-                <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
-                  <div className="text-center">
-                    <PieChartIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Gráfico de Legendas</p>
-                    <p className="text-sm text-gray-500">Implementando com Recharts...</p>
+                {legendasData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={legendasData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                        outerRadius={120}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {legendasData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value: number) => [value, 'Questões']}
+                        labelStyle={{ color: '#374151' }}
+                      />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                    <div className="text-center">
+                      <PieChartIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Nenhum dado para exibir</p>
+                      <p className="text-sm text-gray-500">Complete quizzes no período selecionado</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </Card>
           )}
