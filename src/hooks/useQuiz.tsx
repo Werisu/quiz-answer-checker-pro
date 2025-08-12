@@ -90,6 +90,8 @@ export const useQuiz = () => {
     
     setLoading(true);
     try {
+      console.log('🔍 [fetchQuizHistory] Buscando histórico para usuário:', user.id);
+      
       const { data, error } = await supabase
         .from('quiz_results')
         .select(`
@@ -108,9 +110,15 @@ export const useQuiz = () => {
 
       if (error) throw error;
       
+      console.log('🔍 [fetchQuizHistory] Dados brutos do Supabase:', data);
+      
       // Buscar as respostas do usuário para cada quiz
       const resultsWithStats = await Promise.all(
         data?.map(async (result) => {
+          console.log('🔍 [fetchQuizHistory] Processando resultado:', result);
+          console.log('🔍 [fetchQuizHistory] Quiz data:', result.quiz);
+          console.log('🔍 [fetchQuizHistory] Caderno data:', result.quiz?.cadernos);
+          
           // Primeiro, buscar as questões do quiz
           const { data: questions, error: questionsError } = await supabase
             .from('questions')
@@ -143,20 +151,27 @@ export const useQuiz = () => {
             },
           };
 
-          return {
+          const processedResult = {
             ...result,
             quiz: {
               title: result.quiz?.title || '',
               description: result.quiz?.description || null,
+              caderno_id: result.quiz?.caderno_id || null,
+              cadernos: result.quiz?.cadernos || null,
             },
             legendStats,
           };
+          
+          console.log('🔍 [fetchQuizHistory] Resultado processado:', processedResult);
+          return processedResult;
         }) || []
       );
 
+      console.log('🔍 [fetchQuizHistory] Resultados finais:', resultsWithStats);
       setQuizHistory(resultsWithStats as QuizResult[]);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      console.error('❌ [fetchQuizHistory] Erro:', error);
       toast({
         title: "Erro ao carregar histórico",
         description: errorMessage,
@@ -291,6 +306,9 @@ export const useQuiz = () => {
   const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string, cadernoId: string) => {
     if (!user) throw new Error('User not authenticated');
     
+    console.log('🔍 [createQuiz] Criando quiz com caderno_id:', cadernoId);
+    console.log('🔍 [createQuiz] Dados do quiz:', { title, questionCount, pdfName, description, cadernoId });
+    
     setLoading(true);
     try {
       // Create quiz
@@ -308,6 +326,9 @@ export const useQuiz = () => {
         .single();
 
       if (quizError) throw quizError;
+      
+      console.log('✅ [createQuiz] Quiz criado com sucesso:', quiz);
+      console.log('✅ [createQuiz] Caderno ID salvo:', quiz.caderno_id);
 
       // Create questions
       const questions = Array.from({ length: questionCount }, (_, i) => ({
@@ -340,6 +361,7 @@ export const useQuiz = () => {
 
       return quizWithQuestions;
     } catch (error: any) {
+      console.error('❌ [createQuiz] Erro ao criar quiz:', error);
       toast({
         title: "Erro ao criar quiz",
         description: error.message,
