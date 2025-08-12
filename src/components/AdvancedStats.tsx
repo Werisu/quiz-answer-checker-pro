@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { format, subDays } from 'date-fns';
+import { format, subDays, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Award, BarChart3, PieChart as PieChartIcon, Target, TrendingUp } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
@@ -60,9 +60,9 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
       case '30d':
         return { start: subDays(now, 30), end: now };
       case '3m':
-        return { start: subDays(now, 3), end: now };
+        return { start: subMonths(now, 3), end: now };
       case '1y':
-        return { start: subDays(now, 12), end: now };
+        return { start: subMonths(now, 12), end: now };
       default:
         return { start: subDays(now, 30), end: now };
     }
