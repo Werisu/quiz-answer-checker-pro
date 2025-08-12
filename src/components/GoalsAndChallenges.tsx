@@ -70,7 +70,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     type: 'daily' as const,
     target: 10,
     unit: 'questions' as const,
-    cadernoId: '',
+    cadernoId: 'all',
     deadline: ''
   });
 
@@ -179,7 +179,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
       target: goalForm.target,
       current: 0,
       unit: goalForm.unit,
-      cadernoId: goalForm.cadernoId || undefined,
+      cadernoId: goalForm.cadernoId === 'all' ? undefined : goalForm.cadernoId,
       deadline: goalForm.deadline || new Date().toISOString(),
       completed: false,
       points: goalForm.type === 'daily' ? 10 : goalForm.type === 'weekly' ? 50 : 200,
@@ -197,7 +197,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
       type: 'daily',
       target: 10,
       unit: 'questions',
-      cadernoId: '',
+      cadernoId: 'all',
       deadline: ''
     });
     setShowGoalForm(false);
@@ -244,7 +244,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
       type: goal.type,
       target: goal.target,
       unit: goal.unit,
-      cadernoId: goal.cadernoId || '',
+      cadernoId: goal.cadernoId || 'all',
       deadline: goal.deadline
     });
     setShowGoalForm(true);
@@ -270,7 +270,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
       type: 'daily',
       target: 10,
       unit: 'questions',
-      cadernoId: '',
+      cadernoId: 'all',
       deadline: ''
     });
   };
@@ -450,7 +450,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                     <SelectValue placeholder="Todos os cadernos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os cadernos</SelectItem>
+                    <SelectItem value="all">Todos os cadernos</SelectItem>
                     {cadernos.map((caderno) => (
                       <SelectItem key={caderno.id} value={caderno.id}>
                         {caderno.nome}
@@ -498,7 +498,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                     type: 'daily',
                     target: 10,
                     unit: 'questions',
-                    cadernoId: '',
+                    cadernoId: 'all',
                     deadline: ''
                   });
                 }}
