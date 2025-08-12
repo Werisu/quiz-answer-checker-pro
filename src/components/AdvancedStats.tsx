@@ -3,24 +3,24 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { format, subDays, subMonths } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Award, BarChart3, PieChart as PieChartIcon, Target, TrendingUp } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
 } from 'recharts';
 
 interface AdvancedStatsProps {

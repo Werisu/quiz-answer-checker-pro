@@ -1,16 +1,16 @@
 import { AdminPanel } from '@/components/AdminPanel';
+import { AdvancedStats } from '@/components/AdvancedStats';
 import { AuthModal } from '@/components/AuthModal';
 import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
 import { QuizHistory } from '@/components/QuizHistory';
 import { Results } from '@/components/Results';
-import { AdvancedStats } from '@/components/AdvancedStats';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { History, LogOut, Settings, User, BarChart3 } from 'lucide-react';
+import { BarChart3, History, LogOut, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 
 const MainContent = () => {
