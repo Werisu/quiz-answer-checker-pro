@@ -1,21 +1,21 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useQuiz } from '@/hooks/useQuiz';
 import { useCadernos } from '@/hooks/useCadernos';
-import { Calendar, Circle, Edit2, Eye, HelpCircle, History, Star, Target, Trash2, TrendingUp, Filter, X } from 'lucide-react';
+import { useQuiz } from '@/hooks/useQuiz';
+import { Calendar, Circle, Edit2, Eye, Filter, HelpCircle, History, Star, Target, Trash2, TrendingUp, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -37,7 +37,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
   const { cadernos } = useCadernos();
   const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
-  const [selectedCadernoFilter, setSelectedCadernoFilter] = useState<string>('');
+  const [selectedCadernoFilter, setSelectedCadernoFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchQuizHistory();
@@ -51,9 +51,9 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
   }, [selectedQuizId]);
 
   // Filtrar quizzes baseado no caderno selecionado
-  const filteredQuizHistory = selectedCadernoFilter
-    ? quizHistory.filter(result => result.quiz?.caderno_id === selectedCadernoFilter)
-    : quizHistory;
+  const filteredQuizHistory = selectedCadernoFilter === 'all'
+    ? quizHistory
+    : quizHistory.filter(result => result.quiz?.caderno_id === selectedCadernoFilter);
 
   // Obter nome do caderno filtrado
   const getCadernoName = (cadernoId: string) => {
@@ -104,7 +104,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                 <SelectValue placeholder="Todos os cadernos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os cadernos</SelectItem>
+                <SelectItem value="all">Todos os cadernos</SelectItem>
                 {cadernos.map((caderno) => (
                   <SelectItem key={caderno.id} value={caderno.id}>
                     {caderno.nome}
@@ -112,18 +112,18 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                 ))}
               </SelectContent>
             </Select>
-            {selectedCadernoFilter && (
+            {selectedCadernoFilter !== 'all' && (
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setSelectedCadernoFilter('')}
+                onClick={() => setSelectedCadernoFilter('all')}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="w-4 h-4" />
               </Button>
             )}
           </div>
-          {selectedCadernoFilter && (
+          {selectedCadernoFilter !== 'all' && (
             <div className="mt-2 text-sm text-gray-600">
               Mostrando quizzes do caderno: <span className="font-medium text-blue-600">{getCadernoName(selectedCadernoFilter)}</span>
               {' '}({filteredQuizHistory.length} de {quizHistory.length} quizzes)
@@ -152,7 +152,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
             </p>
             <Button
               variant="outline"
-              onClick={() => setSelectedCadernoFilter('')}
+              onClick={() => setSelectedCadernoFilter('all')}
               className="mt-3"
             >
               Remover Filtro
@@ -391,7 +391,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="w-5 h-5 text-blue-600" />
                   <h4 className="font-semibold text-blue-800">
-                    {selectedCadernoFilter ? 'Estatísticas do Caderno Selecionado' : 'Estatísticas Gerais'}
+                    {selectedCadernoFilter === 'all' ? 'Estatísticas Gerais' : 'Estatísticas do Caderno Selecionado'}
                   </h4>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -399,7 +399,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                     <span className="text-gray-600">Total de Quizzes:</span>
                     <div className="font-semibold text-gray-800">
                       {filteredQuizHistory.length}
-                      {selectedCadernoFilter && ` / ${quizHistory.length}`}
+                      {selectedCadernoFilter !== 'all' && ` / ${quizHistory.length}`}
                     </div>
                   </div>
                   <div>
