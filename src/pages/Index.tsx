@@ -1,6 +1,7 @@
 import { AdminPanel } from '@/components/AdminPanel';
 import { AdvancedStats } from '@/components/AdvancedStats';
 import { AuthModal } from '@/components/AuthModal';
+import { GoalsAndChallenges } from '@/components/GoalsAndChallenges';
 import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
 import { QuizHistory } from '@/components/QuizHistory';
@@ -10,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { BarChart3, History, LogOut, Settings, User } from 'lucide-react';
+import { BarChart3, History, LogOut, Settings, Target, User } from 'lucide-react';
 import { useState } from 'react';
 
 const MainContent = () => {
@@ -19,6 +20,7 @@ const MainContent = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
+  const [showGoalsAndChallenges, setShowGoalsAndChallenges] = useState(false);
   const { user, signOut, loading: authLoading, userProfile } = useAuth();
   const { cadernos, createCaderno } = useCadernos();
   const {
@@ -90,6 +92,12 @@ const MainContent = () => {
     return <AdvancedStats onBack={() => setShowAdvancedStats(false)} />;
   }
 
+  if (showGoalsAndChallenges) {
+    return (
+      <GoalsAndChallenges onBack={() => setShowGoalsAndChallenges(false)} />
+    );
+  }
+
   if (showAdminPanel) {
     return <AdminPanel onBack={() => setShowAdminPanel(false)} />;
   }
@@ -129,6 +137,15 @@ const MainContent = () => {
                   >
                     <BarChart3 className="w-4 h-4 mr-2" />
                     Estatísticas
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowGoalsAndChallenges(true)}
+                    className="bg-white/80 w-full"
+                  >
+                    <Target className="w-4 h-4 mr-2" />
+                    Metas
                   </Button>
                   {userProfile?.role === 'admin' && (
                     <Button 
