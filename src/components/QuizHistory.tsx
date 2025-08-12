@@ -1,13 +1,13 @@
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -104,6 +104,13 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                         <p className="text-sm text-gray-600">
                           {result.quiz.description}
                         </p>
+                      )}
+                      {result.quiz?.cadernos?.nome && (
+                        <div className="flex items-center gap-1">
+                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                            {result.quiz.cadernos.nome}
+                          </Badge>
+                        </div>
                       )}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">

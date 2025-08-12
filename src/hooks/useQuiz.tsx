@@ -12,6 +12,7 @@ export interface Quiz {
   created_at: string;
   questions: Question[];
   pdf_name?: string;
+  caderno_id?: string;
 }
 
 export interface Question {
@@ -45,6 +46,10 @@ export interface QuizResult {
   quiz?: {
     title: string;
     description: string | null;
+    caderno_id?: string;
+    cadernos?: {
+      nome: string;
+    };
   };
   profiles?: {
     name: string;
@@ -91,7 +96,11 @@ export const useQuiz = () => {
           *,
           quiz:quizzes (
             title,
-            description
+            description,
+            caderno_id,
+            cadernos (
+              nome
+            )
           )
         `)
         .eq('user_id', user.id)
@@ -279,7 +288,7 @@ export const useQuiz = () => {
     }
   };
 
-  const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string) => {
+  const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string, cadernoId: string) => {
     if (!user) throw new Error('User not authenticated');
     
     setLoading(true);
@@ -293,6 +302,7 @@ export const useQuiz = () => {
           creator_id: user.id,
           is_public: true,
           pdf_name: pdfName,
+          caderno_id: cadernoId,
         })
         .select()
         .single();
