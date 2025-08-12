@@ -145,9 +145,6 @@ export const Header: React.FC<HeaderProps> = ({
                           </div>
                           <div>
                             <div className="font-medium text-gray-800 text-sm">{caderno.nome}</div>
-                            {caderno.descricao && (
-                              <div className="text-xs text-gray-500">{caderno.descricao}</div>
-                            )}
                           </div>
                         </div>
                       </SelectItem>
