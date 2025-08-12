@@ -49,7 +49,7 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
   // Buscar histórico quando o componente for montado
   React.useEffect(() => {
     fetchQuizHistory();
-  }, [fetchQuizHistory]);
+  }, []); // Array vazio para executar apenas uma vez
 
   // Calcular período baseado na seleção
   const getDateRange = (range: TimeRange) => {
