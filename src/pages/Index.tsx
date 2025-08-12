@@ -4,12 +4,13 @@ import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
 import { QuizHistory } from '@/components/QuizHistory';
 import { Results } from '@/components/Results';
+import { AdvancedStats } from '@/components/AdvancedStats';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { History, LogOut, Settings, User } from 'lucide-react';
+import { History, LogOut, Settings, User, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 
 const MainContent = () => {
@@ -17,6 +18,7 @@ const MainContent = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showAdvancedStats, setShowAdvancedStats] = useState(false);
   const { user, signOut, loading: authLoading, userProfile } = useAuth();
   const { cadernos, createCaderno } = useCadernos();
   const {
@@ -84,6 +86,10 @@ const MainContent = () => {
     return <QuizHistory onBack={() => setShowHistory(false)} />;
   }
 
+  if (showAdvancedStats) {
+    return <AdvancedStats onBack={() => setShowAdvancedStats(false)} />;
+  }
+
   if (showAdminPanel) {
     return <AdminPanel onBack={() => setShowAdminPanel(false)} />;
   }
@@ -105,7 +111,7 @@ const MainContent = () => {
                     </Badge>
                   )}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full sm:w-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 w-full sm:w-auto">
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -114,6 +120,15 @@ const MainContent = () => {
                   >
                     <History className="w-4 h-4 mr-2" />
                     Histórico
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowAdvancedStats(true)}
+                    className="bg-white/80 w-full"
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Estatísticas
                   </Button>
                   {userProfile?.role === 'admin' && (
                     <Button 
