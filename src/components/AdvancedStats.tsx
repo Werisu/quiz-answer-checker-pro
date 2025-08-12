@@ -40,11 +40,16 @@ const CHART_COLORS = {
 };
 
 export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
-  const { quizHistory } = useQuiz();
+  const { quizHistory, fetchQuizHistory } = useQuiz();
   const { cadernos } = useCadernos();
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('30d');
   const [selectedCaderno, setSelectedCaderno] = useState<string>('all');
   const [activeChart, setActiveChart] = useState<'progress' | 'cadernos' | 'legendas'>('progress');
+
+  // Buscar histórico quando o componente for montado
+  React.useEffect(() => {
+    fetchQuizHistory();
+  }, [fetchQuizHistory]);
 
   // Calcular período baseado na seleção
   const getDateRange = (range: TimeRange) => {
