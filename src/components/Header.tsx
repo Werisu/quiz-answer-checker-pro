@@ -140,9 +140,6 @@ export const Header: React.FC<HeaderProps> = ({
                     {cadernos.map((caderno) => (
                       <SelectItem key={caderno.id} value={caderno.id} className="rounded-lg">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-purple-500 rounded-lg flex items-center justify-center">
-                            <BookOpen className="w-3 h-3 text-white" />
-                          </div>
                           <div>
                             <div className="font-medium text-gray-800 text-sm">{caderno.nome}</div>
                           </div>
