@@ -12,8 +12,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useQuiz } from '@/hooks/useQuiz';
-import { Calendar, Circle, Edit2, Eye, HelpCircle, History, Star, Target, Trash2, TrendingUp } from 'lucide-react';
+import { useCadernos } from '@/hooks/useCadernos';
+import { Calendar, Circle, Edit2, Eye, HelpCircle, History, Star, Target, Trash2, TrendingUp, Filter, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -32,8 +34,10 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
     updateQuestionStatus,
     currentResults 
   } = useQuiz();
+  const { cadernos } = useCadernos();
   const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [selectedCadernoFilter, setSelectedCadernoFilter] = useState<string>('');
 
   useEffect(() => {
     fetchQuizHistory();
@@ -45,6 +49,16 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
       fetchQuizQuestions(selectedQuizId);
     }
   }, [selectedQuizId]);
+
+  // Filtrar quizzes baseado no caderno selecionado
+  const filteredQuizHistory = selectedCadernoFilter
+    ? quizHistory.filter(result => result.quiz?.caderno_id === selectedCadernoFilter)
+    : quizHistory;
+
+  // Obter nome do caderno filtrado
+  const getCadernoName = (cadernoId: string) => {
+    return cadernos.find(c => c.id === cadernoId)?.nome || 'Caderno não encontrado';
+  };
 
   const getPerformanceBadge = (percentage: number) => {
     if (percentage >= 80) {
@@ -80,6 +94,43 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
           </Button>
         </div>
 
+        {/* Filtro por Caderno */}
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+          <div className="flex items-center gap-3">
+            <Filter className="w-5 h-5 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Filtrar por Caderno:</span>
+            <Select value={selectedCadernoFilter} onValueChange={setSelectedCadernoFilter}>
+              <SelectTrigger className="w-64">
+                <SelectValue placeholder="Todos os cadernos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Todos os cadernos</SelectItem>
+                {cadernos.map((caderno) => (
+                  <SelectItem key={caderno.id} value={caderno.id}>
+                    {caderno.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedCadernoFilter && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedCadernoFilter('')}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+          {selectedCadernoFilter && (
+            <div className="mt-2 text-sm text-gray-600">
+              Mostrando quizzes do caderno: <span className="font-medium text-blue-600">{getCadernoName(selectedCadernoFilter)}</span>
+              {' '}({filteredQuizHistory.length} de {quizHistory.length} quizzes)
+            </div>
+          )}
+        </div>
+
         {quizHistory.length === 0 ? (
           <div className="text-center py-12">
             <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -90,9 +141,26 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
               Complete alguns quizzes para ver seu histórico aqui
             </p>
           </div>
+        ) : filteredQuizHistory.length === 0 ? (
+          <div className="text-center py-12">
+            <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">
+              Nenhum quiz encontrado para o caderno selecionado
+            </h3>
+            <p className="text-gray-500">
+              Tente selecionar outro caderno ou remover o filtro
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedCadernoFilter('')}
+              className="mt-3"
+            >
+              Remover Filtro
+            </Button>
+          </div>
         ) : (
           <div className="space-y-4">
-            {quizHistory.map((result) => (
+            {filteredQuizHistory.map((result) => (
               <Card key={result.id} className="p-4 bg-white/60 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -322,35 +390,46 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="w-5 h-5 text-blue-600" />
-                  <h4 className="font-semibold text-blue-800">Estatísticas Gerais</h4>
+                  <h4 className="font-semibold text-blue-800">
+                    {selectedCadernoFilter ? 'Estatísticas do Caderno Selecionado' : 'Estatísticas Gerais'}
+                  </h4>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">Total de Quizzes:</span>
-                    <div className="font-semibold text-gray-800">{quizHistory.length}</div>
+                    <div className="font-semibold text-gray-800">
+                      {filteredQuizHistory.length}
+                      {selectedCadernoFilter && ` / ${quizHistory.length}`}
+                    </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Média de Acertos:</span>
                     <div className="font-semibold text-green-600">
-                      {(quizHistory.reduce((acc, r) => acc + r.percentage, 0) / quizHistory.length).toFixed(1)}%
+                      {filteredQuizHistory.length > 0 
+                        ? (filteredQuizHistory.reduce((acc, r) => acc + r.percentage, 0) / filteredQuizHistory.length).toFixed(1)
+                        : '0.0'
+                      }%
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Melhor Resultado:</span>
                     <div className="font-semibold text-blue-600">
-                      {Math.max(...quizHistory.map(r => r.percentage)).toFixed(1)}%
+                      {filteredQuizHistory.length > 0 
+                        ? Math.max(...filteredQuizHistory.map(r => r.percentage)).toFixed(1)
+                        : '0.0'
+                      }%
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Total de Questões:</span>
                     <div className="font-semibold text-gray-800">
-                      {quizHistory.reduce((acc, r) => acc + r.total_questions, 0)}
+                      {filteredQuizHistory.reduce((acc, r) => acc + r.total_questions, 0)}
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Total de Pontos Líquidos:</span>
                     <div className="font-semibold text-gray-800">
-                      {quizHistory.reduce((acc, r) => acc + (r.correct_answers - r.wrong_answers), 0)}
+                      {filteredQuizHistory.reduce((acc, r) => acc + (r.correct_answers - r.wrong_answers), 0)}
                     </div>
                   </div>
                 </div>
