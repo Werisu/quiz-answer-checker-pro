@@ -1,12 +1,19 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { AlertCircle, Circle, HelpCircle, Play, RotateCcw, Save, Star } from 'lucide-react';
+import { AlertCircle, BookOpen, Circle, HelpCircle, Play, Plus, RotateCcw, Save, Star } from 'lucide-react';
 import React, { useState } from 'react';
 
+interface Caderno {
+  id: string;
+  nome: string;
+  descricao?: string;
+}
+
 interface HeaderProps {
-  onInitialize: (count: number, pdfName: string, description: string) => void;
+  onInitialize: (count: number, pdfName: string, description: string, cadernoId: string) => void;
   onReset: () => void;
   onSave: () => void;
   hasQuestions: boolean;
@@ -16,6 +23,8 @@ interface HeaderProps {
     unanswered: number;
     total: number;
   };
+  cadernos: Caderno[];
+  onCadernoCreate: (nome: string, descricao: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,14 +33,35 @@ export const Header: React.FC<HeaderProps> = ({
   onSave,
   hasQuestions,
   results,
+  cadernos,
+  onCadernoCreate,
 }) => {
   const [questionCount, setQuestionCount] = useState(10);
   const [pdfName, setPdfName] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedCadernoId, setSelectedCadernoId] = useState('');
+  const [showNewCadernoForm, setShowNewCadernoForm] = useState(false);
+  const [newCadernoNome, setNewCadernoNome] = useState('');
+  const [newCadernoDescricao, setNewCadernoDescricao] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onInitialize(questionCount, pdfName, description);
+    if (!selectedCadernoId) {
+      alert('Por favor, selecione um caderno');
+      return;
+    }
+    onInitialize(questionCount, pdfName, description, selectedCadernoId);
+  };
+
+  const handleCreateCaderno = () => {
+    if (!newCadernoNome.trim()) {
+      alert('Por favor, insira o nome do caderno');
+      return;
+    }
+    onCadernoCreate(newCadernoNome.trim(), newCadernoDescricao.trim());
+    setNewCadernoNome('');
+    setNewCadernoDescricao('');
+    setShowNewCadernoForm(false);
   };
 
   const percentage = results.total > 0
@@ -63,13 +93,86 @@ export const Header: React.FC<HeaderProps> = ({
                 className="w-full"
               />
             </div>
+            
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-gray-700">Selecionar Caderno:</span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Select value={selectedCadernoId} onValueChange={setSelectedCadernoId}>
+                  <SelectTrigger className="w-full sm:w-64">
+                    <SelectValue placeholder="Escolha um caderno" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cadernos.map((caderno) => (
+                      <SelectItem key={caderno.id} value={caderno.id}>
+                        {caderno.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowNewCadernoForm(!showNewCadernoForm)}
+                  className="w-full sm:w-auto"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Novo Caderno
+                </Button>
+              </div>
+            </div>
+
+            {showNewCadernoForm && (
+              <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Criar Novo Caderno</h4>
+                <div className="flex flex-col gap-3">
+                  <Input
+                    type="text"
+                    value={newCadernoNome}
+                    onChange={(e) => setNewCadernoNome(e.target.value)}
+                    placeholder="Nome do caderno (ex: Direito Constitucional)"
+                    className="w-full"
+                  />
+                  <Textarea
+                    value={newCadernoDescricao}
+                    onChange={(e) => setNewCadernoDescricao(e.target.value)}
+                    placeholder="Descrição do caderno (opcional)"
+                    className="w-full"
+                  />
+                  <div className="flex gap-2">
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      className="bg-blue-600 hover:bg-blue-700"
+                      onClick={handleCreateCaderno}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Criar
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowNewCadernoForm(false)}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Descrição (opcional)"
               className="w-full"
             />
-            <Button type="submit" className="w-full sm:w-auto">
+            <Button type="submit" className="w-full sm:w-auto" disabled={!selectedCadernoId}>
               <Play className="w-4 h-4 mr-2" />
               Iniciar
             </Button>

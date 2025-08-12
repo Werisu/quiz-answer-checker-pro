@@ -109,6 +109,41 @@ export type Database = {
           }
         ];
       };
+      cadernos: {
+        Row: {
+          id: string;
+          nome: string;
+          descricao: string | null;
+          user_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          nome: string;
+          descricao?: string | null;
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          nome?: string;
+          descricao?: string | null;
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "cadernos_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       quizzes: {
         Row: {
           created_at: string;
@@ -118,6 +153,8 @@ export type Database = {
           is_public: boolean;
           title: string;
           updated_at: string;
+          pdf_name: string | null;
+          caderno_id: string | null;
         };
         Insert: {
           created_at?: string;
@@ -127,6 +164,8 @@ export type Database = {
           is_public?: boolean;
           title: string;
           updated_at?: string;
+          pdf_name?: string | null;
+          caderno_id?: string | null;
         };
         Update: {
           created_at?: string;
@@ -136,8 +175,18 @@ export type Database = {
           is_public?: boolean;
           title?: string;
           updated_at?: string;
+          pdf_name?: string | null;
+          caderno_id?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "quizzes_caderno_id_fkey";
+            columns: ["caderno_id"];
+            isOneToOne: false;
+            referencedRelation: "cadernos";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       user_answers: {
         Row: {

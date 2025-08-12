@@ -7,6 +7,7 @@ import { Results } from '@/components/Results';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
 import { History, LogOut, Settings, User } from 'lucide-react';
 import { useState } from 'react';
@@ -17,6 +18,7 @@ const MainContent = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const { user, signOut, loading: authLoading, userProfile } = useAuth();
+  const { cadernos, createCaderno } = useCadernos();
   const {
     currentQuiz,
     loading: quizLoading,
@@ -27,12 +29,22 @@ const MainContent = () => {
     getResults,
   } = useQuiz();
 
-  const handleInitialize = async (count: number, pdfName: string, description: string) => {
+  const handleInitialize = async (count: number, pdfName: string, description: string, cadernoId: string) => {
     if (!user) {
       setShowAuthModal(true);
       return;
     }
-    await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count, pdfName, description);
+    await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count, pdfName, description, cadernoId);
+  };
+
+  const handleCadernoCreate = async (nome: string, descricao: string) => {
+    try {
+      console.log('🔍 [Index] Iniciando criação de caderno:', { nome, descricao });
+      await createCaderno(nome, descricao);
+      console.log('✅ [Index] Caderno criado com sucesso');
+    } catch (error) {
+      console.error('❌ [Index] Erro ao criar caderno:', error);
+    }
   };
 
   const handleSave = async () => {
@@ -143,6 +155,8 @@ const MainContent = () => {
           onSave={handleSave}
           hasQuestions={!!currentQuiz}
           results={results}
+          cadernos={cadernos}
+          onCadernoCreate={handleCadernoCreate}
         />
 
         {showResults && currentQuiz ? (
