@@ -302,6 +302,20 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                           </Button>
                         )}
                         <Button
+                          variant={editingQuestionId === selectedQuizId ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => {
+                            if (editingQuestionId === selectedQuizId) {
+                              setEditingQuestionId(null);
+                            } else {
+                              setEditingQuestionId(selectedQuizId);
+                            }
+                          }}
+                          className={editingQuestionId === selectedQuizId ? "bg-yellow-600 hover:bg-yellow-700" : ""}
+                        >
+                          {editingQuestionId === selectedQuizId ? "Cancelar Edição" : "Editar Questões"}
+                        </Button>
+                        <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => {
@@ -375,7 +389,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                                   updateQuestionStatus(selectedQuizId, question.id, status, legend);
                                 }
                               }}
-                              isEditing={editingQuestionId === selectedQuizId}
+                              isEditing={true}
                             />
                           ))}
                         </div>
