@@ -4,49 +4,27 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCadernos } from '@/hooks/useCadernos';
+import { useGoalsAndChallenges } from '@/hooks/useGoalsAndChallenges';
 import { useQuiz } from '@/hooks/useQuiz';
 import {
-    Calendar,
-    CheckCircle2,
-    Clock,
-    Edit2,
-    Flag,
-    Plus,
-    Target,
-    Trash2,
-    TrendingUp,
-    Trophy,
-    XCircle
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Edit2,
+  Flag,
+  Plus,
+  Target,
+  Trash2,
+  TrendingUp,
+  Trophy,
+  XCircle
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-interface Goal {
-  id: string;
-  title: string;
-  description: string;
-  type: 'daily' | 'weekly' | 'monthly';
-  target: number;
-  current: number;
-  unit: 'questions' | 'quizzes' | 'percentage';
-  cadernoId?: string;
-  deadline: string;
-  completed: boolean;
-  points: number;
-  createdAt: string;
-}
+import { Database } from '@/integrations/supabase/types';
 
-interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  targetPercentage: number;
-  cadernoId: string;
-  deadline: string;
-  completed: boolean;
-  currentPercentage: number;
-  points: number;
-  createdAt: string;
-}
+type Goal = Database['public']['Tables']['goals']['Row'];
+type Challenge = Database['public']['Tables']['challenges']['Row'];
 
 interface GoalsAndChallengesProps {
   onBack: () => void;
@@ -55,9 +33,20 @@ interface GoalsAndChallengesProps {
 export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }) => {
   const { quizHistory } = useQuiz();
   const { cadernos } = useCadernos();
+  const {
+    goals,
+    challenges,
+    loading,
+    createGoal: createGoalDB,
+    updateGoal: updateGoalDB,
+    deleteGoal: deleteGoalDB,
+    createChallenge: createChallengeDB,
+    updateChallenge: updateChallengeDB,
+    deleteChallenge: deleteChallengeDB,
+    updateGoalProgress: updateGoalProgressDB,
+    updateChallengeProgress: updateChallengeProgressDB,
+  } = useGoalsAndChallenges();
   
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [showChallengeForm, setShowChallengeForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -67,9 +56,9 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
   const [goalForm, setGoalForm] = useState({
     title: '',
     description: '',
-    type: 'daily' as const,
+    type: 'daily' as 'daily' | 'weekly' | 'monthly',
     target: 10,
-    unit: 'questions' as const,
+    unit: 'questions' as 'questions' | 'quizzes' | 'percentage',
     cadernoId: 'all',
     deadline: ''
   });
@@ -82,25 +71,10 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     deadline: ''
   });
 
-  // Carregar metas e desafios do localStorage (simulação de banco)
-  useEffect(() => {
-    const savedGoals = localStorage.getItem('quiz-goals');
-    const savedChallenges = localStorage.getItem('quiz-challenges');
-    
-    if (savedGoals) setGoals(JSON.parse(savedGoals));
-    if (savedChallenges) setChallenges(JSON.parse(savedChallenges));
-  }, []);
-
-  // Salvar no localStorage
-  const saveToStorage = (newGoals: Goal[], newChallenges: Challenge[]) => {
-    localStorage.setItem('quiz-goals', JSON.stringify(newGoals));
-    localStorage.setItem('quiz-challenges', JSON.stringify(newChallenges));
-  };
-
   // Calcular progresso das metas baseado no histórico real
   const calculateGoalProgress = (goal: Goal): number => {
     const now = new Date();
-    const startDate = new Date(goal.createdAt);
+    const startDate = new Date(goal.created_at);
     let endDate: Date;
 
     switch (goal.type) {
@@ -121,7 +95,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     const relevantHistory = quizHistory.filter(result => {
       const resultDate = new Date(result.completed_at);
       return resultDate >= startDate && resultDate <= endDate && 
-             (!goal.cadernoId || result.quiz?.caderno_id === goal.cadernoId);
+             (!goal.caderno_id || result.quiz?.caderno_id === goal.caderno_id);
     });
 
     switch (goal.unit) {
@@ -129,17 +103,18 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
         return relevantHistory.reduce((sum, result) => sum + result.total_questions, 0);
       case 'quizzes':
         return relevantHistory.length;
-      case 'percentage':
+      case 'percentage': {
         if (relevantHistory.length === 0) return 0;
         const totalPercentage = relevantHistory.reduce((sum, result) => sum + result.percentage, 0);
         return Math.round(totalPercentage / relevantHistory.length);
+      }
     }
   };
 
   // Calcular progresso dos desafios
   const calculateChallengeProgress = (challenge: Challenge): number => {
     const relevantHistory = quizHistory.filter(result => 
-      result.quiz?.caderno_id === challenge.cadernoId
+      result.quiz?.caderno_id === challenge.caderno_id
     );
 
     if (relevantHistory.length === 0) return 0;
@@ -150,143 +125,160 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
 
   // Atualizar progresso automaticamente
   useEffect(() => {
-    const updatedGoals = goals.map(goal => ({
-      ...goal,
-      current: calculateGoalProgress(goal),
-      completed: calculateGoalProgress(goal) >= goal.target
-    }));
+    if (goals.length > 0 || challenges.length > 0) {
+      goals.forEach(async (goal) => {
+        const current = calculateGoalProgress(goal);
+        const completed = current >= goal.target;
+        
+        if (current !== goal.current || completed !== goal.completed) {
+          await updateGoalProgressDB(goal.id, current, completed);
+        }
+      });
 
-    const updatedChallenges = challenges.map(challenge => ({
-      ...challenge,
-      currentPercentage: calculateChallengeProgress(challenge),
-      completed: calculateChallengeProgress(challenge) >= challenge.targetPercentage
-    }));
-
-    setGoals(updatedGoals);
-    setChallenges(updatedChallenges);
-    saveToStorage(updatedGoals, updatedChallenges);
-  }, [quizHistory]);
+      challenges.forEach(async (challenge) => {
+        const currentPercentage = calculateChallengeProgress(challenge);
+        const completed = currentPercentage >= challenge.target_percentage;
+        
+        if (currentPercentage !== challenge.current_percentage || completed !== challenge.completed) {
+          await updateChallengeProgressDB(challenge.id, currentPercentage, completed);
+        }
+      });
+    }
+  }, [quizHistory, goals, challenges]);
 
   // Criar nova meta
-  const createGoal = () => {
+  const createGoal = async () => {
     if (!goalForm.title.trim()) return;
 
-    const newGoal: Goal = {
-      id: Date.now().toString(),
-      title: goalForm.title.trim(),
-      description: goalForm.description.trim(),
-      type: goalForm.type,
-      target: goalForm.target,
-      current: 0,
-      unit: goalForm.unit,
-      cadernoId: goalForm.cadernoId === 'all' ? undefined : goalForm.cadernoId,
-      deadline: goalForm.deadline || new Date().toISOString(),
-      completed: false,
-      points: goalForm.type === 'daily' ? 10 : goalForm.type === 'weekly' ? 50 : 200,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const goalData = {
+        title: goalForm.title.trim(),
+        description: goalForm.description.trim(),
+        type: goalForm.type,
+        target: goalForm.target,
+        unit: goalForm.unit,
+        caderno_id: goalForm.cadernoId === 'all' ? null : goalForm.cadernoId,
+        deadline: goalForm.deadline || new Date().toISOString(),
+        points: goalForm.type === 'daily' ? 10 : goalForm.type === 'weekly' ? 50 : 200,
+      };
 
-    const newGoals = [...goals, newGoal];
-    setGoals(newGoals);
-    saveToStorage(newGoals, challenges);
-    
-    // Reset form
-    setGoalForm({
-      title: '',
-      description: '',
-      type: 'daily',
-      target: 10,
-      unit: 'questions',
-      cadernoId: 'all',
-      deadline: ''
-    });
-    setShowGoalForm(false);
+      await createGoalDB(goalData);
+      
+      // Reset form
+      setGoalForm({
+        title: '',
+        description: '',
+        type: 'daily',
+        target: 10,
+        unit: 'questions',
+        cadernoId: 'all',
+        deadline: ''
+      });
+      setShowGoalForm(false);
+    } catch (error) {
+      console.error('Erro ao criar meta:', error);
+      alert('Erro ao criar meta. Tente novamente.');
+    }
   };
 
   // Criar novo desafio
-  const createChallenge = () => {
+  const createChallenge = async () => {
     if (!challengeForm.title.trim() || !challengeForm.cadernoId) return;
 
-    const newChallenge: Challenge = {
-      id: Date.now().toString(),
-      title: challengeForm.title.trim(),
-      description: challengeForm.description.trim(),
-      targetPercentage: challengeForm.targetPercentage,
-      cadernoId: challengeForm.cadernoId,
-      deadline: challengeForm.deadline || new Date().toISOString(),
-      completed: false,
-      currentPercentage: 0,
-      points: 300,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const challengeData = {
+        title: challengeForm.title.trim(),
+        description: challengeForm.description.trim(),
+        target_percentage: challengeForm.targetPercentage,
+        caderno_id: challengeForm.cadernoId,
+        deadline: challengeForm.deadline || new Date().toISOString(),
+        points: 300,
+      };
 
-    const newChallenges = [...challenges, newChallenge];
-    setChallenges(newChallenges);
-    saveToStorage(goals, newChallenges);
-    
-    // Reset form
-    setChallengeForm({
-      title: '',
-      description: '',
-      targetPercentage: 80,
-      cadernoId: '',
-      deadline: ''
-    });
-    setShowChallengeForm(false);
+      await createChallengeDB(challengeData);
+      
+      // Reset form
+      setChallengeForm({
+        title: '',
+        description: '',
+        targetPercentage: 80,
+        cadernoId: '',
+        deadline: ''
+      });
+      setShowChallengeForm(false);
+    } catch (error) {
+      console.error('Erro ao criar desafio:', error);
+      alert('Erro ao criar desafio. Tente novamente.');
+    }
   };
 
   // Editar meta
   const editGoal = (goal: Goal) => {
     setEditingGoal(goal);
-    setGoalForm({
-      title: goal.title,
-      description: goal.description,
-      type: goal.type,
-      target: goal.target,
-      unit: goal.unit,
-      cadernoId: goal.cadernoId || 'all',
-      deadline: goal.deadline
-    });
+          setGoalForm({
+        title: goal.title,
+        description: goal.description || '',
+        type: goal.type as 'daily' | 'weekly' | 'monthly',
+        target: goal.target,
+        unit: goal.unit as 'questions' | 'quizzes' | 'percentage',
+        cadernoId: goal.caderno_id || 'all',
+        deadline: goal.deadline
+      });
     setShowGoalForm(true);
   };
 
   // Salvar edição da meta
-  const saveGoalEdit = () => {
+  const saveGoalEdit = async () => {
     if (!editingGoal) return;
 
-    const updatedGoals = goals.map(goal => 
-      goal.id === editingGoal.id 
-        ? { ...goal, ...goalForm, current: calculateGoalProgress(goal) }
-        : goal
-    );
+    try {
+      const updates = {
+        title: goalForm.title,
+        description: goalForm.description,
+        type: goalForm.type,
+        target: goalForm.target,
+        unit: goalForm.unit,
+        caderno_id: goalForm.cadernoId === 'all' ? null : goalForm.cadernoId,
+        deadline: goalForm.deadline,
+      };
 
-    setGoals(updatedGoals);
-    saveToStorage(updatedGoals, challenges);
-    setEditingGoal(null);
-    setShowGoalForm(false);
-    setGoalForm({
-      title: '',
-      description: '',
-      type: 'daily',
-      target: 10,
-      unit: 'questions',
-      cadernoId: 'all',
-      deadline: ''
-    });
+      await updateGoalDB(editingGoal.id, updates);
+      
+      setEditingGoal(null);
+      setShowGoalForm(false);
+      setGoalForm({
+        title: '',
+        description: '',
+        type: 'daily',
+        target: 10,
+        unit: 'questions',
+        cadernoId: 'all',
+        deadline: ''
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar meta:', error);
+      alert('Erro ao atualizar meta. Tente novamente.');
+    }
   };
 
   // Deletar meta
-  const deleteGoal = (goalId: string) => {
-    const newGoals = goals.filter(goal => goal.id !== goalId);
-    setGoals(newGoals);
-    saveToStorage(newGoals, challenges);
+  const deleteGoal = async (goalId: string) => {
+    try {
+      await deleteGoalDB(goalId);
+    } catch (error) {
+      console.error('Erro ao deletar meta:', error);
+      alert('Erro ao deletar meta. Tente novamente.');
+    }
   };
 
   // Deletar desafio
-  const deleteChallenge = (challengeId: string) => {
-    const newChallenges = challenges.filter(challenge => challenge.id !== challengeId);
-    setChallenges(newChallenges);
-    saveToStorage(goals, newChallenges);
+  const deleteChallenge = async (challengeId: string) => {
+    try {
+      await deleteChallengeDB(challengeId);
+    } catch (error) {
+      console.error('Erro ao deletar desafio:', error);
+      alert('Erro ao deletar desafio. Tente novamente.');
+    }
   };
 
   // Calcular pontos totais
@@ -311,6 +303,30 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     const currentLevelIndex = levels.findIndex(threshold => totalPoints < threshold);
     return levels[currentLevelIndex];
   }, [totalPoints]);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Target className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-800">Metas e Desafios</h2>
+            </div>
+            <Button variant="outline" onClick={onBack}>
+              Voltar
+            </Button>
+          </div>
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Carregando metas e desafios...</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -445,7 +461,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Caderno (opcional)</label>
-                <Select value={goalForm.cadernoId} onValueChange={setGoalForm.cadernoId}>
+                <Select value={goalForm.cadernoId} onValueChange={(value) => setGoalForm({ ...goalForm, cadernoId: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todos os cadernos" />
                   </SelectTrigger>
@@ -528,7 +544,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Caderno</label>
-                <Select value={challengeForm.cadernoId} onValueChange={setChallengeForm.cadernoId}>
+                <Select value={challengeForm.cadernoId} onValueChange={(value) => setChallengeForm({ ...challengeForm, cadernoId: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um caderno" />
                   </SelectTrigger>
@@ -631,9 +647,9 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                           <Calendar className="w-3 h-3" />
                           <span>Prazo: {new Date(goal.deadline).toLocaleDateString('pt-BR')}</span>
                         </div>
-                        {goal.cadernoId && (
+                        {goal.caderno_id && (
                           <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full inline-block">
-                            {cadernos.find(c => c.id === goal.cadernoId)?.nome}
+                            {cadernos.find(c => c.id === goal.caderno_id)?.nome}
                           </div>
                         )}
                       </div>
@@ -723,9 +739,8 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {challenges.map((challenge) => {
-                const progress = Math.min(100, (challenge.currentPercentage / challenge.targetPercentage) * 100);
+                const progress = Math.min(100, (challenge.current_percentage / challenge.target_percentage) * 100);
                 const isOverdue = new Date(challenge.deadline) < new Date() && !challenge.completed;
-                const caderno = cadernos.find(c => c.id === challenge.cadernoId);
                 
                 return (
                   <Card key={challenge.id} className={`p-4 ${challenge.completed ? 'bg-green-50 border-green-200' : isOverdue ? 'bg-red-50 border-red-200' : 'bg-white'}`}>
@@ -739,9 +754,9 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                           <Calendar className="w-3 h-3" />
                           <span>Prazo: {new Date(challenge.deadline).toLocaleDateString('pt-BR')}</span>
                         </div>
-                        {caderno && (
+                        {challenge.caderno_id && (
                           <div className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full inline-block">
-                            {caderno.nome}
+                            {cadernos.find(c => c.id === challenge.caderno_id)?.nome}
                           </div>
                         )}
                       </div>
@@ -759,7 +774,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">
-                          {challenge.currentPercentage}% / {challenge.targetPercentage}%
+                          {challenge.current_percentage}% / {challenge.target_percentage}%
                         </span>
                         <span className="font-medium text-gray-800">{Math.round(progress)}%</span>
                       </div>
@@ -767,7 +782,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all duration-300 ${
-                            challenge.completed ? 'bg-green-500' : isOverdue ? 'bg-red-500' : 'bg-purple-500'
+                            challenge.completed ? 'bg-green-500' : isOverdue ? 'bg-purple-500' : 'bg-purple-500'
                           }`}
                           style={{ width: `${progress}%` }}
                         ></div>
@@ -775,7 +790,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                       
                       <div className="flex items-center justify-between">
                         <div className="text-xs text-gray-500">
-                          Desafio de {challenge.targetPercentage}%
+                          Desafio de {challenge.target_percentage}%
                         </div>
                         
                         {challenge.completed ? (

@@ -109,6 +109,132 @@ export type Database = {
           }
         ];
       };
+      goals: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          description: string | null;
+          type: "daily" | "weekly" | "monthly";
+          target: number;
+          current: number;
+          unit: "questions" | "quizzes" | "percentage";
+          caderno_id: string | null;
+          deadline: string;
+          completed: boolean;
+          points: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          title: string;
+          description?: string | null;
+          type: "daily" | "weekly" | "monthly";
+          target: number;
+          current?: number;
+          unit: "questions" | "quizzes" | "percentage";
+          caderno_id?: string | null;
+          deadline: string;
+          completed?: boolean;
+          points: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          description?: string | null;
+          type?: "daily" | "weekly" | "monthly";
+          target?: number;
+          current?: number;
+          unit?: "questions" | "quizzes" | "percentage";
+          caderno_id?: string | null;
+          deadline?: string;
+          completed?: boolean;
+          points?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "goals_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "goals_caderno_id_fkey";
+            columns: ["caderno_id"];
+            isOneToOne: false;
+            referencedRelation: "cadernos";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      challenges: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          description: string | null;
+          target_percentage: number;
+          caderno_id: string;
+          deadline: string;
+          completed: boolean;
+          current_percentage: number;
+          points: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          title: string;
+          description?: string | null;
+          target_percentage: number;
+          caderno_id: string;
+          deadline: string;
+          completed?: boolean;
+          current_percentage?: number;
+          points: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          description?: string | null;
+          target_percentage?: number;
+          caderno_id?: string;
+          deadline?: string;
+          completed?: boolean;
+          current_percentage?: number;
+          points?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "challenges_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "challenges_caderno_id_fkey";
+            columns: ["caderno_id"];
+            isOneToOne: false;
+            referencedRelation: "cadernos";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       cadernos: {
         Row: {
           id: string;
