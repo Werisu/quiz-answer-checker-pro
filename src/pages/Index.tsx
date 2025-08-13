@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { Activity, BarChart3, History, LogOut, Settings, Target, User } from 'lucide-react';
+import { LogOut, Plus, User } from 'lucide-react';
 import { useState } from 'react';
 
 const MainContent = () => {
@@ -22,7 +22,7 @@ const MainContent = () => {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
   const [showGoalsAndChallenges, setShowGoalsAndChallenges] = useState(false);
-  const [showDashboard, setShowDashboard] = useState(false);
+  const [showQuizCreator, setShowQuizCreator] = useState(false);
   const { user, signOut, loading: authLoading, userProfile } = useAuth();
   const { cadernos, createCaderno } = useCadernos();
   const {
@@ -41,6 +41,7 @@ const MainContent = () => {
       return;
     }
     await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count, pdfName, description, cadernoId);
+    setShowQuizCreator(false);
   };
 
   const handleCadernoCreate = async (nome: string, descricao: string) => {
@@ -77,15 +78,180 @@ const MainContent = () => {
 
   if (authLoading) {
     return (
-             <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80 flex items-center justify-center">
         <div className="text-center">
-                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                      <p className="text-muted-foreground">Carregando...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando...</p>
         </div>
       </div>
     );
   }
 
+  // Se não estiver logado, mostrar tela de login
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-background/80 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">
+              Bem-vindo ao Gabarito Digital
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Faça login para começar a usar o gabarito e acompanhar seu progresso.
+            </p>
+            <Button 
+              onClick={() => setShowAuthModal(true)}
+              className="bg-primary hover:bg-primary/90 w-full"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Entrar / Cadastrar
+            </Button>
+          </div>
+        </div>
+        
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+        />
+      </div>
+    );
+  }
+
+  // Se estiver criando um quiz, mostrar o criador
+  if (showQuizCreator) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80">
+        <div className="container mx-auto px-4 py-6 space-y-6">
+          {/* Header com botão voltar */}
+          <div className="flex items-center justify-between">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowQuizCreator(false)}
+              className="bg-background/80"
+            >
+              ← Voltar ao Dashboard
+            </Button>
+            <div className="text-right">
+              <h1 className="text-2xl font-bold text-foreground">Criar Novo Quiz</h1>
+              <p className="text-muted-foreground">Configure e inicie um novo gabarito</p>
+            </div>
+          </div>
+
+          <Header
+            onInitialize={handleInitialize}
+            onReset={handleReset}
+            onSave={handleSave}
+            hasQuestions={!!currentQuiz}
+            results={results}
+            cadernos={cadernos}
+            onCadernoCreate={handleCadernoCreate}
+          />
+
+          {showResults && currentQuiz ? (
+            <Results
+              results={results}
+              onBack={() => setShowResults(false)}
+            />
+          ) : currentQuiz ? (
+            <div className="mt-6">
+              <QuestionTracker
+                questions={currentQuiz.questions.map(q => ({
+                  id: q.question_number,
+                  status: q.status,
+                  legend: q.legend
+                }))}
+                onUpdateStatus={handleUpdateStatus}
+              />
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="bg-background/80 backdrop-blur-sm rounded-lg p-6 max-w-md mx-auto">
+                <h2 className="text-xl font-semibold text-foreground mb-4">
+                  Criar Novo Quiz
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  Digite o número de questões para começar a marcar suas respostas.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Se estiver mostrando resultados, mostrar tela de resultados
+  if (showResults && currentQuiz) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80">
+        <div className="container mx-auto px-4 py-6">
+          <div className="mb-6">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowResults(false)}
+              className="bg-background/80"
+            >
+              ← Voltar ao Quiz
+            </Button>
+          </div>
+          <Results
+            results={results}
+            onBack={() => setShowResults(false)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Se estiver fazendo um quiz, mostrar o quiz
+  if (currentQuiz) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80">
+        <div className="container mx-auto px-4 py-6 space-y-6">
+          {/* Header com botão voltar */}
+          <div className="flex items-center justify-between">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => resetQuiz()}
+              className="bg-background/80"
+            >
+              ← Voltar ao Dashboard
+            </Button>
+            <div className="text-right">
+              <h1 className="text-2xl font-bold text-foreground">Quiz em Andamento</h1>
+              <p className="text-muted-foreground">Marque suas respostas e salve os resultados</p>
+            </div>
+          </div>
+
+          <Header
+            onInitialize={handleInitialize}
+            onReset={handleReset}
+            onSave={handleSave}
+            hasQuestions={!!currentQuiz}
+            results={results}
+            cadernos={cadernos}
+            onCadernoCreate={handleCadernoCreate}
+          />
+
+          <div className="mt-6">
+            <QuestionTracker
+              questions={currentQuiz.questions.map(q => ({
+                id: q.question_number,
+                status: q.status,
+                legend: q.legend
+              }))}
+              onUpdateStatus={handleUpdateStatus}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Se estiver mostrando outras telas, mostrar com botão voltar
   if (showHistory) {
     return <QuizHistory onBack={() => setShowHistory(false)} />;
   }
@@ -104,148 +270,59 @@ const MainContent = () => {
     return <AdminPanel onBack={() => setShowAdminPanel(false)} />;
   }
 
-  if (showDashboard) {
-    return <Dashboard onBack={() => setShowDashboard(false)} />;
-  }
-
+  // Dashboard como tela principal
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80">
-      <div className="container mx-auto px-4 py-6 space-y-6">
-        {/* User Info */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-            {user ? (
-              <>
-                              <div className="flex items-center gap-2 bg-background/80 px-3 py-2 rounded-lg w-full sm:w-auto">
+      {/* Header com informações do usuário e navegação */}
+      <div className="bg-background/80 border-b border-border p-4">
+        <div className="container mx-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+              <div className="flex items-center gap-2 bg-background/80 px-3 py-2 rounded-lg w-full sm:w-auto">
                 <User className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-foreground truncate">{user.email}</span>
-                  {userProfile?.role === 'admin' && (
-                    <Badge variant="destructive" className="bg-destructive/20 text-destructive text-xs">
-                      ADMIN
-                    </Badge>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 w-full sm:w-auto">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setShowDashboard(true)}
-                    className="bg-background/80 w-full"
-                  >
-                    <Activity className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setShowHistory(true)}
-                    className="bg-background/80 w-full"
-                  >
-                    <History className="w-4 h-4 mr-2" />
-                    Histórico
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setShowAdvancedStats(true)}
-                    className="bg-background/80 w-full"
-                  >
-                    <BarChart3 className="w-4 h-4 mr-2" />
-                    Estatísticas
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setShowGoalsAndChallenges(true)}
-                    className="bg-background/80 w-full"
-                  >
-                    <Target className="w-4 h-4 mr-2" />
-                    Metas
-                  </Button>
-                  {userProfile?.role === 'admin' && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setShowAdminPanel(true)}
-                      className="bg-background/80 w-full"
-                    >
-                      <Settings className="w-4 h-4 mr-2" />
-                      Admin
-                    </Button>
-                  )}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={signOut}
-                    className="bg-background/80 w-full"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sair
-                  </Button>
-                </div>
-              </>
-            ) : (
+                {userProfile?.role === 'admin' && (
+                  <Badge variant="destructive" className="bg-destructive/20 text-destructive text-xs">
+                    ADMIN
+                  </Badge>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
               <Button 
-                onClick={() => setShowAuthModal(true)}
-                className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowQuizCreator(true)}
+                className="bg-background/80"
               >
-                <User className="w-4 h-4 mr-2" />
-                Entrar / Cadastrar
+                <Plus className="w-4 h-4 mr-2" />
+                Novo Quiz
               </Button>
-            )}
-          </div>
-        </div>
-
-        <Header
-          onInitialize={handleInitialize}
-          onReset={handleReset}
-          onSave={handleSave}
-          hasQuestions={!!currentQuiz}
-          results={results}
-          cadernos={cadernos}
-          onCadernoCreate={handleCadernoCreate}
-        />
-
-        {showResults && currentQuiz ? (
-          <Results
-            results={results}
-            onBack={() => setShowResults(false)}
-          />
-        ) : currentQuiz ? (
-          <div className="mt-6">
-            <QuestionTracker
-              questions={currentQuiz.questions.map(q => ({
-                id: q.question_number,
-                status: q.status,
-                legend: q.legend
-              }))}
-              onUpdateStatus={handleUpdateStatus}
-            />
-          </div>
-        ) : (
-          <div className="text-center py-8 sm:py-12">
-            <div className="bg-background/80 backdrop-blur-sm rounded-lg p-6 sm:p-8 max-w-md mx-auto">
-              <h2 className="text-xl font-semibold text-foreground mb-4">
-                Bem-vindo ao Gabarito Digital
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                {user 
-                  ? "Digite o número de questões para começar a marcar suas respostas."
-                  : "Faça login para começar a usar o gabarito e salvar seus resultados."
-                }
-              </p>
-              {!user && (
-                <Button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
-                >
-                  Entrar / Cadastrar
-                </Button>
-              )}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={signOut}
+                className="bg-background/80"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
             </div>
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Dashboard com navegação para outras funcionalidades */}
+      <Dashboard 
+        onBack={() => {}} // Não precisa de onBack no Dashboard principal
+        onNavigateToHistory={() => setShowHistory(true)}
+        onNavigateToStats={() => setShowAdvancedStats(true)}
+        onNavigateToGoals={() => setShowGoalsAndChallenges(true)}
+        onNavigateToAdmin={() => setShowAdminPanel(true)}
+        onNavigateToQuizCreator={() => setShowQuizCreator(true)}
+        showNavigationButtons={true}
+      />
 
       <AuthModal
         isOpen={showAuthModal}

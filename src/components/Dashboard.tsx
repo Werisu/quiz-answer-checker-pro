@@ -15,6 +15,9 @@ import {
   Calendar,
   CheckCircle2,
   HelpCircle,
+  History,
+  Plus,
+  Settings,
   Star,
   Target,
   XCircle
@@ -23,9 +26,23 @@ import React, { useEffect, useState } from 'react';
 
 interface DashboardProps {
   onBack: () => void;
+  onNavigateToHistory?: () => void;
+  onNavigateToStats?: () => void;
+  onNavigateToGoals?: () => void;
+  onNavigateToAdmin?: () => void;
+  onNavigateToQuizCreator?: () => void;
+  showNavigationButtons?: boolean;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ 
+  onBack, 
+  onNavigateToHistory, 
+  onNavigateToStats, 
+  onNavigateToGoals, 
+  onNavigateToAdmin, 
+  onNavigateToQuizCreator,
+  showNavigationButtons = false 
+}) => {
   const { user, userProfile } = useAuth();
   const { quizHistory, fetchQuizHistory } = useQuiz();
   const { goals, challenges } = useGoalsAndChallenges();
@@ -101,10 +118,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
       <div className="bg-background/80 border-b border-border p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={onBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar
-            </Button>
+            {onBack && (
+              <Button variant="outline" size="sm" onClick={onBack}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar
+              </Button>
+            )}
             <div>
               <h1 className="text-2xl font-bold text-foreground">Dashboard Personalizado</h1>
               <p className="text-muted-foreground">Acompanhe seu progresso e desempenho</p>
@@ -123,6 +142,71 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
           </div>
         </div>
       </div>
+
+      {/* Botões de Navegação Rápida */}
+      {showNavigationButtons && (
+        <div className="bg-background/60 border-b border-border p-4">
+          <div className="container mx-auto">
+            <div className="flex flex-wrap gap-3 justify-center">
+              {onNavigateToQuizCreator && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onNavigateToQuizCreator}
+                  className="bg-background/80"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Novo Quiz
+                </Button>
+              )}
+              {onNavigateToHistory && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onNavigateToHistory}
+                  className="bg-background/80"
+                >
+                  <History className="w-4 h-4 mr-2" />
+                  Histórico
+                </Button>
+              )}
+              {onNavigateToStats && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onNavigateToStats}
+                  className="bg-background/80"
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Estatísticas
+                </Button>
+              )}
+              {onNavigateToGoals && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onNavigateToGoals}
+                  className="bg-background/80"
+                >
+                  <Target className="w-4 h-4 mr-2" />
+                  Metas
+                </Button>
+              )}
+              {onNavigateToAdmin && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onNavigateToAdmin}
+                  className="bg-background/80"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Admin
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Conteúdo Principal */}
       <div className="container mx-auto p-6">
