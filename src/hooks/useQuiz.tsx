@@ -124,8 +124,14 @@ export const useQuiz = () => {
       
       // Processar os resultados sem fazer queries adicionais
       const resultsWithStats = data?.map((result) => {
+        // Calcular percentage baseado em correct_answers vs total_questions
+        const percentage = result.total_questions > 0 
+          ? (result.correct_answers / result.total_questions) * 100 
+          : 0;
+        
         const processedResult = {
           ...result,
+          percentage: Math.round(percentage * 10) / 10, // Arredondar para 1 casa decimal
           quiz: {
             title: result.quiz?.title || '',
             description: result.quiz?.description || null,

@@ -8,19 +8,19 @@ import { ptBR } from 'date-fns/locale';
 import { Award, BarChart3, PieChart as PieChartIcon, Target, TrendingUp } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
 } from 'recharts';
 
 interface AdvancedStatsProps {
@@ -50,6 +50,20 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
   React.useEffect(() => {
     fetchQuizHistory();
   }, []); // Array vazio para executar apenas uma vez
+
+  // Verificar estrutura dos dados
+  React.useEffect(() => {
+    if (quizHistory.length > 0) {
+      console.log('🔍 [AdvancedStats] Estrutura dos dados:', {
+        totalResults: quizHistory.length,
+        sampleResult: quizHistory[0],
+        hasPercentage: quizHistory[0]?.percentage !== undefined,
+        hasCorrectAnswers: quizHistory[0]?.correct_answers !== undefined,
+        hasTotalQuestions: quizHistory[0]?.total_questions !== undefined,
+        hasCompletedAt: quizHistory[0]?.completed_at !== undefined
+      });
+    }
+  }, [quizHistory]);
 
   // Calcular período baseado na seleção
   const getDateRange = (range: TimeRange) => {
@@ -96,9 +110,13 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
         return resultDate.toDateString() === date.toDateString();
       });
       
-      const avgPercentage = dayResults.length > 0
-        ? dayResults.reduce((sum, result) => sum + result.percentage, 0) / dayResults.length
-        : 0;
+      // Calcular média baseada em acertos vs total de questões para o dia
+      let avgPercentage = 0;
+      if (dayResults.length > 0) {
+        const dayTotalQuestions = dayResults.reduce((sum, result) => sum + result.total_questions, 0);
+        const dayTotalCorrect = dayResults.reduce((sum, result) => sum + result.correct_answers, 0);
+        avgPercentage = dayTotalQuestions > 0 ? (dayTotalCorrect / dayTotalQuestions) * 100 : 0;
+      }
       
       data.push({
         date: format(date, 'dd/MM', { locale: ptBR }),
@@ -107,6 +125,14 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
         fullDate: date,
       });
     }
+    
+    // Log de debug para o gráfico
+    console.log('📈 [AdvancedStats] ProgressData:', {
+      timeRange: selectedTimeRange,
+      days,
+      dataPoints: data.length,
+      sampleData: data.slice(0, 3)
+    });
     
     return data;
   }, [filteredData, selectedTimeRange]);
@@ -149,8 +175,9 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
 
     // Calcular dificuldade baseada na média de acertos
     return Array.from(cadernoStats.entries()).map(([id, stats]) => {
-      const avgPercentage = Math.round((stats.avgPercentage / stats.quizzes) * 10) / 10;
+      // Calcular média baseada em acertos vs total de questões
       const accuracy = stats.totalQuestions > 0 ? (stats.correctAnswers / stats.totalQuestions) * 100 : 0;
+      const avgPercentage = Math.round(accuracy * 10) / 10;
       
       // Classificar dificuldade
       let difficulty: 'facil' | 'medio' | 'dificil';
@@ -170,7 +197,7 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
         quizzes: stats.quizzes,
         correctAnswers: stats.correctAnswers,
         wrongAnswers: stats.wrongAnswers,
-        accuracy: Math.round(accuracy * 10) / 10,
+        accuracy: avgPercentage,
         difficulty,
         // Calcular pontos líquidos (acertos - erros)
         pontosLiquidos: stats.correctAnswers - stats.wrongAnswers,
@@ -227,37 +254,60 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
     if (filteredData.length === 0) return null;
     
     const totalQuizzes = filteredData.length;
-    const avgPercentage = filteredData.reduce((sum, result) => sum + result.percentage, 0) / totalQuizzes;
     const totalQuestions = filteredData.reduce((sum, result) => sum + result.total_questions, 0);
     const totalCorrect = filteredData.reduce((sum, result) => sum + result.correct_answers, 0);
     
+    // Calcular média geral baseada em acertos vs total de questões
+    const avgPercentage = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
+    
     // Calcular tendência (últimos 7 dias vs anteriores)
+    const now = new Date();
+    const sevenDaysAgo = subDays(now, 7);
+    
     const recentData = filteredData.filter(result => {
       const resultDate = new Date(result.completed_at);
-      return resultDate >= subDays(new Date(), 7);
+      return resultDate >= sevenDaysAgo;
     });
     
     const olderData = filteredData.filter(result => {
       const resultDate = new Date(result.completed_at);
-      return resultDate < subDays(new Date(), 7);
+      return resultDate < sevenDaysAgo;
     });
     
-    const recentAvg = recentData.length > 0 
-      ? recentData.reduce((sum, result) => sum + result.percentage, 0) / recentData.length 
-      : 0;
-    const olderAvg = olderData.length > 0 
-      ? olderData.reduce((sum, result) => sum + result.percentage, 0) / olderData.length 
-      : 0;
+    // Calcular média recente
+    const recentTotalQuestions = recentData.reduce((sum, result) => sum + result.total_questions, 0);
+    const recentTotalCorrect = recentData.reduce((sum, result) => sum + result.correct_answers, 0);
+    const recentAvg = recentTotalQuestions > 0 ? (recentTotalCorrect / recentTotalQuestions) * 100 : 0;
+    
+    // Calcular média anterior
+    const olderTotalQuestions = olderData.reduce((sum, result) => sum + result.total_questions, 0);
+    const olderTotalCorrect = olderData.reduce((sum, result) => sum + result.correct_answers, 0);
+    const olderAvg = olderTotalQuestions > 0 ? (olderTotalCorrect / olderTotalQuestions) * 100 : 0;
     
     const trend = recentAvg - olderAvg;
+    
+    // Log de debug
+    console.log('📊 [AdvancedStats] Cálculos:', {
+      totalQuizzes,
+      totalQuestions,
+      totalCorrect,
+      avgPercentage,
+      recentData: recentData.length,
+      olderData: olderData.length,
+      recentAvg,
+      olderAvg,
+      trend
+    });
     
     return {
       totalQuizzes,
       avgPercentage: Math.round(avgPercentage * 10) / 10,
       totalQuestions,
       totalCorrect,
-      accuracy: totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 1000) / 10 : 0,
+      accuracy: Math.round(avgPercentage * 10) / 10,
       trend: Math.round(trend * 10) / 10,
+      recentAvg: Math.round(recentAvg * 10) / 10,
+      olderAvg: Math.round(olderAvg * 10) / 10,
     };
   }, [filteredData]);
 
@@ -722,9 +772,16 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
             <h3 className="text-lg font-semibold text-gray-600 mb-2">
               Nenhum dado encontrado
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 mb-4">
               Complete alguns quizzes no período selecionado para ver as estatísticas
             </p>
+            <div className="text-sm text-gray-400 bg-gray-50 p-4 rounded-lg text-left max-w-md mx-auto">
+              <p><strong>Debug Info:</strong></p>
+              <p>• Total de resultados: {quizHistory.length}</p>
+              <p>• Período selecionado: {selectedTimeRange}</p>
+              <p>• Caderno selecionado: {selectedCaderno === 'all' ? 'Todos' : selectedCaderno}</p>
+              <p>• Dados filtrados: {filteredData.length}</p>
+            </div>
           </div>
         )}
       </Card>
