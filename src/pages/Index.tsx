@@ -46,9 +46,7 @@ const MainContent = () => {
 
   const handleCadernoCreate = async (nome: string, descricao: string) => {
     try {
-      console.log('🔍 [Index] Iniciando criação de caderno:', { nome, descricao });
       await createCaderno(nome, descricao);
-      console.log('✅ [Index] Caderno criado com sucesso');
     } catch (error) {
       console.error('❌ [Index] Erro ao criar caderno:', error);
     }

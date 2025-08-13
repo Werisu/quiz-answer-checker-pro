@@ -90,7 +90,6 @@ export const useQuiz = () => {
     
     setLoading(true);
     try {
-      console.log('🔍 [fetchQuizHistory] Buscando histórico para usuário:', user.id);
       
       const { data, error } = await supabase
         .from('quiz_results')
@@ -110,14 +109,9 @@ export const useQuiz = () => {
 
       if (error) throw error;
       
-      console.log('🔍 [fetchQuizHistory] Dados brutos do Supabase:', data);
-      
       // Buscar as respostas do usuário para cada quiz
       const resultsWithStats = await Promise.all(
         data?.map(async (result) => {
-          console.log('🔍 [fetchQuizHistory] Processando resultado:', result);
-          console.log('🔍 [fetchQuizHistory] Quiz data:', result.quiz);
-          console.log('🔍 [fetchQuizHistory] Caderno data:', result.quiz?.cadernos);
           
           // Primeiro, buscar as questões do quiz
           const { data: questions, error: questionsError } = await supabase
@@ -162,12 +156,10 @@ export const useQuiz = () => {
             legendStats,
           };
           
-          console.log('🔍 [fetchQuizHistory] Resultado processado:', processedResult);
           return processedResult;
         }) || []
       );
 
-      console.log('🔍 [fetchQuizHistory] Resultados finais:', resultsWithStats);
       setQuizHistory(resultsWithStats as QuizResult[]);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
@@ -238,9 +230,7 @@ export const useQuiz = () => {
     }
     
     try {
-      console.log('Iniciando deleção do quiz:', resultId);
-      console.log('Usuário atual:', user.id);
-
+      
       // Primeiro, verifica se o resultado existe e pertence ao usuário
       const { data: existingResult, error: checkError } = await supabase
         .from('quiz_results')
@@ -249,7 +239,6 @@ export const useQuiz = () => {
         .eq('user_id', user.id)
         .single();
 
-      console.log('Resultado da verificação:', { existingResult, checkError });
 
       if (checkError) {
         console.error('Erro na verificação:', checkError);
@@ -279,8 +268,6 @@ export const useQuiz = () => {
         .eq('id', resultId)
         .eq('user_id', user.id);
 
-      console.log('Resultado da deleção:', { deleteError });
-
       if (deleteError) {
         console.error('Erro na deleção:', deleteError);
         throw deleteError;
@@ -306,9 +293,6 @@ export const useQuiz = () => {
   const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string, cadernoId: string) => {
     if (!user) throw new Error('User not authenticated');
     
-    console.log('🔍 [createQuiz] Criando quiz com caderno_id:', cadernoId);
-    console.log('🔍 [createQuiz] Dados do quiz:', { title, questionCount, pdfName, description, cadernoId });
-    
     setLoading(true);
     try {
       // Create quiz
@@ -326,9 +310,6 @@ export const useQuiz = () => {
         .single();
 
       if (quizError) throw quizError;
-      
-      console.log('✅ [createQuiz] Quiz criado com sucesso:', quiz);
-      console.log('✅ [createQuiz] Caderno ID salvo:', quiz.caderno_id);
 
       // Create questions
       const questions = Array.from({ length: questionCount }, (_, i) => ({

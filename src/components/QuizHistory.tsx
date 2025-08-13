@@ -45,7 +45,6 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
 
   useEffect(() => {
     if (selectedQuizId) {
-      console.log('Buscando questões para o quiz:', selectedQuizId);
       fetchQuizQuestions(selectedQuizId);
     }
   }, [selectedQuizId]);

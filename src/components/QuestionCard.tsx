@@ -11,8 +11,6 @@ interface QuestionCardProps {
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onUpdateStatus, isEditing = false }) => {
-  console.log('🔍 [QuestionCard] Renderizando com isEditing:', isEditing);
-  console.log('🔍 [QuestionCard] Questão:', question.question_number, 'Status:', question.status);
   
   const getStatusColor = (status: string) => {
     switch (status) {

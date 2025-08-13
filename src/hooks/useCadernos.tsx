@@ -37,11 +37,9 @@ export const useCadernos = () => {
   // Criar novo caderno
   const createCaderno = async (nome: string, descricao: string = '') => {
     try {
-      console.log('🔍 [useCadernos] Tentando criar caderno:', { nome, descricao });
       
       // Verificar se o usuário está autenticado
       const { data: { user } } = await supabase.auth.getUser();
-      console.log('🔍 [useCadernos] Usuário autenticado:', user?.id);
       
       if (!user) {
         throw new Error('Usuário não autenticado');
@@ -53,14 +51,11 @@ export const useCadernos = () => {
         .select()
         .single();
 
-      console.log('🔍 [useCadernos] Resposta do Supabase:', { data, error });
 
       if (error) {
-        console.error('❌ [useCadernos] Erro do Supabase:', error);
         throw error;
       }
 
-      console.log('✅ [useCadernos] Caderno criado com sucesso:', data);
       setCadernos(prev => [...prev, data]);
       return data;
     } catch (err) {
