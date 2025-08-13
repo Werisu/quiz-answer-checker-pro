@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { AlertCircle, BookOpen, CheckCircle2, Circle, Clock, HelpCircle, Play, Plus, RotateCcw, Save, Star, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
-import { ThemeToggle } from './ThemeToggle';
+
 
 interface Caderno {
   id: string;
@@ -77,10 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
         {!hasQuestions && (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
             {/* Cabeçalho do Formulário */}
-            <div className="text-center space-y-2 relative">
-              <div className="absolute top-0 right-0">
-                <ThemeToggle />
-              </div>
+            <div className="text-center space-y-2">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
                 <BookOpen className="w-6 h-6 text-white" />
               </div>

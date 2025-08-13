@@ -1,3 +1,4 @@
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -131,6 +132,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
           
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Badge variant="outline" className="bg-accent/50">
               <Award className="w-4 h-4 mr-1" />
               Nível 1
