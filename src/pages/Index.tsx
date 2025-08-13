@@ -75,10 +75,10 @@ const MainContent = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+             <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
+                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                      <p className="text-muted-foreground">Carregando...</p>
         </div>
       </div>
     );
@@ -103,18 +103,18 @@ const MainContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80">
       <div className="container mx-auto px-4 py-6 space-y-6">
         {/* User Info */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             {user ? (
               <>
-                <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-lg w-full sm:w-auto">
-                  <User className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm text-gray-700 truncate">{user.email}</span>
+                              <div className="flex items-center gap-2 bg-background/80 px-3 py-2 rounded-lg w-full sm:w-auto">
+                <User className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-foreground truncate">{user.email}</span>
                   {userProfile?.role === 'admin' && (
-                    <Badge variant="destructive" className="bg-red-100 text-red-800 text-xs">
+                    <Badge variant="destructive" className="bg-destructive/20 text-destructive text-xs">
                       ADMIN
                     </Badge>
                   )}
@@ -124,7 +124,7 @@ const MainContent = () => {
                     variant="outline" 
                     size="sm" 
                     onClick={() => setShowHistory(true)}
-                    className="bg-white/80 w-full"
+                    className="bg-background/80 w-full"
                   >
                     <History className="w-4 h-4 mr-2" />
                     Histórico
@@ -133,7 +133,7 @@ const MainContent = () => {
                     variant="outline" 
                     size="sm" 
                     onClick={() => setShowAdvancedStats(true)}
-                    className="bg-white/80 w-full"
+                    className="bg-background/80 w-full"
                   >
                     <BarChart3 className="w-4 h-4 mr-2" />
                     Estatísticas
@@ -142,7 +142,7 @@ const MainContent = () => {
                     variant="outline" 
                     size="sm" 
                     onClick={() => setShowGoalsAndChallenges(true)}
-                    className="bg-white/80 w-full"
+                    className="bg-background/80 w-full"
                   >
                     <Target className="w-4 h-4 mr-2" />
                     Metas
@@ -152,7 +152,7 @@ const MainContent = () => {
                       variant="outline" 
                       size="sm" 
                       onClick={() => setShowAdminPanel(true)}
-                      className="bg-white/80 w-full"
+                      className="bg-background/80 w-full"
                     >
                       <Settings className="w-4 h-4 mr-2" />
                       Admin
@@ -162,7 +162,7 @@ const MainContent = () => {
                     variant="outline" 
                     size="sm" 
                     onClick={signOut}
-                    className="bg-white/80 w-full"
+                    className="bg-background/80 w-full"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Sair
@@ -172,7 +172,7 @@ const MainContent = () => {
             ) : (
               <Button 
                 onClick={() => setShowAuthModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
               >
                 <User className="w-4 h-4 mr-2" />
                 Entrar / Cadastrar
@@ -209,11 +209,11 @@ const MainContent = () => {
           </div>
         ) : (
           <div className="text-center py-8 sm:py-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 sm:p-8 max-w-md mx-auto">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            <div className="bg-background/80 backdrop-blur-sm rounded-lg p-6 sm:p-8 max-w-md mx-auto">
+              <h2 className="text-xl font-semibold text-foreground mb-4">
                 Bem-vindo ao Gabarito Digital
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 {user 
                   ? "Digite o número de questões para começar a marcar suas respostas."
                   : "Faça login para começar a usar o gabarito e salvar seus resultados."
@@ -222,7 +222,7 @@ const MainContent = () => {
               {!user && (
                 <Button 
                   onClick={() => setShowAuthModal(true)}
-                  className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                  className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
                 >
                   Entrar / Cadastrar
                 </Button>

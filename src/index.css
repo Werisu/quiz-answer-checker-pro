@@ -49,6 +49,14 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Variáveis customizadas para modo claro */
+    --gradient-bg: 0 0% 100%;
+    --gradient-card: 0 0% 100%;
+    --gradient-border: 214.3 31.8% 91.4%;
+    --text-primary: 222.2 84% 4.9%;
+    --text-secondary: 215.4 16.3% 46.9%;
+    --text-muted: 210 40% 96.1%;
   }
 
   .dark {
@@ -79,6 +87,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -87,6 +96,14 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Variáveis customizadas para modo escuro */
+    --gradient-bg: 222.2 84% 4.9%;
+    --gradient-card: 217.2 32.6% 17.5%;
+    --gradient-border: 217.2 32.6% 17.5%;
+    --text-primary: 210 40% 98%;
+    --text-secondary: 215 20.2% 65.1%;
+    --text-muted: 217.2 32.6% 17.5%;
   }
 }
 
@@ -97,5 +114,32 @@
 
   body {
     @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* Garantir que todos os elementos usem as variáveis do tema */
+  * {
+    @apply border-border;
+  }
+
+  /* Estilos específicos para inputs e selects */
+  input,
+  textarea,
+  select {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+
+  /* Estilos para botões outline */
+  button[data-variant="outline"] {
+    background-color: hsl(var(--background));
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+
+  button[data-variant="outline"]:hover {
+    background-color: hsl(var(--accent));
   }
 }
