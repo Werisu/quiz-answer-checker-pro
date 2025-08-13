@@ -1,6 +1,7 @@
 import { AdminPanel } from '@/components/AdminPanel';
 import { AdvancedStats } from '@/components/AdvancedStats';
 import { AuthModal } from '@/components/AuthModal';
+import { Dashboard } from '@/components/Dashboard';
 import { GoalsAndChallenges } from '@/components/GoalsAndChallenges';
 import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { BarChart3, History, LogOut, Settings, Target, User } from 'lucide-react';
+import { Activity, BarChart3, History, LogOut, Settings, Target, User } from 'lucide-react';
 import { useState } from 'react';
 
 const MainContent = () => {
@@ -21,6 +22,7 @@ const MainContent = () => {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
   const [showGoalsAndChallenges, setShowGoalsAndChallenges] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const { user, signOut, loading: authLoading, userProfile } = useAuth();
   const { cadernos, createCaderno } = useCadernos();
   const {
@@ -102,6 +104,10 @@ const MainContent = () => {
     return <AdminPanel onBack={() => setShowAdminPanel(false)} />;
   }
 
+  if (showDashboard) {
+    return <Dashboard onBack={() => setShowDashboard(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80">
       <div className="container mx-auto px-4 py-6 space-y-6">
@@ -119,7 +125,16 @@ const MainContent = () => {
                     </Badge>
                   )}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 w-full sm:w-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 w-full sm:w-auto">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowDashboard(true)}
+                    className="bg-background/80 w-full"
+                  >
+                    <Activity className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
                   <Button 
                     variant="outline" 
                     size="sm" 
