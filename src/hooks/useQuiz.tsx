@@ -85,19 +85,19 @@ export const useQuiz = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const fetchQuizHistory = useCallback(async () => {
+  const fetchQuizHistory = useCallback(async (forceRefresh = false) => {
     if (!user || loading) {
       console.log('🚫 [fetchQuizHistory] Chamada bloqueada:', { user: !!user, loading });
       return; // Evita chamadas duplicadas
     }
     
-    // Debounce simples para evitar chamadas muito frequentes
-    if (quizHistory.length > 0) {
+    // Debounce simples para evitar chamadas muito frequentes (apenas se não for forceRefresh)
+    if (quizHistory.length > 0 && !forceRefresh) {
       console.log('📊 [fetchQuizHistory] Dados já carregados, pulando busca');
       return; // Já temos dados, não precisa buscar novamente
     }
     
-    console.log('🔄 [fetchQuizHistory] Iniciando busca de dados...');
+    console.log('🔄 [fetchQuizHistory] Iniciando busca de dados...', { forceRefresh });
     setLoading(true);
     try {
       
@@ -425,7 +425,7 @@ export const useQuiz = () => {
     const percentage = total > 0 ? (correct / total) * 100 : 0;
 
     try {
-      const { error } = await supabase
+      const { data: newResult, error } = await supabase
         .from('quiz_results')
         .insert({
           user_id: user.id,
@@ -434,9 +434,44 @@ export const useQuiz = () => {
           wrong_answers: incorrect,
           total_questions: total,
           percentage: percentage,
-        });
+        })
+        .select(`
+          id,
+          user_id,
+          quiz_id,
+          correct_answers,
+          wrong_answers,
+          total_questions,
+          completed_at,
+          quiz:quizzes (
+            title,
+            description,
+            caderno_id
+          )
+        `)
+        .single();
 
       if (error) throw error;
+
+      // Atualizar o estado local com o novo resultado
+      if (newResult) {
+        const processedResult = {
+          ...newResult,
+          percentage: Math.round(percentage * 10) / 10,
+          quiz: {
+            title: newResult.quiz?.title || '',
+            description: newResult.quiz?.description || null,
+            caderno_id: newResult.quiz?.caderno_id || null,
+          },
+          legendStats: {
+            star: { total: 0, wrong: 0 },
+            question: { total: 0, correct: 0 },
+            circle: { total: 0 },
+          },
+        };
+
+        setQuizHistory(prev => [processedResult, ...prev]);
+      }
 
       toast({
         title: "Resultados salvos!",

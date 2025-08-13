@@ -31,7 +31,7 @@ interface GoalsAndChallengesProps {
 }
 
 export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }) => {
-  const { quizHistory } = useQuiz();
+  const { quizHistory, fetchQuizHistory } = useQuiz();
   const { cadernos } = useCadernos();
   const {
     goals,
@@ -45,12 +45,14 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     deleteChallenge: deleteChallengeDB,
     updateGoalProgress: updateGoalProgressDB,
     updateChallengeProgress: updateChallengeProgressDB,
+    loadGoalsAndChallenges,
   } = useGoalsAndChallenges();
   
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [showChallengeForm, setShowChallengeForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [editingChallenge, setEditingChallenge] = useState<Challenge | null>(null);
+  const [updatingProgress, setUpdatingProgress] = useState(false);
   
   // Estados para formulários
   const [goalForm, setGoalForm] = useState({
@@ -76,17 +78,23 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     const now = new Date();
     const startDate = new Date(goal.created_at);
     let endDate: Date;
+    let startDateForCalculation: Date;
 
     switch (goal.type) {
       case 'daily':
+        // Para metas diárias, calcular apenas para o dia atual
+        startDateForCalculation = new Date(now);
+        startDateForCalculation.setHours(0, 0, 0, 0);
         endDate = new Date(now);
         endDate.setHours(23, 59, 59, 999);
         break;
       case 'weekly':
+        startDateForCalculation = new Date(startDate);
         endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 7);
         break;
       case 'monthly':
+        startDateForCalculation = new Date(startDate);
         endDate = new Date(startDate);
         endDate.setMonth(startDate.getMonth() + 1);
         break;
@@ -94,8 +102,16 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
 
     const relevantHistory = quizHistory.filter(result => {
       const resultDate = new Date(result.completed_at);
-      return resultDate >= startDate && resultDate <= endDate && 
+      return resultDate >= startDateForCalculation && resultDate <= endDate && 
              (!goal.caderno_id || result.quiz?.caderno_id === goal.caderno_id);
+    });
+
+    console.log(`Calculando progresso para meta "${goal.title}":`, {
+      type: goal.type,
+      startDate: startDateForCalculation.toISOString(),
+      endDate: endDate.toISOString(),
+      relevantResults: relevantHistory.length,
+      totalQuestions: relevantHistory.reduce((sum, result) => sum + result.total_questions, 0)
     });
 
     switch (goal.unit) {
@@ -123,28 +139,65 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     return Math.round(totalPercentage / relevantHistory.length);
   };
 
-  // Atualizar progresso automaticamente
+  // Buscar dados atualizados quando o componente montar
   useEffect(() => {
-    if (goals.length > 0 || challenges.length > 0) {
-      goals.forEach(async (goal) => {
-        const current = calculateGoalProgress(goal);
-        const completed = current >= goal.target;
-        
-        if (current !== goal.current || completed !== goal.completed) {
-          await updateGoalProgressDB(goal.id, current, completed);
-        }
-      });
+    fetchQuizHistory(true);
+    loadGoalsAndChallenges();
+  }, []);
 
-      challenges.forEach(async (challenge) => {
-        const currentPercentage = calculateChallengeProgress(challenge);
-        const completed = currentPercentage >= challenge.target_percentage;
-        
-        if (currentPercentage !== challenge.current_percentage || completed !== challenge.completed) {
-          await updateChallengeProgressDB(challenge.id, currentPercentage, completed);
+  // Atualizar progresso automaticamente quando quizHistory ou goals mudarem
+  useEffect(() => {
+    if (goals.length > 0 && quizHistory.length > 0) {
+      setUpdatingProgress(true);
+      
+      const updateGoals = async () => {
+        try {
+          for (const goal of goals) {
+            const current = calculateGoalProgress(goal);
+            const completed = current >= goal.target;
+            
+            if (current !== goal.current || completed !== goal.completed) {
+              console.log(`Atualizando meta "${goal.title}": ${goal.current} -> ${current}, completed: ${goal.completed} -> ${completed}`);
+              await updateGoalProgressDB(goal.id, current, completed);
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao atualizar progresso das metas:', error);
+        } finally {
+          setUpdatingProgress(false);
         }
-      });
+      };
+      
+      updateGoals();
     }
-  }, [quizHistory, goals, challenges]);
+  }, [quizHistory, goals]);
+
+  // Atualizar progresso dos desafios
+  useEffect(() => {
+    if (challenges.length > 0 && quizHistory.length > 0) {
+      setUpdatingProgress(true);
+      
+      const updateChallenges = async () => {
+        try {
+          for (const challenge of challenges) {
+            const currentPercentage = calculateChallengeProgress(challenge);
+            const completed = currentPercentage >= challenge.target_percentage;
+            
+            if (currentPercentage !== challenge.current_percentage || completed !== challenge.completed) {
+              console.log(`Atualizando desafio "${challenge.title}": ${challenge.current_percentage}% -> ${currentPercentage}%, completed: ${challenge.completed} -> ${completed}`);
+              await updateChallengeProgressDB(challenge.id, currentPercentage, completed);
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao atualizar progresso dos desafios:', error);
+        } finally {
+          setUpdatingProgress(false);
+        }
+      };
+      
+      updateChallenges();
+    }
+  }, [quizHistory, challenges]);
 
   // Criar nova meta
   const createGoal = async () => {
@@ -398,7 +451,27 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
             <Flag className="w-4 h-4 mr-2" />
             Novo Desafio
           </Button>
+          <Button
+            onClick={() => {
+              fetchQuizHistory(true);
+              loadGoalsAndChallenges();
+            }}
+            variant="outline"
+            className="border-blue-200 text-blue-600 hover:bg-blue-50"
+            disabled={updatingProgress}
+          >
+            <TrendingUp className={`w-4 h-4 mr-2 ${updatingProgress ? 'animate-spin' : ''}`} />
+            {updatingProgress ? 'Atualizando...' : 'Atualizar'}
+          </Button>
         </div>
+
+        {/* Indicador de Atualização */}
+        {updatingProgress && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2 text-blue-700">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            <span className="text-sm">Atualizando progresso das metas e desafios...</span>
+          </div>
+        )}
 
         {/* Formulário de Meta */}
         {showGoalForm && (
