@@ -114,30 +114,32 @@ export const Dashboard: React.FC<DashboardProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background/80">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/50 dark:from-background dark:via-muted/30 dark:to-background/80">
       {/* Header */}
-      <div className="bg-background/80 border-b border-border p-4">
-        <div className="flex items-center justify-between">
+      <div className="bg-white/90 backdrop-blur-xl border-b border-slate-200/60 shadow-sm dark:bg-background/80 dark:border-border dark:shadow-none">
+        <div className="flex items-center justify-between p-6">
           <div className="flex items-center gap-4">
             {onBack && (
-              <Button variant="outline" size="sm" onClick={onBack}>
+              <Button variant="outline" size="sm" onClick={onBack} className="bg-white/80 hover:bg-white border-slate-200 hover:border-slate-300 shadow-sm dark:bg-background/80 dark:border-border dark:hover:border-border">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar
               </Button>
             )}
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Dashboard Personalizado</h1>
-              <p className="text-muted-foreground">Acompanhe seu progresso e desempenho</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent dark:from-foreground dark:via-foreground dark:to-foreground">
+                Dashboard Personalizado
+              </h1>
+              <p className="text-slate-600 dark:text-muted-foreground">Acompanhe seu progresso e desempenho</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Badge variant="outline" className="bg-accent/50">
+            <Badge variant="outline" className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 text-amber-800 shadow-sm dark:bg-accent/50 dark:border-border dark:text-foreground">
               <Award className="w-4 h-4 mr-1" />
               Nível 1
             </Badge>
-            <Badge variant="outline" className="bg-accent/50">
+            <Badge variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-800 shadow-sm dark:bg-accent/50 dark:border-border dark:text-foreground">
               <Star className="w-4 h-4 mr-1" />
               0 pts
             </Badge>
@@ -147,15 +149,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Botões de Navegação Rápida */}
       {showNavigationButtons && (
-        <div className="bg-background/60 border-b border-border p-4">
-          <div className="container mx-auto">
+        <div className="bg-white/70 backdrop-blur-xl border-b border-slate-200/60 shadow-sm dark:bg-background/60 dark:border-border dark:shadow-none">
+          <div className="container mx-auto p-6">
             <div className="flex flex-wrap gap-3 justify-center">
               {onNavigateToQuizCreator && (
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToQuizCreator}
-                  className="bg-background/80"
+                  className="bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Novo Quiz
@@ -166,7 +168,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToHistory}
-                  className="bg-background/80"
+                  className="bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 border-emerald-200 hover:border-emerald-300 text-emerald-700 hover:text-emerald-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
                 >
                   <History className="w-4 h-4 mr-2" />
                   Histórico
@@ -177,7 +179,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToStats}
-                  className="bg-background/80"
+                  className="bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 hover:border-purple-300 text-purple-700 hover:text-purple-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
                 >
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Estatísticas
@@ -188,7 +190,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToGoals}
-                  className="bg-background/80"
+                  className="bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border-rose-200 hover:border-rose-300 text-rose-700 hover:text-rose-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
                 >
                   <Target className="w-4 h-4 mr-2" />
                   Metas
@@ -199,7 +201,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToAdmin}
-                  className="bg-background/80"
+                  className="bg-gradient-to-r from-slate-50 to-gray-50 hover:from-slate-100 hover:to-gray-100 border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Admin
@@ -212,106 +214,112 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Conteúdo Principal */}
       <div className="container mx-auto p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-muted/50">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-background">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-lg rounded-2xl p-1 dark:bg-muted/50 dark:border-border dark:shadow-none">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Visão Geral
             </TabsTrigger>
-            <TabsTrigger value="performance" className="data-[state=active]:bg-background">
+            <TabsTrigger value="performance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Performance
             </TabsTrigger>
-            <TabsTrigger value="goals" className="data-[state=active]:bg-background">
+            <TabsTrigger value="goals" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Metas
             </TabsTrigger>
-            <TabsTrigger value="insights" className="data-[state=active]:bg-background">
+            <TabsTrigger value="insights" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Insights
             </TabsTrigger>
           </TabsList>
 
           {/* Tab: Visão Geral */}
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-8">
             {/* Cards de Estatísticas Rápidas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-background/80 border-border">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-foreground">Total de Quizzes</CardTitle>
+              <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-blue-800 dark:text-foreground">Total de Quizzes</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{totalQuizzes}</div>
-                  <p className="text-xs text-muted-foreground">Quizzes realizados</p>
+                  <div className="text-3xl font-bold text-blue-900 dark:text-foreground">{totalQuizzes}</div>
+                  <p className="text-xs text-blue-700 dark:text-muted-foreground">Quizzes realizados</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-background/80 border-border">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-foreground">Precisão</CardTitle>
+              <Card className="bg-gradient-to-br from-emerald-50 to-green-100 border-emerald-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-emerald-800 dark:text-foreground">Precisão</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{accuracy.toFixed(1)}%</div>
-                  <p className="text-xs text-muted-foreground">Taxa de acerto</p>
+                  <div className="text-3xl font-bold text-emerald-900 dark:text-foreground">{accuracy.toFixed(1)}%</div>
+                  <p className="text-xs text-emerald-700 dark:text-muted-foreground">Taxa de acerto</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-background/80 border-border">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-foreground">Frequência</CardTitle>
+              <Card className="bg-gradient-to-br from-purple-50 to-violet-100 border-purple-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-purple-800 dark:text-foreground">Frequência</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{studyDays}</div>
-                  <p className="text-xs text-muted-foreground">Dias de estudo</p>
+                  <div className="text-3xl font-bold text-purple-900 dark:text-foreground">{studyDays}</div>
+                  <p className="text-xs text-purple-700 dark:text-muted-foreground">Dias de estudo</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-background/80 border-border">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-foreground">Metas Ativas</CardTitle>
+              <Card className="bg-gradient-to-br from-rose-50 to-pink-100 border-rose-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-rose-800 dark:text-foreground">Metas Ativas</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{activeGoals.length}</div>
-                  <p className="text-xs text-muted-foreground">Metas em andamento</p>
+                  <div className="text-3xl font-bold text-rose-900 dark:text-foreground">{activeGoals.length}</div>
+                  <p className="text-xs text-rose-700 dark:text-muted-foreground">Metas em andamento</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Progresso das Metas */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-background/80 border-border">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
                 <CardHeader>
-                  <CardTitle className="text-foreground">Progresso das Metas</CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardTitle className="text-slate-800 dark:text-foreground">Progresso das Metas</CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-muted-foreground">
                     {completedGoals.length} de {goals.length} concluídas
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Progress value={goalCompletionRate} className="h-3 mb-4" />
+                  <Progress value={goalCompletionRate} className="h-4 mb-4 bg-slate-100 dark:bg-muted" />
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Taxa de conclusão</span>
-                    <span className="font-medium text-foreground">{goalCompletionRate.toFixed(1)}%</span>
+                    <span className="text-slate-600 dark:text-muted-foreground">Taxa de conclusão</span>
+                    <span className="font-semibold text-slate-800 dark:text-foreground">{goalCompletionRate.toFixed(1)}%</span>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Top Cadernos */}
-              <Card className="bg-background/80 border-border">
+              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
                 <CardHeader>
-                  <CardTitle className="text-foreground">Top Cadernos</CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardTitle className="text-slate-800 dark:text-foreground">Top Cadernos</CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-muted-foreground">
                     Seu desempenho por matéria
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {cadernoPerformance.slice(0, 3).map((caderno) => (
-                      <div key={caderno.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <BookOpen className="w-4 h-4 text-blue-500" />
-                          <span className="text-sm text-foreground">{caderno.nome || 'Caderno sem nome'}</span>
+                  <div className="space-y-4">
+                    {cadernoPerformance.slice(0, 3).map((caderno, index) => (
+                      <div key={caderno.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50 dark:bg-muted/30 dark:border-border">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                            index === 0 ? 'bg-gradient-to-r from-amber-400 to-yellow-500' :
+                            index === 1 ? 'bg-gradient-to-r from-slate-400 to-gray-500' :
+                            'bg-gradient-to-r from-amber-600 to-orange-600'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <span className="text-sm font-medium text-slate-800 dark:text-foreground">{caderno.nome || 'Caderno sem nome'}</span>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm font-medium text-foreground">
+                          <div className="text-sm font-semibold text-slate-800 dark:text-foreground">
                             {caderno.accuracy.toFixed(1)}%
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-xs text-slate-600 dark:text-muted-foreground">
                             {caderno.quizzes} quizzes
                           </div>
                         </div>
@@ -324,73 +332,73 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </TabsContent>
 
           {/* Tab: Performance */}
-          <TabsContent value="performance" className="space-y-6">
+          <TabsContent value="performance" className="space-y-8">
             {/* Gráfico de Evolução */}
-            <Card className="bg-background/80 border-border">
+            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
               <CardHeader>
-                <CardTitle className="text-foreground">Evolução da Performance</CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardTitle className="text-slate-800 dark:text-foreground">Evolução da Performance</CardTitle>
+                <CardDescription className="text-slate-600 dark:text-muted-foreground">
                   Gráfico de progresso ao longo do tempo
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-64 flex items-center justify-center bg-muted/30 rounded-lg">
+                <div className="h-64 flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl border border-slate-200/50 dark:bg-muted/30 dark:border-border">
                   <div className="text-center">
-                    <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">Gráfico em desenvolvimento</p>
+                    <BarChart3 className="w-16 h-16 text-slate-400 mx-auto mb-4 dark:text-muted-foreground" />
+                    <p className="text-slate-600 dark:text-muted-foreground">Gráfico em desenvolvimento</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Estatísticas Detalhadas */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-background/80 border-border">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
                 <CardHeader>
-                  <CardTitle className="text-foreground">Distribuição de Respostas</CardTitle>
+                  <CardTitle className="text-slate-800 dark:text-foreground">Distribuição de Respostas</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
-                      <span className="text-sm text-foreground">Corretas</span>
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-green-100 rounded-xl border border-emerald-200/50">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                      <span className="text-sm font-medium text-emerald-800 dark:text-foreground">Corretas</span>
                     </div>
-                    <span className="font-medium text-foreground">{correctAnswers}</span>
+                    <span className="font-semibold text-emerald-800 dark:text-foreground">{correctAnswers}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <XCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-sm text-foreground">Incorretas</span>
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-rose-100 rounded-xl border border-red-200/50">
+                    <div className="flex items-center gap-3">
+                      <XCircle className="w-5 h-5 text-red-600" />
+                      <span className="text-sm font-medium text-red-800 dark:text-foreground">Incorretas</span>
                     </div>
-                    <span className="font-medium text-foreground">{wrongAnswers}</span>
+                    <span className="font-semibold text-red-800 dark:text-foreground">{wrongAnswers}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-yellow-500" />
-                      <span className="text-sm text-foreground">Pendentes</span>
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-yellow-100 rounded-xl border border-amber-200/50">
+                    <div className="flex items-center gap-3">
+                      <HelpCircle className="w-5 h-5 text-amber-600" />
+                      <span className="text-sm font-medium text-amber-800 dark:text-foreground">Pendentes</span>
                     </div>
-                    <span className="font-medium text-foreground">
+                    <span className="font-semibold text-amber-800 dark:text-foreground">
                       {totalQuestions - correctAnswers - wrongAnswers}
                     </span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-background/80 border-border">
+              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
                 <CardHeader>
-                  <CardTitle className="text-foreground">Atividade Recente</CardTitle>
+                  <CardTitle className="text-slate-800 dark:text-foreground">Atividade Recente</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {recentQuizzes.slice(0, 3).map((quiz) => (
-                      <div key={quiz.id} className="flex items-center justify-between p-2 bg-muted/30 rounded">
+                      <div key={quiz.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50 dark:bg-muted/30 dark:border-border">
                         <div>
-                          <p className="text-sm font-medium text-foreground">{quiz.quiz?.title || 'Quiz sem nome'}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm font-medium text-slate-800 dark:text-foreground">{quiz.quiz?.title || 'Quiz sem nome'}</p>
+                          <p className="text-xs text-slate-600 dark:text-muted-foreground">
                             {new Date(quiz.completed_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs bg-white/80 border-slate-200 text-slate-700 dark:bg-background/80 dark:border-border dark:text-foreground">
                           {quiz.correct_answers || 0}/{quiz.total_questions || 0}
                         </Badge>
                       </div>
@@ -403,10 +411,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Tab: Metas */}
           <TabsContent value="goals" className="space-y-6">
-            <Card className="bg-background/80 border-border">
+            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
               <CardHeader>
-                <CardTitle className="text-foreground">Status das Metas</CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardTitle className="text-slate-800 dark:text-foreground">Status das Metas</CardTitle>
+                <CardDescription className="text-slate-600 dark:text-muted-foreground">
                   Acompanhe todas as suas metas e desafios
                 </CardDescription>
               </CardHeader>
@@ -414,33 +422,33 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div className="space-y-4">
                   {goals.length > 0 ? (
                     goals.map((goal) => (
-                      <div key={goal.id} className="p-4 border border-border rounded-lg">
-                        <div className="flex items-center justify-between mb-3">
+                      <div key={goal.id} className="p-4 bg-gradient-to-r from-slate-50 to-blue-50 border border-slate-200/50 rounded-2xl dark:bg-muted/30 dark:border-border">
+                        <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-3">
-                            <Target className="w-5 h-5 text-purple-500" />
+                            <Target className="w-6 h-6 text-purple-600" />
                             <div>
-                              <h4 className="font-medium text-foreground">{goal.title || 'Sem título'}</h4>
-                              <p className="text-sm text-muted-foreground">{goal.description || 'Sem descrição'}</p>
+                              <h4 className="font-semibold text-slate-800 dark:text-foreground">{goal.title || 'Sem título'}</h4>
+                              <p className="text-sm text-slate-600 dark:text-muted-foreground">{goal.description || 'Sem descrição'}</p>
                             </div>
                           </div>
-                          <Badge variant={goal.completed ? 'default' : 'outline'}>
+                          <Badge variant={goal.completed ? 'default' : 'outline'} className={goal.completed ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white' : 'bg-white/80 border-slate-200 text-slate-700 dark:bg-background/80 dark:border-border dark:text-foreground'}>
                             {goal.completed ? 'Concluída' : 'Ativa'}
                           </Badge>
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">Progresso</span>
-                            <span className="font-medium text-foreground">
+                            <span className="text-slate-600 dark:text-muted-foreground">Progresso</span>
+                            <span className="font-semibold text-slate-800 dark:text-foreground">
                               {goal.target > 0 ? Math.round((goal.current / goal.target) * 100) : 0}%
                             </span>
                           </div>
                           <Progress 
                             value={goal.target > 0 ? (goal.current / goal.target) * 100 : 0} 
-                            className="h-2" 
+                            className="h-3 bg-slate-100 dark:bg-muted" 
                           />
                           
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-muted-foreground">
                             <span>Tipo: {goal.type || 'N/A'}</span>
                             <span>Prazo: {new Date(goal.deadline || new Date()).toLocaleDateString()}</span>
                           </div>
@@ -448,10 +456,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8">
-                      <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">Nenhuma meta criada ainda</p>
-                      <p className="text-sm text-muted-foreground">Crie suas primeiras metas para começar!</p>
+                    <div className="text-center py-12">
+                      <Target className="w-20 h-20 text-slate-300 mx-auto mb-6 dark:text-muted-foreground" />
+                      <p className="text-slate-600 dark:text-muted-foreground text-lg mb-2">Nenhuma meta criada ainda</p>
+                      <p className="text-sm text-slate-500 dark:text-muted-foreground">Crie suas primeiras metas para começar!</p>
                     </div>
                   )}
                 </div>
@@ -460,22 +468,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </TabsContent>
 
           {/* Tab: Insights */}
-          <TabsContent value="insights" className="space-y-6">
-            <Card className="bg-background/80 border-border">
+          <TabsContent value="insights" className="space-y-8">
+            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
               <CardHeader>
-                <CardTitle className="text-foreground">Recomendações Inteligentes</CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardTitle className="text-slate-800 dark:text-foreground">Recomendações Inteligentes</CardTitle>
+                <CardDescription className="text-slate-600 dark:text-muted-foreground">
                   Sugestões baseadas no seu histórico de estudos
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {accuracy < 70 && (
-                    <div className="flex items-start gap-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                      <HelpCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200/50 rounded-2xl">
+                      <HelpCircle className="w-6 h-6 text-amber-600 mt-1" />
                       <div>
-                        <h4 className="font-medium text-foreground">Foque na Revisão</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-semibold text-amber-800 dark:text-foreground">Foque na Revisão</h4>
+                        <p className="text-sm text-amber-700 dark:text-muted-foreground">
                           Sua precisão está abaixo de 70%. Considere revisar os cadernos com menor desempenho.
                         </p>
                       </div>
@@ -483,11 +491,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
 
                   {studyDays < 7 && (
-                    <div className="flex items-start gap-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                      <Calendar className="w-5 h-5 text-blue-500 mt-0.5" />
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 border border-blue-200/50 rounded-2xl">
+                      <Calendar className="w-6 h-6 text-blue-600 mt-1" />
                       <div>
-                        <h4 className="font-medium text-foreground">Estabeleça uma Rotina</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-semibold text-blue-800 dark:text-foreground">Estabeleça uma Rotina</h4>
+                        <p className="text-sm text-blue-700 dark:text-muted-foreground">
                           Você estudou em apenas {studyDays} dias. Tente manter uma frequência mais consistente.
                         </p>
                       </div>
@@ -495,11 +503,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
 
                   {activeGoals.length === 0 && (
-                    <div className="flex items-start gap-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
-                      <Target className="w-5 h-5 text-purple-500 mt-0.5" />
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-purple-50 to-violet-100 border border-purple-200/50 rounded-2xl">
+                      <Target className="w-6 h-6 text-purple-600 mt-1" />
                       <div>
-                        <h4 className="font-medium text-foreground">Defina Metas</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-semibold text-purple-800 dark:text-foreground">Defina Metas</h4>
+                        <p className="text-sm text-purple-700 dark:text-muted-foreground">
                           Você não tem metas ativas. Crie algumas para manter o foco e motivação.
                         </p>
                       </div>
@@ -507,11 +515,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
 
                   {cadernoPerformance.length > 0 && cadernoPerformance[0].accuracy > 80 && (
-                    <div className="flex items-start gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                      <Star className="w-5 h-5 text-green-500 mt-0.5" />
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-100 border border-emerald-200/50 rounded-2xl">
+                      <Star className="w-6 h-6 text-emerald-600 mt-1" />
                       <div>
-                        <h4 className="font-medium text-foreground">Excelente Desempenho!</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-semibold text-emerald-800 dark:text-foreground">Excelente Desempenho!</h4>
+                        <p className="text-sm text-emerald-700 dark:text-muted-foreground">
                           Você está se saindo muito bem em {cadernoPerformance[0].nome}! Continue assim!
                         </p>
                       </div>
@@ -522,77 +530,77 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </Card>
 
             {/* Padrões de Estudo */}
-            <Card className="bg-background/80 border-border">
+            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
               <CardHeader>
-                <CardTitle className="text-foreground">Padrões de Estudo</CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardTitle className="text-slate-800 dark:text-foreground">Padrões de Estudo</CardTitle>
+                <CardDescription className="text-slate-600 dark:text-muted-foreground">
                   Análise dos seus hábitos de estudo
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-foreground">{averageQuizzesPerDay.toFixed(1)}</div>
-                    <div className="text-sm text-muted-foreground">Quizzes por dia</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200/50 dark:bg-muted/30 dark:border-border">
+                    <div className="text-3xl font-bold text-blue-800 dark:text-foreground">{averageQuizzesPerDay.toFixed(1)}</div>
+                    <div className="text-sm text-blue-700 dark:text-muted-foreground">Quizzes por dia</div>
                   </div>
-                  <div className="text-center p-4 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-foreground">{studyDays}</div>
-                    <div className="text-sm text-muted-foreground">Dias ativos</div>
+                  <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200/50 dark:bg-muted/30 dark:border-border">
+                    <div className="text-3xl font-bold text-emerald-800 dark:text-foreground">{studyDays}</div>
+                    <div className="text-sm text-emerald-700 dark:text-muted-foreground">Dias ativos</div>
                   </div>
-                  <div className="text-center p-4 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-foreground">{totalQuestions}</div>
-                    <div className="text-sm text-muted-foreground">Questões respondidas</div>
+                  <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl border border-purple-200/50 dark:bg-muted/30 dark:border-border">
+                    <div className="text-3xl font-bold text-purple-800 dark:text-foreground">{totalQuestions}</div>
+                    <div className="text-sm text-purple-700 dark:text-muted-foreground">Questões respondidas</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Conquistas */}
-            <Card className="bg-background/80 border-border">
+            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
               <CardHeader>
-                <CardTitle className="text-foreground">Conquistas</CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardTitle className="text-slate-800 dark:text-foreground">Conquistas</CardTitle>
+                <CardDescription className="text-slate-600 dark:text-muted-foreground">
                   Suas realizações e marcos importantes
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {totalQuizzes >= 10 && (
-                    <div className="flex items-center gap-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                      <Award className="w-8 h-8 text-yellow-500" />
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200/50 rounded-2xl">
+                      <Award className="w-10 h-10 text-amber-600" />
                       <div>
-                        <h4 className="font-medium text-foreground">Dedicação</h4>
-                        <p className="text-sm text-muted-foreground">Completou 10+ quizzes</p>
+                        <h4 className="font-semibold text-amber-800 dark:text-foreground">Dedicação</h4>
+                        <p className="text-sm text-amber-700 dark:text-muted-foreground">Completou 10+ quizzes</p>
                       </div>
                     </div>
                   )}
                   
                   {accuracy >= 80 && (
-                    <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                      <Star className="w-8 h-8 text-green-500" />
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-100 border border-emerald-200/50 rounded-2xl">
+                      <Star className="w-10 h-10 text-emerald-600" />
                       <div>
-                        <h4 className="font-medium text-foreground">Precisão</h4>
-                        <p className="text-sm text-muted-foreground">Manteve 80%+ de acerto</p>
+                        <h4 className="font-semibold text-emerald-800 dark:text-foreground">Precisão</h4>
+                        <p className="text-sm text-emerald-700 dark:text-muted-foreground">Manteve 80%+ de acerto</p>
                       </div>
                     </div>
                   )}
                   
                   {studyDays >= 7 && (
-                    <div className="flex items-center gap-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                      <Calendar className="w-8 h-8 text-blue-500" />
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 border border-blue-200/50 rounded-2xl">
+                      <Calendar className="w-10 h-10 text-blue-600" />
                       <div>
-                        <h4 className="font-medium text-foreground">Consistência</h4>
-                        <p className="text-sm text-muted-foreground">Estudou por 7+ dias</p>
+                        <h4 className="font-semibold text-blue-800 dark:text-foreground">Consistência</h4>
+                        <p className="text-sm text-blue-700 dark:text-muted-foreground">Estudou por 7+ dias</p>
                       </div>
                     </div>
                   )}
                   
                   {activeGoals.length > 0 && (
-                    <div className="flex items-center gap-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
-                      <Target className="w-8 h-8 text-purple-500" />
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-violet-100 border border-purple-200/50 rounded-2xl">
+                      <Target className="w-10 h-10 text-purple-600" />
                       <div>
-                        <h4 className="font-medium text-foreground">Foco</h4>
-                        <p className="text-sm text-muted-foreground">Definiu metas de estudo</p>
+                        <h4 className="font-semibold text-purple-800 dark:text-foreground">Foco</h4>
+                        <p className="text-sm text-purple-700 dark:text-muted-foreground">Definiu metas de estudo</p>
                       </div>
                     </div>
                   )}
