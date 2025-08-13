@@ -1,7 +1,7 @@
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export interface Quiz {
   id: string;
@@ -85,23 +85,36 @@ export const useQuiz = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const fetchQuizHistory = async () => {
-    if (!user) return;
+  const fetchQuizHistory = useCallback(async () => {
+    if (!user || loading) {
+      console.log('🚫 [fetchQuizHistory] Chamada bloqueada:', { user: !!user, loading });
+      return; // Evita chamadas duplicadas
+    }
     
+    // Debounce simples para evitar chamadas muito frequentes
+    if (quizHistory.length > 0) {
+      console.log('📊 [fetchQuizHistory] Dados já carregados, pulando busca');
+      return; // Já temos dados, não precisa buscar novamente
+    }
+    
+    console.log('🔄 [fetchQuizHistory] Iniciando busca de dados...');
     setLoading(true);
     try {
       
       const { data, error } = await supabase
         .from('quiz_results')
         .select(`
-          *,
+          id,
+          user_id,
+          quiz_id,
+          correct_answers,
+          wrong_answers,
+          total_questions,
+          completed_at,
           quiz:quizzes (
             title,
             description,
-            caderno_id,
-            cadernos (
-              nome
-            )
+            caderno_id
           )
         `)
         .eq('user_id', user.id)
@@ -109,58 +122,27 @@ export const useQuiz = () => {
 
       if (error) throw error;
       
-      // Buscar as respostas do usuário para cada quiz
-      const resultsWithStats = await Promise.all(
-        data?.map(async (result) => {
-          
-          // Primeiro, buscar as questões do quiz
-          const { data: questions, error: questionsError } = await supabase
-            .from('questions')
-            .select('id')
-            .eq('quiz_id', result.quiz_id);
-
-          if (questionsError) throw questionsError;
-
-          // Depois, buscar as respostas do usuário para essas questões
-          const { data: userAnswers, error: userAnswersError } = await supabase
-            .from('user_answers')
-            .select('*')
-            .eq('user_id', user.id)
-            .in('question_id', questions?.map(q => q.id) || []);
-
-          if (userAnswersError) throw userAnswersError;
-
-          // Calcular estatísticas das legendas
-          const legendStats = {
-            star: {
-              total: userAnswers?.filter(a => a.legend === 'star').length || 0,
-              wrong: userAnswers?.filter(a => a.legend === 'star' && !a.is_correct).length || 0,
-            },
-            question: {
-              total: userAnswers?.filter(a => a.legend === 'question').length || 0,
-              correct: userAnswers?.filter(a => a.legend === 'question' && a.is_correct).length || 0,
-            },
-            circle: {
-              total: userAnswers?.filter(a => a.legend === 'circle').length || 0,
-            },
-          };
-
-          const processedResult = {
-            ...result,
-            quiz: {
-              title: result.quiz?.title || '',
-              description: result.quiz?.description || null,
-              caderno_id: result.quiz?.caderno_id || null,
-              cadernos: result.quiz?.cadernos || null,
-            },
-            legendStats,
-          };
-          
-          return processedResult;
-        }) || []
-      );
+      // Processar os resultados sem fazer queries adicionais
+      const resultsWithStats = data?.map((result) => {
+        const processedResult = {
+          ...result,
+          quiz: {
+            title: result.quiz?.title || '',
+            description: result.quiz?.description || null,
+            caderno_id: result.quiz?.caderno_id || null,
+          },
+          legendStats: {
+            star: { total: 0, wrong: 0 },
+            question: { total: 0, correct: 0 },
+            circle: { total: 0 },
+          },
+        };
+        
+        return processedResult;
+      }) || [];
 
       setQuizHistory(resultsWithStats as QuizResult[]);
+      console.log('✅ [fetchQuizHistory] Dados carregados com sucesso:', resultsWithStats.length, 'quizzes');
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       console.error('❌ [fetchQuizHistory] Erro:', error);
@@ -171,8 +153,9 @@ export const useQuiz = () => {
       });
     } finally {
       setLoading(false);
+      console.log('🏁 [fetchQuizHistory] Busca finalizada');
     }
-  };
+  }, [user, toast, loading, quizHistory.length]);
 
   const fetchAllResults = async () => {
     if (!user) return;

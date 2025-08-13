@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   Award,
   BarChart3,
-  BookOpen,
   Calendar,
   CheckCircle2,
   HelpCircle,
@@ -23,7 +22,7 @@ import {
   Target,
   XCircle
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface DashboardProps {
   onBack: () => void;
@@ -53,6 +52,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
 
   useEffect(() => {
+    if (user) {
+      fetchQuizHistory();
+    }
+  }, [user]); // Removido fetchQuizHistory da dependência
+
+  // Função para forçar refresh dos dados
+  const refreshData = useCallback(() => {
     if (user) {
       fetchQuizHistory();
     }
