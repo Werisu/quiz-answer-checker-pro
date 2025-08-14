@@ -163,7 +163,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToQuizCreator}
-                  className="bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
+                  className="bg-gradient-to-r from-blue-500/10 to-blue-600/20 hover:from-blue-500/20 hover:to-blue-600/30 border-blue-200/50 hover:border-blue-300/70 text-blue-700 hover:text-blue-800 shadow-sm transition-all duration-200 dark:from-blue-500/20 dark:to-blue-600/30 dark:hover:from-blue-500/30 dark:hover:to-blue-600/40 dark:border-blue-400/40 dark:hover:border-blue-300/60 dark:text-blue-200 dark:hover:text-blue-100"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Novo Quiz
@@ -174,7 +174,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToHistory}
-                  className="bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 border-emerald-200 hover:border-emerald-300 text-emerald-700 hover:text-emerald-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
+                  className="bg-gradient-to-r from-emerald-500/10 to-green-600/20 hover:from-emerald-500/20 hover:to-green-600/30 border-emerald-200/50 hover:border-emerald-300/70 text-emerald-700 hover:text-emerald-800 shadow-sm transition-all duration-200 dark:from-emerald-500/20 dark:to-emerald-600/30 dark:hover:from-emerald-500/30 dark:hover:to-emerald-600/40 dark:border-emerald-400/40 dark:hover:border-emerald-300/60 dark:text-emerald-200 dark:hover:text-emerald-100"
                 >
                   <History className="w-4 h-4 mr-2" />
                   Histórico
@@ -185,7 +185,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToStats}
-                  className="bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 hover:border-purple-300 text-purple-700 hover:text-purple-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
+                  className="bg-gradient-to-r from-purple-500/10 to-violet-600/20 hover:from-purple-500/20 hover:to-violet-600/30 border-purple-200/50 hover:border-purple-300/70 text-purple-700 hover:text-purple-800 shadow-sm transition-all duration-200 dark:from-purple-500/20 dark:to-purple-600/30 dark:hover:from-purple-500/30 dark:hover:to-purple-600/40 dark:border-purple-400/40 dark:hover:border-purple-300/60 dark:text-purple-200 dark:hover:text-purple-100"
                 >
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Estatísticas
@@ -196,7 +196,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToGoals}
-                  className="bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border-rose-200 hover:border-rose-300 text-rose-700 hover:text-rose-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
+                  className="bg-gradient-to-r from-rose-500/10 to-pink-600/20 hover:from-rose-500/20 hover:to-pink-600/30 border-rose-200/50 hover:border-rose-300/70 text-rose-700 hover:text-rose-800 shadow-sm transition-all duration-200 dark:from-rose-500/20 dark:to-rose-600/30 dark:hover:from-rose-500/30 dark:hover:to-rose-600/40 dark:border-rose-400/40 dark:hover:border-rose-300/60 dark:text-rose-200 dark:hover:text-rose-100"
                 >
                   <Target className="w-4 h-4 mr-2" />
                   Metas
@@ -207,7 +207,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={onNavigateToAdmin}
-                  className="bg-gradient-to-r from-slate-50 to-gray-50 hover:from-slate-100 hover:to-gray-100 border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-800 shadow-sm transition-all duration-200 dark:bg-background/80 dark:border-border dark:hover:bg-accent dark:text-foreground"
+                  className="bg-gradient-to-r from-slate-500/10 to-gray-600/20 hover:from-slate-500/20 hover:to-gray-600/30 border-slate-200/50 hover:border-slate-300/70 text-slate-700 hover:text-slate-800 shadow-sm transition-all duration-200 dark:from-slate-500/20 dark:to-slate-600/30 dark:hover:from-slate-500/30 dark:hover:to-slate-600/40 dark:border-slate-400/40 dark:hover:border-slate-300/60 dark:text-slate-200 dark:hover:text-slate-100"
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Admin
