@@ -1,4 +1,4 @@
-# 🎯 Dashboard Personalizado - Quiz Answer Checker Pro
+# 🎯 Dashboard Personalizado - EstudaPro
 
 ## ✨ **Visão Geral**
 
@@ -238,7 +238,7 @@ O **Dashboard Personalizado** é uma interface moderna e intuitiva que oferece u
 
 ---
 
-**🎯 O Dashboard Personalizado está completamente funcional e integrado ao Quiz Answer Checker Pro!**
+**🎯 O Dashboard Personalizado está completamente funcional e integrado ao EstudaPro!**
 
 **✅ Interface moderna e responsiva implementada!**
 
