@@ -9,18 +9,18 @@ import { useCadernos } from '@/hooks/useCadernos';
 import { useGoalsAndChallenges } from '@/hooks/useGoalsAndChallenges';
 import { useQuiz } from '@/hooks/useQuiz';
 import {
-    ArrowLeft,
-    Award,
-    BarChart3,
-    Calendar,
-    CheckCircle2,
-    HelpCircle,
-    History,
-    Plus,
-    Settings,
-    Star,
-    Target,
-    XCircle
+  ArrowLeft,
+  Award,
+  BarChart3,
+  Calendar,
+  CheckCircle2,
+  HelpCircle,
+  History,
+  Plus,
+  Settings,
+  Star,
+  Target,
+  XCircle
 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -521,7 +521,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
 
                   {cadernoPerformance.length > 0 && cadernoPerformance[0].accuracy > 80 && (
-                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-100 border border-emerald-200/50 rounded-2xl">
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-100 border border-emerald-200/50 rounded-2xl dark:from-emerald-500/20 dark:to-green-600/30 dark:border-emerald-600/40">
                       <Star className="w-6 h-6 text-emerald-600 mt-1" />
                       <div>
                         <h4 className="font-semibold text-emerald-800 dark:text-foreground">Excelente Desempenho!</h4>
@@ -545,15 +545,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200/50 dark:bg-muted/30 dark:border-border">
+                  <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200/50 dark:bg-muted/30 dark:border-border dark:from-blue-500/20 dark:to-indigo-600/30 dark:border-blue-600/40">
                     <div className="text-3xl font-bold text-blue-800 dark:text-foreground">{averageQuizzesPerDay.toFixed(1)}</div>
                     <div className="text-sm text-blue-700 dark:text-muted-foreground">Quizzes por dia</div>
                   </div>
-                  <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200/50 dark:bg-muted/30 dark:border-border">
+                  <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200/50 dark:bg-muted/30 dark:border-border dark:from-emerald-500/20 dark:to-green-600/30 dark:border-emerald-600/40">
                     <div className="text-3xl font-bold text-emerald-800 dark:text-foreground">{studyDays}</div>
                     <div className="text-sm text-emerald-700 dark:text-muted-foreground">Dias ativos</div>
                   </div>
-                  <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl border border-purple-200/50 dark:bg-muted/30 dark:border-border">
+                  <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl border border-purple-200/50 dark:bg-muted/30 dark:border-border dark:from-purple-500/20 dark:to-violet-600/30 dark:border-purple-600/40">
                     <div className="text-3xl font-bold text-purple-800 dark:text-foreground">{totalQuestions}</div>
                     <div className="text-sm text-purple-700 dark:text-muted-foreground">Questões respondidas</div>
                   </div>
@@ -572,7 +572,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {totalQuizzes >= 10 && (
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200/50 rounded-2xl">
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200/50 rounded-2xl dark:from-amber-500/20 dark:to-yellow-600/30 dark:border-amber-600/40">
                       <Award className="w-10 h-10 text-amber-600" />
                       <div>
                         <h4 className="font-semibold text-amber-800 dark:text-foreground">Dedicação</h4>
@@ -582,7 +582,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
                   
                   {accuracy >= 80 && (
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-100 border border-emerald-200/50 rounded-2xl">
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-100 border border-emerald-200/50 rounded-2xl dark:from-emerald-500/20 dark:to-green-600/30 dark:border-emerald-600/40">
                       <Star className="w-10 h-10 text-emerald-600" />
                       <div>
                         <h4 className="font-semibold text-emerald-800 dark:text-foreground">Precisão</h4>
@@ -592,7 +592,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
                   
                   {studyDays >= 7 && (
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 border border-blue-200/50 rounded-2xl">
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 border border-blue-200/50 rounded-2xl dark:from-blue-500/20 dark:to-indigo-600/30 dark:border-blue-600/40">
                       <Calendar className="w-10 h-10 text-blue-600" />
                       <div>
                         <h4 className="font-semibold text-blue-800 dark:text-foreground">Consistência</h4>
@@ -602,7 +602,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
                   
                   {activeGoals.length > 0 && (
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-violet-100 border border-purple-200/50 rounded-2xl">
+                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-violet-100 border border-purple-200/50 rounded-2xl dark:from-purple-500/20 dark:to-violet-600/30 dark:border-purple-600/40 dark:text-purple-200">
                       <Target className="w-10 h-10 text-purple-600" />
                       <div>
                         <h4 className="font-semibold text-purple-800 dark:text-foreground">Foco</h4>
