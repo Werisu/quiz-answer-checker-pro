@@ -319,10 +319,10 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
   }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-800">{`Data: ${label}`}</p>
-          <p className="text-blue-600">{`Média: ${payload[0].value}%`}</p>
-          <p className="text-green-600">{`Quizzes: ${payload[1]?.value || 0}`}</p>
+        <div className="bg-white dark:bg-slate-800 p-3 border border-gray-200 dark:border-slate-600 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-800 dark:text-gray-100">{`Data: ${label}`}</p>
+          <p className="text-blue-600 dark:text-blue-400">{`Média: ${payload[0].value}%`}</p>
+          <p className="text-green-600 dark:text-green-400">{`Quizzes: ${payload[1]?.value || 0}`}</p>
         </div>
       );
     }
@@ -331,24 +331,24 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="p-6 bg-gradient-to-br from-white/80 via-gray-50/50 to-white/80 backdrop-blur-xl border-0 shadow-2xl rounded-3xl dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-800/80">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <BarChart3 className="w-6 h-6 text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-800">Estatísticas Avançadas</h2>
+            <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Estatísticas Avançadas</h2>
           </div>
-          <Button variant="outline" onClick={onBack}>
+          <Button variant="outline" onClick={onBack} className="bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 text-slate-700 hover:from-white hover:to-white hover:border-slate-300/70 hover:text-slate-800 shadow-sm dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100">
             Voltar
           </Button>
         </div>
 
         {/* Filtros */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+        <div className="mb-6 p-4 bg-gradient-to-r from-slate-500/10 to-blue-500/10 rounded-lg border border-slate-200/50 dark:from-slate-500/20 dark:to-blue-500/20 dark:border-slate-600/40 dark:bg-slate-500/20">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Período</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Período</label>
               <Select value={selectedTimeRange} onValueChange={(value: TimeRange) => setSelectedTimeRange(value)}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-40 bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:bg-slate-700/80">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -361,9 +361,9 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Caderno</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Caderno</label>
               <Select value={selectedCaderno} onValueChange={setSelectedCaderno}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-48 bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:bg-slate-700/80">
                   <SelectValue placeholder="Todos os cadernos" />
                 </SelectTrigger>
                 <SelectContent>
@@ -382,38 +382,42 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
         {/* Métricas Gerais */}
         {generalStats && (
           <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-gradient-to-r from-blue-500/10 to-blue-600/20 p-4 rounded-lg border border-blue-200/50 dark:from-blue-500/20 dark:to-blue-600/30 dark:border-blue-400/30 dark:bg-blue-500/20">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="w-5 h-5 text-blue-600" />
-                <h5 className="font-semibold text-blue-800">Total de Quizzes</h5>
+                <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h5 className="font-semibold text-blue-800 dark:text-blue-200">Total de Quizzes</h5>
               </div>
-              <div className="text-2xl font-bold text-blue-600">{generalStats.totalQuizzes}</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{generalStats.totalQuizzes}</div>
             </div>
             
-            <div className="bg-green-50 p-4 rounded-lg">
+            <div className="bg-gradient-to-r from-green-500/10 to-green-600/20 p-4 rounded-lg border border-green-200/50 dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/30 dark:bg-green-500/20">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-                <h5 className="font-semibold text-green-800">Média Geral</h5>
+                <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <h5 className="font-semibold text-green-800 dark:text-green-200">Média Geral</h5>
               </div>
-              <div className="text-2xl font-bold text-green-600">{generalStats.avgPercentage}%</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{generalStats.avgPercentage}%</div>
             </div>
             
-            <div className="bg-purple-50 p-4 rounded-lg">
+            <div className="bg-gradient-to-r from-purple-500/10 to-purple-600/20 p-4 rounded-lg border border-purple-200/50 dark:from-purple-500/20 dark:to-purple-600/30 dark:border-purple-400/30 dark:bg-purple-500/20">
               <div className="flex items-center gap-2 mb-2">
-                <Award className="w-5 h-5 text-purple-600" />
-                <h5 className="font-semibold text-purple-800">Taxa de Acerto</h5>
+                <Award className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <h5 className="font-semibold text-purple-800 dark:text-purple-200">Taxa de Acerto</h5>
               </div>
-              <div className="text-2xl font-bold text-purple-600">{generalStats.accuracy}%</div>
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{generalStats.accuracy}%</div>
             </div>
             
-            <div className={`p-4 rounded-lg ${generalStats.trend >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+            <div className={`p-4 rounded-lg border ${
+              generalStats.trend >= 0 
+                ? 'bg-gradient-to-r from-green-500/10 to-green-600/20 border-green-200/50 dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/30 dark:bg-green-500/20' 
+                : 'bg-gradient-to-r from-red-500/10 to-red-600/20 border-red-200/50 dark:from-red-500/20 dark:to-red-600/30 dark:border-red-400/30 dark:bg-red-500/20'
+            }`}>
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className={`w-5 h-5 ${generalStats.trend >= 0 ? 'text-green-600' : 'text-red-600'}`} />
-                <h5 className={`font-semibold ${generalStats.trend >= 0 ? 'text-green-800' : 'text-red-800'}`}>
+                <TrendingUp className={`w-5 h-5 ${generalStats.trend >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`} />
+                <h5 className={`font-semibold ${generalStats.trend >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
                   Tendência
                 </h5>
               </div>
-              <div className={`text-2xl font-bold ${generalStats.trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={`text-2xl font-bold ${generalStats.trend >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {generalStats.trend >= 0 ? '+' : ''}{generalStats.trend}%
               </div>
             </div>
@@ -425,7 +429,11 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
           <Button
             variant={activeChart === 'progress' ? 'default' : 'outline'}
             onClick={() => setActiveChart('progress')}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${
+              activeChart === 'progress' 
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 text-slate-700 hover:from-white hover:to-white hover:border-slate-300/70 hover:text-slate-800 shadow-sm dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100'
+            }`}
           >
             <TrendingUp className="w-4 h-4" />
             Progresso
@@ -433,7 +441,11 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
           <Button
             variant={activeChart === 'cadernos' ? 'default' : 'outline'}
             onClick={() => setActiveChart('cadernos')}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${
+              activeChart === 'cadernos' 
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 text-slate-700 hover:from-white hover:to-white hover:border-slate-300/70 hover:text-slate-800 shadow-sm dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100'
+            }`}
           >
             <BarChart3 className="w-4 h-4" />
             Cadernos
@@ -441,7 +453,11 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
           <Button
             variant={activeChart === 'legendas' ? 'default' : 'outline'}
             onClick={() => setActiveChart('legendas')}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${
+              activeChart === 'legendas' 
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 text-slate-700 hover:from-white hover:to-white hover:border-slate-300/70 hover:text-slate-800 shadow-sm dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100'
+            }`}
           >
             <PieChartIcon className="w-4 h-4" />
             Legendas
@@ -452,22 +468,24 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
         <div className="space-y-6">
           {/* Gráfico de Progresso */}
           {activeChart === 'progress' && (
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Progresso ao Longo do Tempo</h3>
+            <Card className="p-6 bg-gradient-to-br from-white/60 to-white/40 backdrop-blur-sm border border-slate-200/30 dark:from-slate-700/60 dark:to-slate-600/40 dark:border-slate-600/30 dark:bg-slate-700/60">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Progresso ao Longo do Tempo</h3>
               <div className="h-96 w-full">
                 {progressData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={progressData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-slate-600" />
                       <XAxis 
                         dataKey="date" 
                         stroke="#6b7280"
+                        className="dark:stroke-slate-400"
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
                       />
                       <YAxis 
                         stroke="#6b7280"
+                        className="dark:stroke-slate-400"
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
@@ -494,11 +512,11 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center h-full bg-gradient-to-r from-gray-500/10 to-slate-600/20 rounded-lg border border-gray-200/50 dark:from-gray-500/20 dark:to-slate-600/30 dark:border-gray-600/40 dark:bg-gray-500/20">
                     <div className="text-center">
-                      <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Nenhum dado para exibir</p>
-                      <p className="text-sm text-gray-500">Complete quizzes no período selecionado</p>
+                      <TrendingUp className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                      <p className="text-gray-600 dark:text-gray-300">Nenhum dado para exibir</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Complete quizzes no período selecionado</p>
                     </div>
                   </div>
                 )}
@@ -508,37 +526,37 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
 
           {/* Gráfico de Cadernos */}
           {activeChart === 'cadernos' && (
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Análise de Performance por Caderno</h3>
+            <Card className="p-6 bg-gradient-to-br from-white/60 to-white/40 backdrop-blur-sm border border-slate-200/30 dark:from-slate-700/60 dark:to-slate-600/40 dark:border-slate-600/30 dark:bg-slate-700/60">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Análise de Performance por Caderno</h3>
               
               {/* Resumo de Dificuldade */}
               {dificuldadeAnalysis && (
                 <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <div className="bg-gradient-to-r from-green-500/10 to-green-600/20 p-4 rounded-lg border border-green-200/50 dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/30 dark:bg-green-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-green-800">Fácil</span>
+                      <span className="text-sm font-medium text-green-800 dark:text-green-200">Fácil</span>
                     </div>
-                    <div className="text-2xl font-bold text-green-600">{dificuldadeAnalysis.facil}</div>
-                    <div className="text-xs text-green-600">cadernos</div>
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">{dificuldadeAnalysis.facil}</div>
+                    <div className="text-xs text-green-600 dark:text-green-400">cadernos</div>
                   </div>
                   
-                  <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <div className="bg-gradient-to-r from-yellow-500/10 to-yellow-600/20 p-4 rounded-lg border border-yellow-200/50 dark:from-yellow-500/20 dark:to-yellow-600/30 dark:border-yellow-400/30 dark:bg-yellow-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-yellow-800">Médio</span>
+                      <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Médio</span>
                     </div>
-                    <div className="text-2xl font-bold text-yellow-600">{dificuldadeAnalysis.medio}</div>
-                    <div className="text-xs text-yellow-600">cadernos</div>
+                    <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{dificuldadeAnalysis.medio}</div>
+                    <div className="text-xs text-yellow-600 dark:text-yellow-400">cadernos</div>
                   </div>
                   
-                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <div className="bg-gradient-to-r from-red-500/10 to-red-600/20 p-4 rounded-lg border border-red-200/50 dark:from-red-500/20 dark:to-red-600/30 dark:border-red-400/30 dark:bg-red-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-red-800">Difícil</span>
+                      <span className="text-sm font-medium text-red-800 dark:text-red-200">Difícil</span>
                     </div>
-                    <div className="text-2xl font-bold text-red-600">{dificuldadeAnalysis.dificil}</div>
-                    <div className="text-xs text-red-600">cadernos</div>
+                    <div className="text-2xl font-bold text-red-600 dark:text-red-400">{dificuldadeAnalysis.dificil}</div>
+                    <div className="text-xs text-red-600 dark:text-red-400">cadernos</div>
                   </div>
                 </div>
               )}
@@ -546,28 +564,28 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
               {/* Melhor e Pior Caderno */}
               {dificuldadeAnalysis && (
                 <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">
+                  <div className="bg-gradient-to-r from-green-500/10 to-emerald-600/20 p-4 rounded-lg border border-green-200/50 dark:from-green-500/20 dark:to-emerald-600/30 dark:border-green-400/30 dark:bg-green-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm font-bold">🥇</span>
                       </div>
-                      <span className="text-sm font-semibold text-green-800">Melhor Performance</span>
+                      <span className="text-sm font-semibold text-green-800 dark:text-green-200">Melhor Performance</span>
                     </div>
-                    <div className="text-lg font-bold text-green-700">{dificuldadeAnalysis.melhorCaderno.name}</div>
-                    <div className="text-sm text-green-600">
+                    <div className="text-lg font-bold text-green-700 dark:text-green-300">{dificuldadeAnalysis.melhorCaderno.name}</div>
+                    <div className="text-sm text-green-600 dark:text-green-400">
                       {dificuldadeAnalysis.melhorCaderno.media}% • {dificuldadeAnalysis.melhorCaderno.quizzes} quizzes
                     </div>
                   </div>
                   
-                  <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-lg border border-red-200">
+                  <div className="bg-gradient-to-r from-red-500/10 to-pink-600/20 p-4 rounded-lg border border-red-200/50 dark:from-red-500/20 dark:to-pink-600/30 dark:border-red-400/30 dark:bg-red-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm font-bold">⚠️</span>
                       </div>
-                      <span className="text-sm font-semibold text-red-800">Precisa Melhorar</span>
+                      <span className="text-sm font-semibold text-red-800 dark:text-red-200">Precisa Melhorar</span>
                     </div>
-                    <div className="text-lg font-bold text-red-700">{dificuldadeAnalysis.piorCaderno.name}</div>
-                    <div className="text-sm text-red-600">
+                    <div className="text-lg font-bold text-red-700 dark:text-red-300">{dificuldadeAnalysis.piorCaderno.name}</div>
+                    <div className="text-sm text-red-600 dark:text-red-400">
                       {dificuldadeAnalysis.piorCaderno.media}% • {dificuldadeAnalysis.piorCaderno.quizzes} quizzes
                     </div>
                   </div>
@@ -578,10 +596,11 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
                 {cadernosData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={cadernosData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-slate-600" />
                       <XAxis 
                         dataKey="name" 
                         stroke="#6b7280"
+                        className="dark:stroke-slate-400"
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
@@ -591,6 +610,7 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
                       />
                       <YAxis 
                         stroke="#6b7280"
+                        className="dark:stroke-slate-400"
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
@@ -602,27 +622,27 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
                             return (
-                              <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-                                <p className="font-semibold text-gray-800 mb-2">{label}</p>
+                              <div className="bg-white dark:bg-slate-800 p-3 border border-gray-200 dark:border-slate-600 rounded-lg shadow-lg">
+                                <p className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{label}</p>
                                 <div className="space-y-1 text-sm">
-                                  <p className="text-gray-600">
+                                  <p className="text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Média:</span> {data.media}%
                                   </p>
-                                  <p className="text-gray-600">
+                                  <p className="text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Quizzes:</span> {data.quizzes}
                                   </p>
-                                  <p className="text-gray-600">
+                                  <p className="text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Acertos:</span> {data.correctAnswers}/{data.totalQuestoes}
                                   </p>
-                                  <p className="text-gray-600">
+                                  <p className="text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Taxa de Erro:</span> {data.taxaErro}%
                                   </p>
-                                  <p className="text-gray-600">
+                                  <p className="text-gray-600 dark:text-gray-300">
                                     <span className="font-medium">Pontos Líquidos:</span> {data.pontosLiquidos}
                                   </p>
                                   <p className={`font-medium ${
-                                    data.difficulty === 'facil' ? 'text-green-600' : 
-                                    data.difficulty === 'medio' ? 'text-yellow-600' : 'text-red-600'
+                                    data.difficulty === 'facil' ? 'text-green-600 dark:text-green-400' : 
+                                    data.difficulty === 'medio' ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
                                   }`}>
                                     <span>Dificuldade:</span> {
                                       data.difficulty === 'facil' ? 'Fácil' : 
@@ -645,11 +665,11 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center h-full bg-gradient-to-r from-gray-500/10 to-slate-600/20 rounded-lg border border-gray-200/50 dark:from-gray-500/20 dark:to-slate-600/30 dark:border-gray-600/40 dark:bg-gray-500/20">
                     <div className="text-center">
-                      <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Nenhum dado para exibir</p>
-                      <p className="text-sm text-gray-500">Complete quizzes no período selecionado</p>
+                      <BarChart3 className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                      <p className="text-gray-600 dark:text-gray-300">Nenhum dado para exibir</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Complete quizzes no período selecionado</p>
                     </div>
                   </div>
                 )}
@@ -658,55 +678,55 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
               {/* Tabela detalhada de cadernos */}
               {cadernosData.length > 0 && (
                 <div className="mt-6">
-                  <h4 className="text-md font-semibold text-gray-800 mb-3">Detalhamento por Caderno</h4>
+                  <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">Detalhamento por Caderno</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-2 font-medium text-gray-700">Caderno</th>
-                          <th className="text-center py-2 font-medium text-gray-700">Média</th>
-                          <th className="text-center py-2 font-medium text-gray-700">Quizzes</th>
-                          <th className="text-center py-2 font-medium text-gray-700">Acertos</th>
-                          <th className="text-center py-2 font-medium text-gray-700">Taxa Erro</th>
-                          <th className="text-center py-2 font-medium text-gray-700">Pontos</th>
-                          <th className="text-center py-2 font-medium text-gray-700">Dificuldade</th>
+                        <tr className="border-b border-gray-200 dark:border-gray-600">
+                          <th className="text-left py-2 font-medium text-gray-700 dark:text-gray-300">Caderno</th>
+                          <th className="text-center py-2 font-medium text-gray-700 dark:text-gray-300">Média</th>
+                          <th className="text-center py-2 font-medium text-gray-700 dark:text-gray-300">Quizzes</th>
+                          <th className="text-center py-2 font-medium text-gray-700 dark:text-gray-300">Acertos</th>
+                          <th className="text-center py-2 font-medium text-gray-700 dark:text-gray-300">Taxa Erro</th>
+                          <th className="text-center py-2 font-medium text-gray-700 dark:text-gray-300">Pontos</th>
+                          <th className="text-center py-2 font-medium text-gray-700 dark:text-gray-300">Dificuldade</th>
                         </tr>
                       </thead>
                       <tbody>
                         {cadernosData.map((caderno) => (
-                          <tr key={caderno.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="py-2 font-medium text-gray-800">{caderno.name}</td>
+                          <tr key={caderno.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-600/20">
+                            <td className="py-2 font-medium text-gray-800 dark:text-gray-100">{caderno.name}</td>
                             <td className="text-center py-2">
                               <span className={`font-semibold ${
-                                caderno.media >= 70 ? 'text-green-600' : 
-                                caderno.media >= 50 ? 'text-yellow-600' : 'text-red-600'
+                                caderno.media >= 70 ? 'text-green-600 dark:text-green-400' : 
+                                caderno.media >= 50 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
                               }`}>
                                 {caderno.media}%
                               </span>
                             </td>
-                            <td className="text-center py-2 text-gray-600">{caderno.quizzes}</td>
-                            <td className="text-center py-2 text-gray-600">
+                            <td className="text-center py-2 text-gray-600 dark:text-gray-400">{caderno.quizzes}</td>
+                            <td className="text-center py-2 text-gray-600 dark:text-gray-400">
                               {caderno.correctAnswers}/{caderno.totalQuestoes}
                             </td>
                             <td className="text-center py-2">
                               <span className={`font-medium ${
-                                caderno.taxaErro <= 20 ? 'text-green-600' : 
-                                caderno.taxaErro <= 40 ? 'text-yellow-600' : 'text-red-600'
+                                caderno.taxaErro <= 20 ? 'text-green-600 dark:text-green-400' : 
+                                caderno.taxaErro <= 40 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
                               }`}>
                                 {caderno.taxaErro}%
                               </span>
                             </td>
                             <td className="text-center py-2">
                               <span className={`font-semibold ${
-                                caderno.pontosLiquidos >= 0 ? 'text-green-600' : 'text-red-600'
+                                caderno.pontosLiquidos >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                               }`}>
                                 {caderno.pontosLiquidos >= 0 ? '+' : ''}{caderno.pontosLiquidos}
                               </span>
                             </td>
                             <td className="text-center py-2">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                caderno.difficulty === 'facil' ? 'bg-green-100 text-green-800' : 
-                                caderno.difficulty === 'medio' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                                caderno.difficulty === 'facil' ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-200 dark:border-green-400/40' : 
+                                caderno.difficulty === 'medio' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-200 dark:border-yellow-400/40' : 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-200 dark:border-red-400/40'
                               }`}>
                                 {caderno.difficulty === 'facil' ? 'Fácil' : 
                                  caderno.difficulty === 'medio' ? 'Médio' : 'Difícil'}
@@ -724,8 +744,8 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
 
           {/* Gráfico de Legendas */}
           {activeChart === 'legendas' && (
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Distribuição de Legendas</h3>
+            <Card className="p-6 bg-gradient-to-br from-white/60 to-white/40 backdrop-blur-sm border border-slate-200/30 dark:from-slate-700/60 dark:to-slate-600/40 dark:border-slate-600/30 dark:bg-slate-700/60">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Distribuição de Legendas</h3>
               <div className="h-96 w-full">
                 {legendasData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -747,16 +767,21 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
                       <Tooltip 
                         formatter={(value: number) => [value, 'Questões']}
                         labelStyle={{ color: '#374151' }}
+                        contentStyle={{ 
+                          backgroundColor: 'var(--background)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '8px'
+                        }}
                       />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center h-full bg-gradient-to-r from-gray-500/10 to-slate-600/20 rounded-lg border border-gray-200/50 dark:from-gray-500/20 dark:to-slate-600/30 dark:border-gray-600/40 dark:bg-gray-500/20">
                     <div className="text-center">
-                      <PieChartIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Nenhum dado para exibir</p>
-                      <p className="text-sm text-gray-500">Complete quizzes no período selecionado</p>
+                      <PieChartIcon className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                      <p className="text-gray-600 dark:text-gray-300">Nenhum dado para exibir</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Complete quizzes no período selecionado</p>
                     </div>
                   </div>
                 )}
@@ -768,14 +793,14 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ onBack }) => {
         {/* Mensagem quando não há dados */}
         {filteredData.length === 0 && (
           <div className="text-center py-12">
-            <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">
+            <BarChart3 className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
               Nenhum dado encontrado
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
               Complete alguns quizzes no período selecionado para ver as estatísticas
             </p>
-            <div className="text-sm text-gray-400 bg-gray-50 p-4 rounded-lg text-left max-w-md mx-auto">
+            <div className="text-sm text-gray-400 dark:text-gray-500 bg-gradient-to-r from-gray-500/10 to-slate-600/20 p-4 rounded-lg text-left max-w-md mx-auto border border-gray-200/50 dark:from-gray-500/20 dark:to-slate-600/30 dark:border-gray-600/40 dark:bg-gray-500/20">
               <p><strong>Debug Info:</strong></p>
               <p>• Total de resultados: {quizHistory.length}</p>
               <p>• Período selecionado: {selectedTimeRange}</p>
