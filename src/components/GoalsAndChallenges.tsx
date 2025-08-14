@@ -360,20 +360,20 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
   if (loading) {
     return (
       <div className="space-y-6">
-        <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="p-6 bg-gradient-to-br from-white/80 via-gray-50/50 to-white/80 backdrop-blur-xl border-0 shadow-2xl rounded-3xl dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-800/80">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <Target className="w-6 h-6 text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Metas e Desafios</h2>
+              <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Metas e Desafios</h2>
             </div>
-            <Button variant="outline" onClick={onBack}>
+            <Button variant="outline" onClick={onBack} className="bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 text-slate-700 hover:from-white hover:to-white hover:border-slate-300/70 hover:text-slate-800 shadow-sm dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100">
               Voltar
             </Button>
           </div>
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Carregando metas e desafios...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 dark:border-purple-400 mx-auto mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-300">Carregando metas e desafios...</p>
             </div>
           </div>
         </Card>
@@ -383,33 +383,33 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="p-6 bg-gradient-to-br from-white/80 via-gray-50/50 to-white/80 backdrop-blur-xl border-0 shadow-2xl rounded-3xl dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-800/80">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Target className="w-6 h-6 text-purple-600" />
-            <h2 className="text-2xl font-bold text-gray-800">Metas e Desafios</h2>
+            <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Metas e Desafios</h2>
           </div>
-          <Button variant="outline" onClick={onBack}>
+          <Button variant="outline" onClick={onBack} className="bg-gradient-to-r from-white/80 to-white/60 border-slate-200/50 text-slate-700 hover:from-white hover:to-white hover:border-slate-300/70 hover:text-slate-800 shadow-sm dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100">
             Voltar
           </Button>
         </div>
 
         {/* Sistema de Níveis */}
-        <div className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-purple-200">
+        <div className="mb-8 p-6 bg-gradient-to-r from-purple-500/10 to-blue-500/20 rounded-2xl border border-purple-200/50 dark:from-purple-500/20 dark:to-blue-500/30 dark:border-purple-400/30 dark:bg-purple-500/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-3xl">
                 {userLevel.icon}
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-800">{userLevel.title}</h3>
-                <p className="text-gray-600">Nível {userLevel.level}</p>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">{userLevel.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300">Nível {userLevel.level}</p>
               </div>
             </div>
             
             <div className="text-right">
-              <div className="text-2xl font-bold text-purple-600">{totalPoints} pts</div>
-              <div className="text-sm text-gray-600">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{totalPoints} pts</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
                 {nextLevelPoints !== Infinity ? `${nextLevelPoints - totalPoints} pts para o próximo nível` : 'Nível máximo!'}
               </div>
             </div>
@@ -418,11 +418,11 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
           {/* Barra de Progresso */}
           {nextLevelPoints !== Infinity && (
             <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-2">
                 <span>Nível {userLevel.level}</span>
                 <span>Nível {userLevel.level + 1}</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3">
                 <div 
                   className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
                   style={{ 
@@ -446,7 +446,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
           <Button
             onClick={() => setShowChallengeForm(true)}
             variant="outline"
-            className="border-purple-200 text-purple-600 hover:bg-purple-50"
+            className="border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-400/40 dark:text-purple-400 dark:hover:bg-purple-500/20"
           >
             <Flag className="w-4 h-4 mr-2" />
             Novo Desafio
@@ -457,7 +457,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               loadGoalsAndChallenges();
             }}
             variant="outline"
-            className="border-blue-200 text-blue-600 hover:bg-blue-50"
+            className="border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-400/40 dark:text-blue-400 dark:hover:bg-blue-500/20"
             disabled={updatingProgress}
           >
             <TrendingUp className={`w-4 h-4 mr-2 ${updatingProgress ? 'animate-spin' : ''}`} />
@@ -467,35 +467,36 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
 
         {/* Indicador de Atualização */}
         {updatingProgress && (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2 text-blue-700">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+          <div className="mb-4 p-3 bg-gradient-to-r from-blue-500/10 to-blue-600/20 border border-blue-200/50 rounded-lg flex items-center gap-2 text-blue-700 dark:from-blue-500/20 dark:to-blue-600/30 dark:border-blue-400/30 dark:text-blue-400 dark:bg-blue-500/20">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400"></div>
             <span className="text-sm">Atualizando progresso das metas e desafios...</span>
           </div>
         )}
 
         {/* Formulário de Meta */}
         {showGoalForm && (
-          <Card className="p-6 mb-6 bg-green-50 border border-green-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          <Card className="p-6 mb-6 bg-gradient-to-r from-green-500/10 to-green-600/20 border border-green-200/50 dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/30 dark:bg-green-500/20">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
               {editingGoal ? 'Editar Meta' : 'Criar Nova Meta'}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Título da Meta</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Título da Meta</label>
                 <Input
                   value={goalForm.title}
                   onChange={(e) => setGoalForm({ ...goalForm, title: e.target.value })}
                   placeholder="Ex: Resolver 20 questões por dia"
+                  className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
                 />
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Tipo</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
                 <Select value={goalForm.type} onValueChange={(value: 'daily' | 'weekly' | 'monthly') => 
                   setGoalForm({ ...goalForm, type: value })
                 }>
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -507,21 +508,22 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Meta</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meta</label>
                 <Input
                   type="number"
                   value={goalForm.target}
                   onChange={(e) => setGoalForm({ ...goalForm, target: Number(e.target.value) })}
                   placeholder="10"
+                  className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
                 />
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Unidade</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Unidade</label>
                 <Select value={goalForm.unit} onValueChange={(value: 'questions' | 'quizzes' | 'percentage') => 
                   setGoalForm({ ...goalForm, unit: value })
                 }>
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -533,9 +535,9 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Caderno (opcional)</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Caderno (opcional)</label>
                 <Select value={goalForm.cadernoId} onValueChange={(value) => setGoalForm({ ...goalForm, cadernoId: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100">
                     <SelectValue placeholder="Todos os cadernos" />
                   </SelectTrigger>
                   <SelectContent>
@@ -550,22 +552,24 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Prazo</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Prazo</label>
                 <Input
                   type="date"
                   value={goalForm.deadline}
                   onChange={(e) => setGoalForm({ ...goalForm, deadline: e.target.value })}
+                  className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
                 />
               </div>
             </div>
             
             <div className="mt-4 space-y-2">
-              <label className="text-sm font-medium text-gray-700">Descrição (opcional)</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Descrição (opcional)</label>
               <Textarea
                 value={goalForm.description}
                 onChange={(e) => setGoalForm({ ...goalForm, description: e.target.value })}
                 placeholder="Descreva sua meta..."
                 rows={2}
+                className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
               />
             </div>
             
@@ -591,6 +595,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                     deadline: ''
                   });
                 }}
+                className="dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100"
               >
                 Cancelar
               </Button>
@@ -600,25 +605,26 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
 
         {/* Formulário de Desafio */}
         {showChallengeForm && (
-          <Card className="p-6 mb-6 bg-purple-50 border border-purple-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          <Card className="p-6 mb-6 bg-gradient-to-r from-purple-500/10 to-purple-600/20 border border-purple-200/50 dark:from-purple-500/20 dark:to-purple-600/30 dark:border-purple-400/30 dark:bg-purple-500/20">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
               {editingChallenge ? 'Editar Desafio' : 'Criar Novo Desafio'}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Título do Desafio</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Título do Desafio</label>
                 <Input
                   value={challengeForm.title}
                   onChange={(e) => setChallengeForm({ ...challengeForm, title: e.target.value })}
                   placeholder="Ex: Atingir 80% em Direito Constitucional"
+                  className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
                 />
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Caderno</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Caderno</label>
                 <Select value={challengeForm.cadernoId} onValueChange={(value) => setChallengeForm({ ...challengeForm, cadernoId: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100">
                     <SelectValue placeholder="Selecione um caderno" />
                   </SelectTrigger>
                   <SelectContent>
@@ -632,7 +638,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Meta de Porcentagem</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meta de Porcentagem</label>
                 <Input
                   type="number"
                   min="0"
@@ -640,26 +646,29 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                   value={challengeForm.targetPercentage}
                   onChange={(e) => setChallengeForm({ ...challengeForm, targetPercentage: Number(e.target.value) })}
                   placeholder="80"
+                  className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
                 />
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Prazo</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Prazo</label>
                 <Input
                   type="date"
                   value={challengeForm.deadline}
                   onChange={(e) => setChallengeForm({ ...challengeForm, deadline: e.target.value })}
+                  className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
                 />
               </div>
             </div>
             
             <div className="mt-4 space-y-2">
-              <label className="text-sm font-medium text-gray-700">Descrição (opcional)</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Descrição (opcional)</label>
               <Textarea
                 value={challengeForm.description}
                 onChange={(e) => setChallengeForm({ ...challengeForm, description: e.target.value })}
                 placeholder="Descreva seu desafio..."
                 rows={2}
+                className="dark:bg-slate-700/80 dark:border-slate-500/40 dark:text-slate-100"
               />
             </div>
             
@@ -682,6 +691,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                     deadline: ''
                   });
                 }}
+                className="dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200 dark:hover:from-slate-600/80 dark:hover:to-slate-500/60 dark:hover:border-slate-400/50 dark:hover:text-slate-100"
               >
                 Cancelar
               </Button>
@@ -691,16 +701,16 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
 
         {/* Lista de Metas */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Target className="w-5 h-5 text-green-600" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
             Minhas Metas ({goals.filter(g => !g.completed).length} ativas)
           </h3>
           
           {goals.length === 0 ? (
-            <div className="text-center py-8 bg-gray-50 rounded-lg">
-              <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Nenhuma meta criada ainda</p>
-              <p className="text-sm text-gray-500">Crie sua primeira meta para começar!</p>
+            <div className="text-center py-8 bg-gradient-to-r from-gray-500/10 to-slate-600/20 rounded-lg border border-gray-200/50 dark:from-gray-500/20 dark:to-slate-600/30 dark:border-gray-600/40 dark:bg-gray-500/20">
+              <Target className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-300">Nenhuma meta criada ainda</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Crie sua primeira meta para começar!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -709,19 +719,25 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                 const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
                 
                 return (
-                  <Card key={goal.id} className={`p-4 ${goal.completed ? 'bg-green-50 border-green-200' : isOverdue ? 'bg-red-50 border-red-200' : 'bg-white'}`}>
+                  <Card key={goal.id} className={`p-4 ${
+                    goal.completed 
+                      ? 'bg-gradient-to-r from-green-500/10 to-green-600/20 border-green-200/50 dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/30 dark:bg-green-500/20' 
+                      : isOverdue 
+                        ? 'bg-gradient-to-r from-red-500/10 to-red-600/20 border-red-200/50 dark:from-red-500/20 dark:to-red-600/30 dark:border-red-400/30 dark:bg-red-500/20' 
+                        : 'bg-gradient-to-r from-white/60 to-white/40 backdrop-blur-sm border border-slate-200/30 dark:from-slate-700/60 dark:to-slate-600/40 dark:border-slate-600/30 dark:bg-slate-700/60'
+                  }`}>
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-800 mb-1">{goal.title}</h4>
+                        <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-1">{goal.title}</h4>
                         {goal.description && (
-                          <p className="text-sm text-gray-600 mb-2">{goal.description}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{goal.description}</p>
                         )}
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
                           <Calendar className="w-3 h-3" />
                           <span>Prazo: {new Date(goal.deadline).toLocaleDateString('pt-BR')}</span>
                         </div>
                         {goal.caderno_id && (
-                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full inline-block">
+                          <div className="text-xs text-blue-600 bg-blue-50 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-400/40 px-2 py-1 rounded-full inline-block border border-blue-200/50">
                             {cadernos.find(c => c.id === goal.caderno_id)?.nome}
                           </div>
                         )}
@@ -732,7 +748,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                           variant="ghost"
                           size="sm"
                           onClick={() => editGoal(goal)}
-                          className="h-8 w-8 p-0 text-gray-500 hover:text-blue-600"
+                          className="h-8 w-8 p-0 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -740,7 +756,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                           variant="ghost"
                           size="sm"
                           onClick={() => deleteGoal(goal.id)}
-                          className="h-8 w-8 p-0 text-gray-500 hover:text-red-600"
+                          className="h-8 w-8 p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -749,13 +765,13 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                     
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-400">
                           {goal.current} / {goal.target} {goal.unit === 'questions' ? 'questões' : goal.unit === 'quizzes' ? 'quizzes' : '%'}
                         </span>
-                        <span className="font-medium text-gray-800">{Math.round(progress)}%</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-100">{Math.round(progress)}%</span>
                       </div>
                       
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all duration-300 ${
                             goal.completed ? 'bg-green-500' : isOverdue ? 'bg-red-500' : 'bg-blue-500'
@@ -766,24 +782,24 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                       
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1 text-xs">
-                          {goal.type === 'daily' && <Clock className="w-3 h-3 text-blue-500" />}
-                          {goal.type === 'weekly' && <Calendar className="w-3 h-3 text-green-500" />}
-                          {goal.type === 'monthly' && <TrendingUp className="w-3 h-3 text-purple-500" />}
-                          <span className="text-gray-500 capitalize">{goal.type}</span>
+                          {goal.type === 'daily' && <Clock className="w-3 h-3 text-blue-500 dark:text-blue-400" />}
+                          {goal.type === 'weekly' && <Calendar className="w-3 h-3 text-green-500 dark:text-green-400" />}
+                          {goal.type === 'monthly' && <TrendingUp className="w-3 h-3 text-purple-500 dark:text-purple-400" />}
+                          <span className="text-gray-500 dark:text-gray-400 capitalize">{goal.type}</span>
                         </div>
                         
                         {goal.completed ? (
-                          <div className="flex items-center gap-1 text-green-600">
+                          <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                             <CheckCircle2 className="w-4 h-4" />
                             <span className="text-sm font-medium">+{goal.points} pts</span>
                           </div>
                         ) : isOverdue ? (
-                          <div className="flex items-center gap-1 text-red-600">
+                          <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
                             <XCircle className="w-4 h-4" />
                             <span className="text-sm font-medium">Atrasada</span>
                           </div>
                         ) : (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
                             +{goal.points} pts
                           </div>
                         )}
@@ -798,16 +814,16 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
 
         {/* Lista de Desafios */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Flag className="w-5 h-5 text-purple-600" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <Flag className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             Meus Desafios ({challenges.filter(c => !c.completed).length} ativos)
           </h3>
           
           {challenges.length === 0 ? (
-            <div className="text-center py-8 bg-gray-50 rounded-lg">
-              <Flag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Nenhum desafio criado ainda</p>
-              <p className="text-sm text-gray-500">Crie seu primeiro desafio para testar seus limites!</p>
+            <div className="text-center py-8 bg-gradient-to-r from-gray-500/10 to-slate-600/20 rounded-lg border border-gray-200/50 dark:from-gray-500/20 dark:to-slate-600/30 dark:border-gray-600/40 dark:bg-gray-500/20">
+              <Flag className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-300">Nenhum desafio criado ainda</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Crie seu primeiro desafio para testar seus limites!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -816,19 +832,25 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                 const isOverdue = new Date(challenge.deadline) < new Date() && !challenge.completed;
                 
                 return (
-                  <Card key={challenge.id} className={`p-4 ${challenge.completed ? 'bg-green-50 border-green-200' : isOverdue ? 'bg-red-50 border-red-200' : 'bg-white'}`}>
+                  <Card key={challenge.id} className={`p-4 ${
+                    challenge.completed 
+                      ? 'bg-gradient-to-r from-green-500/10 to-green-600/20 border-green-200/50 dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/30 dark:bg-green-500/20' 
+                      : isOverdue 
+                        ? 'bg-gradient-to-r from-red-500/10 to-red-600/20 border-red-200/50 dark:from-red-500/20 dark:to-red-600/30 dark:border-red-400/30 dark:bg-red-500/20' 
+                        : 'bg-gradient-to-r from-white/60 to-white/40 backdrop-blur-sm border border-slate-200/30 dark:from-slate-700/60 dark:to-slate-600/40 dark:border-slate-600/30 dark:bg-slate-700/60'
+                  }`}>
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-800 mb-1">{challenge.title}</h4>
+                        <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-1">{challenge.title}</h4>
                         {challenge.description && (
-                          <p className="text-sm text-gray-600 mb-2">{challenge.description}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{challenge.description}</p>
                         )}
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
                           <Calendar className="w-3 h-3" />
                           <span>Prazo: {new Date(challenge.deadline).toLocaleDateString('pt-BR')}</span>
                         </div>
                         {challenge.caderno_id && (
-                          <div className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full inline-block">
+                          <div className="text-xs text-purple-600 bg-purple-50 dark:bg-purple-500/20 dark:text-purple-400 dark:border-purple-400/40 px-2 py-1 rounded-full inline-block border border-purple-200/50">
                             {cadernos.find(c => c.id === challenge.caderno_id)?.nome}
                           </div>
                         )}
@@ -838,7 +860,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                         variant="ghost"
                         size="sm"
                         onClick={() => deleteChallenge(challenge.id)}
-                        className="h-8 w-8 p-0 text-gray-500 hover:text-red-600"
+                        className="h-8 w-8 p-0 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -846,13 +868,13 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                     
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-400">
                           {challenge.current_percentage}% / {challenge.target_percentage}%
                         </span>
-                        <span className="font-medium text-gray-800">{Math.round(progress)}%</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-100">{Math.round(progress)}%</span>
                       </div>
                       
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all duration-300 ${
                             challenge.completed ? 'bg-green-500' : isOverdue ? 'bg-purple-500' : 'bg-purple-500'
@@ -862,22 +884,22 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           Desafio de {challenge.target_percentage}%
                         </div>
                         
                         {challenge.completed ? (
-                          <div className="flex items-center gap-1 text-green-600">
+                          <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                             <Trophy className="w-4 h-4" />
                             <span className="text-sm font-medium">+{challenge.points} pts</span>
                           </div>
                         ) : isOverdue ? (
-                          <div className="flex items-center gap-1 text-red-600">
+                          <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
                             <XCircle className="w-4 h-4" />
                             <span className="text-sm font-medium">Expirado</span>
                           </div>
                         ) : (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
                             +{challenge.points} pts
                           </div>
                         )}
