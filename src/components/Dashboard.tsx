@@ -240,43 +240,43 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <TabsContent value="overview" className="space-y-8">
             {/* Cards de Estatísticas Rápidas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/20 border-blue-200/30 shadow-lg hover:shadow-xl transition-all duration-300 dark:from-blue-500/20 dark:to-blue-600/30 dark:border-blue-400/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold text-blue-800 dark:text-foreground">Total de Quizzes</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-blue-800 dark:text-blue-200">Total de Quizzes</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900 dark:text-foreground">{totalQuizzes}</div>
-                  <p className="text-xs text-blue-700 dark:text-muted-foreground">Quizzes realizados</p>
+                  <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">{totalQuizzes}</div>
+                  <p className="text-xs text-blue-700 dark:text-blue-300">Quizzes realizados</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-emerald-50 to-green-100 border-emerald-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-emerald-500/10 to-green-600/20 border-emerald-200/30 shadow-lg hover:shadow-xl transition-all duration-300 dark:from-emerald-500/20 dark:to-emerald-600/30 dark:border-emerald-400/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold text-emerald-800 dark:text-foreground">Precisão</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">Precisão</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-emerald-900 dark:text-foreground">{accuracy.toFixed(1)}%</div>
-                  <p className="text-xs text-emerald-700 dark:text-muted-foreground">Taxa de acerto</p>
+                  <div className="text-3xl font-bold text-emerald-900 dark:text-emerald-100">{accuracy.toFixed(1)}%</div>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-300">Taxa de acerto</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-purple-50 to-violet-100 border-purple-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-purple-500/10 to-violet-600/20 border-purple-200/30 shadow-lg hover:shadow-xl transition-all duration-300 dark:from-purple-500/20 dark:to-purple-600/30 dark:border-purple-400/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold text-purple-800 dark:text-foreground">Frequência</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-purple-800 dark:text-purple-200">Frequência</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900 dark:text-foreground">{studyDays}</div>
-                  <p className="text-xs text-purple-700 dark:text-muted-foreground">Dias de estudo</p>
+                  <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">{studyDays}</div>
+                  <p className="text-xs text-purple-700 dark:text-purple-300">Dias de estudo</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-rose-50 to-pink-100 border-rose-200/50 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-rose-500/10 to-pink-600/20 border-rose-200/30 shadow-lg hover:shadow-xl transition-all duration-300 dark:from-rose-500/20 dark:to-rose-600/30 dark:border-rose-400/30">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold text-rose-800 dark:text-foreground">Metas Ativas</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-rose-800 dark:text-rose-200">Metas Ativas</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-rose-900 dark:text-foreground">{activeGoals.length}</div>
-                  <p className="text-xs text-rose-700 dark:text-muted-foreground">Metas em andamento</p>
+                  <div className="text-3xl font-bold text-rose-900 dark:text-rose-100">{activeGoals.length}</div>
+                  <p className="text-xs text-rose-700 dark:text-rose-300">Metas em andamento</p>
                 </CardContent>
               </Card>
             </div>
