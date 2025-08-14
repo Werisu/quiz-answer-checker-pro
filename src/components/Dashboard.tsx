@@ -9,18 +9,18 @@ import { useCadernos } from '@/hooks/useCadernos';
 import { useGoalsAndChallenges } from '@/hooks/useGoalsAndChallenges';
 import { useQuiz } from '@/hooks/useQuiz';
 import {
-  ArrowLeft,
-  Award,
-  BarChart3,
-  Calendar,
-  CheckCircle2,
-  HelpCircle,
-  History,
-  Plus,
-  Settings,
-  Star,
-  Target,
-  XCircle
+    ArrowLeft,
+    Award,
+    BarChart3,
+    Calendar,
+    CheckCircle2,
+    HelpCircle,
+    History,
+    Plus,
+    Settings,
+    Star,
+    Target,
+    XCircle
 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -133,7 +133,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             )}
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent dark:from-foreground dark:via-foreground dark:to-foreground">
-                Dashboard Personalizado
+                EstudaPro Dashboard
               </h1>
               <p className="text-slate-600 dark:text-muted-foreground">Acompanhe seu progresso e desempenho</p>
             </div>

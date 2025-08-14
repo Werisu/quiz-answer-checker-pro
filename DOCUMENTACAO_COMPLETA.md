@@ -46,7 +46,7 @@ O **Gabarito Digital** é uma aplicação web moderna desenvolvida em React.js c
 ## 📁 Estrutura do Projeto
 
 ```
-quiz-answer-checker-pro/
+estudapro/
 ├── src/
 │   ├── components/           # Componentes React reutilizáveis
 │   │   ├── ui/              # Componentes base (Radix UI)
@@ -388,7 +388,7 @@ FOR ALL USING (auth.uid() = user_id);
 
 ```bash
 git clone [URL_DO_REPOSITORIO]
-cd quiz-answer-checker-pro
+cd estudapro
 ```
 
 #### 2. Instalação de Dependências

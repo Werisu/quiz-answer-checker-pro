@@ -1,4 +1,4 @@
-# 🎨 Melhorias de Interface - Quiz Answer Checker Pro
+# 🎨 Melhorias de Interface - EstudaPro
 
 ## 🌙 Modo Escuro Implementado
 
@@ -238,7 +238,7 @@ className = "bg-background/80 text-foreground border-border";
 
 ---
 
-**🎨 O Modo Escuro está completamente funcional e integrado ao Quiz Answer Checker Pro!**
+**🎨 O Modo Escuro está completamente funcional e integrado ao EstudaPro!**
 
 **✅ Todos os problemas de background e cores foram corrigidos!**
 

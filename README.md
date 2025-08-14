@@ -1,6 +1,6 @@
-# Quiz Answer Checker Pro 🎯
+# EstudaPro 🎯
 
-Um sistema moderno e completo para verificação de respostas de quiz, desenvolvido com tecnologias web atuais e focado em preparação para concursos públicos.
+Um sistema moderno e completo para preparação de concursos públicos, desenvolvido com tecnologias web atuais e focado em transformar o estudo em uma experiência gamificada e eficiente.
 
 ## 🚀 Funcionalidades Principais
 
@@ -88,8 +88,8 @@ Um sistema moderno e completo para verificação de respostas de quiz, desenvolv
 ### 1. **Clone o Repositório**
 
 ```bash
-git clone https://github.com/seu-usuario/quiz-answer-checker-pro.git
-cd quiz-answer-checker-pro
+git clone https://github.com/seu-usuario/estudapro.git
+cd estudapro
 ```
 
 ### 2. **Instale as Dependências**
@@ -275,7 +275,7 @@ A aplicação estará disponível em `http://localhost:8081`
 ## 🏗️ Estrutura do Projeto
 
 ```
-quiz-answer-checker-pro/
+estudapro/
 ├── src/
 │   ├── components/           # Componentes React
 │   │   ├── ui/              # Componentes de UI (shadcn/ui)
@@ -373,7 +373,7 @@ npm update           # Atualiza dependências
 ## 🤝 Contribuindo
 
 1. **Fork** o projeto
-2. **Clone** seu fork: `git clone https://github.com/seu-usuario/quiz-answer-checker-pro.git`
+2. **Clone** seu fork: `git clone https://github.com/seu-usuario/estudapro.git`
 3. **Crie** uma branch: `git checkout -b feature/NovaFuncionalidade`
 4. **Faça commit**: `git commit -m 'Adiciona nova funcionalidade'`
 5. **Push**: `git push origin feature/NovaFuncionalidade`
@@ -448,7 +448,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 📧 Contato e Suporte
 
-- **GitHub Issues**: [Reporte bugs e solicite features](https://github.com/seu-usuario/quiz-answer-checker-pro/issues)
+- **GitHub Issues**: [Reporte bugs e solicite features](https://github.com/seu-usuario/estudapro/issues)
 - **Email**: seu-email@exemplo.com
 - **Twitter**: [@seu_twitter](https://twitter.com/seu_twitter)
 
@@ -464,4 +464,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 **⭐ Se este projeto te ajudou, considere dar uma estrela no repositório!**
 
-**🎯 Quiz Answer Checker Pro - Transformando o estudo em uma experiência gamificada e eficiente!**
+**🎯 EstudaPro - Transformando o estudo em uma experiência gamificada e eficiente!**
