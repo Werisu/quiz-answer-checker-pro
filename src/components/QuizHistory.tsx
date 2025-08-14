@@ -15,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
-import { Calendar, Circle, Edit2, Eye, Filter, HelpCircle, History, Star, Target, Trash2, TrendingUp, X, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
+import { Calendar, Circle, Edit2, Eye, Filter, HelpCircle, History, Star, Target, Trash2, TrendingUp, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -61,11 +61,11 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
 
   const getPerformanceBadge = (percentage: number) => {
     if (percentage >= 80) {
-      return <Badge className="bg-gradient-to-r from-green-500/10 to-green-600/20 text-green-800 border-green-300 rounded-xl px-3 py-1 text-xs font-medium dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/40 dark:text-green-200">Excelente</Badge>;
+      return <Badge className="bg-gradient-to-r from-green-500/10 to-green-600/20 text-green-800 border-green-300 rounded-xl px-3 py-1 text-xs font-medium dark:from-green-500/20 dark:to-green-600/30 dark:border-green-400/40 dark:text-green-200 dark:bg-green-500/20">Excelente</Badge>;
     } else if (percentage >= 60) {
-      return <Badge className="bg-gradient-to-r from-yellow-500/10 to-amber-600/20 text-yellow-800 border-yellow-300 rounded-xl px-3 py-1 text-xs font-medium dark:from-yellow-500/20 dark:to-amber-600/30 dark:border-yellow-400/40 dark:text-yellow-200">Bom</Badge>;
+      return <Badge className="bg-gradient-to-r from-yellow-500/10 to-amber-600/20 text-yellow-800 border-yellow-300 rounded-xl px-3 py-1 text-xs font-medium dark:from-yellow-500/20 dark:to-amber-600/30 dark:border-yellow-400/40 dark:text-yellow-200 dark:bg-yellow-500/20">Bom</Badge>;
     } else {
-      return <Badge className="bg-gradient-to-r from-red-500/10 to-rose-600/20 text-red-800 border-red-300 rounded-xl px-3 py-1 text-xs font-medium dark:from-red-500/20 dark:to-rose-600/30 dark:border-red-400/40 dark:text-red-200">Precisa Melhorar</Badge>;
+      return <Badge className="bg-gradient-to-r from-red-500/10 to-rose-600/20 text-red-800 border-red-300 rounded-xl px-3 py-1 text-xs font-medium dark:from-red-500/20 dark:to-rose-600/30 dark:border-red-400/40 dark:text-red-200 dark:bg-red-500/20">Precisa Melhorar</Badge>;
     }
   };
 
@@ -176,7 +176,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                       )}
                       {result.quiz?.cadernos?.nome && (
                         <div className="flex items-center gap-1">
-                          <Badge variant="outline" className="text-xs bg-gradient-to-r from-blue-500/10 to-blue-600/20 text-blue-700 border-blue-200 dark:from-blue-500/20 dark:to-blue-600/30 dark:border-blue-400/40 dark:text-blue-200">
+                          <Badge variant="outline" className="text-xs bg-gradient-to-r from-blue-500/10 to-blue-600/20 text-blue-700 border-blue-200 dark:from-blue-500/20 dark:to-blue-600/30 dark:border-blue-400/40 dark:text-blue-200 dark:bg-blue-500/20">
                             {result.quiz.cadernos.nome}
                           </Badge>
                         </div>
