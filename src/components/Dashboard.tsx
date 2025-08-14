@@ -202,7 +202,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   Metas
                 </Button>
               )}
-              {onNavigateToAdmin && (
+              {onNavigateToAdmin && userProfile?.role === 'admin' && (
                 <Button 
                   variant="outline" 
                   size="sm" 
