@@ -141,11 +141,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
           
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Badge variant="outline" className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 text-amber-800 shadow-sm dark:bg-accent/50 dark:border-border dark:text-foreground">
+            <Badge variant="outline" className="bg-gradient-to-r from-amber-500/10 to-yellow-600/20 border-amber-200/50 text-amber-800 shadow-sm dark:from-amber-500/20 dark:to-yellow-600/30 dark:border-amber-400/40 dark:text-amber-200">
               <Award className="w-4 h-4 mr-1" />
               Nível 1
             </Badge>
-            <Badge variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-800 shadow-sm dark:bg-accent/50 dark:border-border dark:text-foreground">
+            <Badge variant="outline" className="bg-gradient-to-r from-blue-500/10 to-indigo-600/20 border-blue-200/50 text-blue-800 shadow-sm dark:from-blue-500/20 dark:to-indigo-600/30 dark:border-blue-400/40 dark:text-blue-200">
               <Star className="w-4 h-4 mr-1" />
               0 pts
             </Badge>
@@ -283,7 +283,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
             {/* Progresso das Metas */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border-slate-200/60 shadow-lg dark:from-slate-800/80 dark:to-slate-700/60 dark:border-slate-600/40">
                 <CardHeader>
                   <CardTitle className="text-slate-800 dark:text-foreground">Progresso das Metas</CardTitle>
                   <CardDescription className="text-slate-600 dark:text-muted-foreground">
@@ -300,7 +300,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </Card>
 
               {/* Top Cadernos */}
-              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border-slate-200/60 shadow-lg dark:from-slate-800/80 dark:to-slate-700/60 dark:border-slate-600/40">
                 <CardHeader>
                   <CardTitle className="text-slate-800 dark:text-foreground">Top Cadernos</CardTitle>
                   <CardDescription className="text-slate-600 dark:text-muted-foreground">
@@ -310,7 +310,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <CardContent>
                   <div className="space-y-4">
                     {cadernoPerformance.slice(0, 3).map((caderno, index) => (
-                      <div key={caderno.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50 dark:bg-muted/30 dark:border-border">
+                      <div key={caderno.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-slate-500/10 to-blue-500/10 rounded-xl border border-slate-200/50 dark:from-slate-500/20 dark:to-blue-500/20 dark:border-slate-600/40">
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
                             index === 0 ? 'bg-gradient-to-r from-amber-400 to-yellow-500' :
@@ -340,7 +340,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* Tab: Performance */}
           <TabsContent value="performance" className="space-y-8">
             {/* Gráfico de Evolução */}
-            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
+            <Card className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border-slate-200/60 shadow-lg dark:from-slate-800/80 dark:to-slate-700/60 dark:border-slate-600/40">
               <CardHeader>
                 <CardTitle className="text-slate-800 dark:text-foreground">Evolução da Performance</CardTitle>
                 <CardDescription className="text-slate-600 dark:text-muted-foreground">
@@ -348,7 +348,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-64 flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl border border-slate-200/50 dark:bg-muted/30 dark:border-border">
+                <div className="h-64 flex items-center justify-center bg-gradient-to-br from-slate-500/10 to-blue-500/10 rounded-2xl border border-slate-200/50 dark:from-slate-500/20 dark:to-blue-500/20 dark:border-slate-600/40">
                   <div className="text-center">
                     <BarChart3 className="w-16 h-16 text-slate-400 mx-auto mb-4 dark:text-muted-foreground" />
                     <p className="text-slate-600 dark:text-muted-foreground">Gráfico em desenvolvimento</p>
@@ -359,52 +359,52 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
             {/* Estatísticas Detalhadas */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border-slate-200/60 shadow-lg dark:from-slate-800/80 dark:to-slate-700/60 dark:border-slate-600/40">
                 <CardHeader>
                   <CardTitle className="text-slate-800 dark:text-foreground">Distribuição de Respostas</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-green-100 rounded-xl border border-emerald-200/50">
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-500/10 to-green-600/20 rounded-xl border border-emerald-200/50 dark:from-emerald-500/20 dark:to-green-600/30 dark:border-emerald-600/40">
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                      <span className="text-sm font-medium text-emerald-800 dark:text-foreground">Corretas</span>
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                      <span className="text-sm font-medium text-emerald-800 dark:text-emerald-200">Corretas</span>
                     </div>
-                    <span className="font-semibold text-emerald-800 dark:text-foreground">{correctAnswers}</span>
+                    <span className="font-semibold text-emerald-800 dark:text-emerald-100">{correctAnswers}</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-rose-100 rounded-xl border border-red-200/50">
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-500/10 to-rose-600/20 rounded-xl border border-red-200/50 dark:from-red-500/20 dark:to-rose-600/30 dark:border-red-600/40">
                     <div className="flex items-center gap-3">
-                      <XCircle className="w-5 h-5 text-red-600" />
-                      <span className="text-sm font-medium text-red-800 dark:text-foreground">Incorretas</span>
+                      <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <span className="text-sm font-medium text-red-800 dark:text-red-200">Incorretas</span>
                     </div>
-                    <span className="font-semibold text-red-800 dark:text-foreground">{wrongAnswers}</span>
+                    <span className="font-semibold text-red-800 dark:text-red-100">{wrongAnswers}</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-yellow-100 rounded-xl border border-amber-200/50">
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-500/10 to-yellow-600/20 rounded-xl border border-amber-200/50 dark:from-amber-500/20 dark:to-yellow-600/30 dark:border-amber-600/40">
                     <div className="flex items-center gap-3">
-                      <HelpCircle className="w-5 h-5 text-amber-600" />
-                      <span className="text-sm font-medium text-amber-800 dark:text-foreground">Pendentes</span>
+                      <HelpCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      <span className="text-sm font-medium text-amber-800 dark:text-amber-200">Pendentes</span>
                     </div>
-                    <span className="font-semibold text-amber-800 dark:text-foreground">
+                    <span className="font-semibold text-amber-800 dark:text-amber-100">
                       {totalQuestions - correctAnswers - wrongAnswers}
                     </span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
+              <Card className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border-slate-200/60 shadow-lg dark:from-slate-800/80 dark:to-slate-700/60 dark:border-slate-600/40">
                 <CardHeader>
                   <CardTitle className="text-slate-800 dark:text-foreground">Atividade Recente</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {recentQuizzes.slice(0, 3).map((quiz) => (
-                      <div key={quiz.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200/50 dark:bg-muted/30 dark:border-border">
+                      <div key={quiz.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-slate-500/10 to-blue-500/10 rounded-xl border border-slate-200/50 dark:from-slate-500/20 dark:to-blue-500/20 dark:border-slate-600/40">
                         <div>
                           <p className="text-sm font-medium text-slate-800 dark:text-foreground">{quiz.quiz?.title || 'Quiz sem nome'}</p>
                           <p className="text-xs text-slate-600 dark:text-muted-foreground">
                             {new Date(quiz.completed_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <Badge variant="outline" className="text-xs bg-white/80 border-slate-200 text-slate-700 dark:bg-background/80 dark:border-border dark:text-foreground">
+                        <Badge variant="outline" className="text-xs bg-gradient-to-r from-white/80 to-white/60 border-slate-200 text-slate-700 dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200">
                           {quiz.correct_answers || 0}/{quiz.total_questions || 0}
                         </Badge>
                       </div>
@@ -417,7 +417,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Tab: Metas */}
           <TabsContent value="goals" className="space-y-6">
-            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
+            <Card className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border-slate-200/60 shadow-lg dark:from-slate-800/80 dark:to-slate-700/60 dark:border-slate-600/40">
               <CardHeader>
                 <CardTitle className="text-slate-800 dark:text-foreground">Status das Metas</CardTitle>
                 <CardDescription className="text-slate-600 dark:text-muted-foreground">
@@ -428,16 +428,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div className="space-y-4">
                   {goals.length > 0 ? (
                     goals.map((goal) => (
-                      <div key={goal.id} className="p-4 bg-gradient-to-r from-slate-50 to-blue-50 border border-slate-200/50 rounded-2xl dark:bg-muted/30 dark:border-border">
+                      <div key={goal.id} className="p-4 bg-gradient-to-r from-slate-500/10 to-blue-500/10 border border-slate-200/50 rounded-2xl dark:from-slate-500/20 dark:to-blue-500/20 dark:border-slate-600/40">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-3">
-                            <Target className="w-6 h-6 text-purple-600" />
+                            <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                             <div>
                               <h4 className="font-semibold text-slate-800 dark:text-foreground">{goal.title || 'Sem título'}</h4>
                               <p className="text-sm text-slate-600 dark:text-muted-foreground">{goal.description || 'Sem descrição'}</p>
                             </div>
                           </div>
-                          <Badge variant={goal.completed ? 'default' : 'outline'} className={goal.completed ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white' : 'bg-white/80 border-slate-200 text-slate-700 dark:bg-background/80 dark:border-border dark:text-foreground'}>
+                          <Badge variant={goal.completed ? 'default' : 'outline'} className={goal.completed ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white' : 'bg-gradient-to-r from-white/80 to-white/60 border-slate-200 text-slate-700 dark:from-slate-700/80 dark:to-slate-600/60 dark:border-slate-500/40 dark:text-slate-200'}>
                             {goal.completed ? 'Concluída' : 'Ativa'}
                           </Badge>
                         </div>
@@ -475,7 +475,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Tab: Insights */}
           <TabsContent value="insights" className="space-y-8">
-            <Card className="bg-white/80 backdrop-blur-xl border-slate-200/60 shadow-lg dark:bg-background/80 dark:border-border dark:shadow-none">
+            <Card className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-xl border-slate-200/60 shadow-lg dark:from-slate-800/80 dark:to-slate-700/60 dark:border-slate-600/40">
               <CardHeader>
                 <CardTitle className="text-slate-800 dark:text-foreground">Recomendações Inteligentes</CardTitle>
                 <CardDescription className="text-slate-600 dark:text-muted-foreground">
@@ -485,7 +485,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <CardContent>
                 <div className="space-y-4">
                   {accuracy < 70 && (
-                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200/50 rounded-2xl">
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-amber-500/10 to-yellow-600/20 border border-amber-200/50 rounded-2xl dark:from-amber-500/20 dark:to-yellow-600/30 dark:border-amber-600/40">
                       <HelpCircle className="w-6 h-6 text-amber-600 mt-1" />
                       <div>
                         <h4 className="font-semibold text-amber-800 dark:text-foreground">Foque na Revisão</h4>
@@ -497,7 +497,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   )}
 
                   {studyDays < 7 && (
-                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 border border-blue-200/50 rounded-2xl">
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-500/10 to-indigo-600/20 border border-blue-200/50 rounded-2xl dark:from-blue-500/20 dark:to-indigo-600/30 dark:border-blue-600/40">
                       <Calendar className="w-6 h-6 text-blue-600 mt-1" />
                       <div>
                         <h4 className="font-semibold text-blue-800 dark:text-foreground">Estabeleça uma Rotina</h4>
