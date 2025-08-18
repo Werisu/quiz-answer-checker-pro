@@ -23,7 +23,7 @@ import {
   Target,
   XCircle
 } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface DashboardProps {
@@ -36,7 +36,7 @@ interface DashboardProps {
   showNavigationButtons?: boolean;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ 
+export const Dashboard: React.FC<DashboardProps> = React.memo(({ 
   onBack, 
   onNavigateToHistory, 
   onNavigateToStats, 
@@ -59,55 +59,111 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
   }, [user]); // Removido fetchQuizHistory da dependência
 
-  // Função para forçar refresh dos dados
+  // Função para forçar refresh dos dados com debounce
   const refreshData = useCallback(() => {
     if (user) {
-      fetchQuizHistory();
+      fetchQuizHistory(true); // forceRefresh = true
     }
   }, [user, fetchQuizHistory]);
 
-  // Calcular estatísticas gerais
-  const totalQuizzes = quizHistory?.length || 0;
-  const totalQuestions = quizHistory?.reduce((sum, quiz) => sum + (quiz.total_questions || 0), 0) || 0;
-  const correctAnswers = quizHistory?.reduce((sum, quiz) => sum + (quiz.correct_answers || 0), 0) || 0;
-  const wrongAnswers = quizHistory?.reduce((sum, quiz) => sum + (quiz.wrong_answers || 0), 0) || 0;
-  const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+  // Memoização das estatísticas calculadas para evitar recálculos
+  const stats = useMemo(() => {
+    if (!quizHistory || !goals || !cadernos) return null;
 
-  // Calcular progresso das metas
-  const activeGoals = goals?.filter(g => !g.completed) || [];
-  const completedGoals = goals?.filter(g => g.completed) || [];
-  const goalCompletionRate = goals?.length > 0 ? (completedGoals.length / goals.length) * 100 : 0;
+    // Estatísticas gerais
+    const totalQuizzes = quizHistory.length;
+    const totalQuestions = quizHistory.reduce((sum, quiz) => sum + (quiz.total_questions || 0), 0);
+    const correctAnswers = quizHistory.reduce((sum, quiz) => sum + (quiz.correct_answers || 0), 0);
+    const wrongAnswers = quizHistory.reduce((sum, quiz) => sum + (quiz.wrong_answers || 0), 0);
+    const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 
-  // Calcular performance por caderno
-  const cadernoPerformance = (cadernos || []).map(caderno => {
-    const cadernoQuizzes = quizHistory?.filter(quiz => quiz.quiz?.caderno_id === caderno.id) || [];
-    const cadernoQuestions = cadernoQuizzes.reduce((sum, quiz) => sum + (quiz.total_questions || 0), 0);
-    const cadernoCorrect = cadernoQuizzes.reduce((sum, quiz) => sum + (quiz.correct_answers || 0), 0);
-    const cadernoAccuracy = cadernoQuestions > 0 ? (cadernoCorrect / cadernoQuestions) * 100 : 0;
-    
+    // Progresso das metas
+    const activeGoals = goals.filter(g => !g.completed);
+    const completedGoals = goals.filter(g => g.completed);
+    const goalCompletionRate = goals.length > 0 ? (completedGoals.length / goals.length) * 100 : 0;
+
+    // Performance por caderno
+    const cadernoPerformance = cadernos.map(caderno => {
+      const cadernoQuizzes = quizHistory.filter(quiz => quiz.quiz?.caderno_id === caderno.id);
+      const cadernoQuestions = cadernoQuizzes.reduce((sum, quiz) => sum + (quiz.total_questions || 0), 0);
+      const cadernoCorrect = cadernoQuizzes.reduce((sum, quiz) => sum + (quiz.correct_answers || 0), 0);
+      const cadernoAccuracy = cadernoQuestions > 0 ? (cadernoCorrect / cadernoQuestions) * 100 : 0;
+      
+      return {
+        ...caderno,
+        quizzes: cadernoQuizzes.length,
+        questions: cadernoQuestions,
+        accuracy: cadernoAccuracy,
+        correct: cadernoCorrect
+      };
+    }).sort((a, b) => b.accuracy - a.accuracy);
+
+    // Tendências de estudo
+    const recentQuizzes = quizHistory
+      .sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())
+      .slice(0, 5);
+
+    // Frequência de estudo
+    const studyFrequency = quizHistory.reduce((acc, quiz) => {
+      const date = new Date(quiz.completed_at).toDateString();
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const studyDays = Object.keys(studyFrequency).length;
+    const averageQuizzesPerDay = studyDays > 0 ? totalQuizzes / studyDays : 0;
+
     return {
-      ...caderno,
-      quizzes: cadernoQuizzes.length,
-      questions: cadernoQuestions,
-      accuracy: cadernoAccuracy,
-      correct: cadernoCorrect
+      totalQuizzes,
+      totalQuestions,
+      correctAnswers,
+      wrongAnswers,
+      accuracy,
+      activeGoals,
+      completedGoals,
+      goalCompletionRate,
+      cadernoPerformance,
+      recentQuizzes,
+      studyFrequency,
+      studyDays,
+      averageQuizzesPerDay
     };
-  }).sort((a, b) => b.accuracy - a.accuracy);
+  }, [quizHistory, goals, cadernos]);
 
-  // Calcular tendências de estudo
-  const recentQuizzes = quizHistory
-    ?.sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())
-    ?.slice(0, 5) || [];
+  // Destructuring das estatísticas memoizadas
+  const {
+    totalQuizzes = 0,
+    totalQuestions = 0,
+    correctAnswers = 0,
+    wrongAnswers = 0,
+    accuracy = 0,
+    activeGoals = [],
+    completedGoals = [],
+    goalCompletionRate = 0,
+    cadernoPerformance = [],
+    recentQuizzes = [],
+    studyDays = 0,
+    averageQuizzesPerDay = 0
+  } = stats || {};
 
-  // Calcular frequência de estudo
-  const studyFrequency = quizHistory?.reduce((acc, quiz) => {
-    const date = new Date(quiz.completed_at).toDateString();
-    acc[date] = (acc[date] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>) || {};
-
-  const studyDays = Object.keys(studyFrequency).length;
-  const averageQuizzesPerDay = studyDays > 0 ? totalQuizzes / studyDays : 0;
+  // Memoização dos dados do gráfico
+  const chartData = useMemo(() => {
+    if (!quizHistory || quizHistory.length === 0) return [];
+    
+    return quizHistory
+      .slice(0, 10) // Primeiros 10 (mais recentes)
+      .reverse() // Inverte para ordem cronológica correta
+      .map((quiz, index) => ({
+        name: `Quiz ${index + 1}`,
+        acertos: quiz.correct_answers || 0,
+        total: quiz.total_questions || 0,
+        porcentagem: quiz.percentage || 0,
+        data: new Date(quiz.completed_at).toLocaleDateString('pt-BR', { 
+          day: '2-digit', 
+          month: '2-digit' 
+        })
+      }));
+  }, [quizHistory]);
 
   // Verificar se os dados estão carregados
   if (!quizHistory || !goals || !cadernos) {
@@ -354,22 +410,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </CardHeader>
               <CardContent>
                 <div className="h-64">
-                  {quizHistory && quizHistory.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                                             <LineChart
-                         data={quizHistory
-                           .slice(0, 10) // Primeiros 10 (mais recentes)
-                           .reverse() // Inverte para ordem cronológica correta
-                           .map((quiz, index) => ({
-                             name: `Quiz ${index + 1}`,
-                             acertos: quiz.correct_answers || 0,
-                             total: quiz.total_questions || 0,
-                             porcentagem: quiz.percentage || 0,
-                             data: new Date(quiz.completed_at).toLocaleDateString('pt-BR', { 
-                               day: '2-digit', 
-                               month: '2-digit' 
-                             })
-                           }))}
+                                     {quizHistory && quizHistory.length > 0 ? (
+                     <ResponsiveContainer width="100%" height="100%">
+                                               <LineChart
+                          data={chartData}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-600" />
@@ -680,7 +724,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
-  );
-};
+             </div>
+     </div>
+   );
+ });
