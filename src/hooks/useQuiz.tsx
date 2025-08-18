@@ -82,6 +82,11 @@ export const useQuiz = () => {
     unanswered: 0,
     total: 0
   });
+  
+  // Cache para evitar refetches desnecessários
+  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
+  const [cacheExpiry, setCacheExpiry] = useState<number>(5 * 60 * 1000); // 5 minutos
+  
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -91,10 +96,15 @@ export const useQuiz = () => {
       return; // Evita chamadas duplicadas
     }
     
-    // Debounce simples para evitar chamadas muito frequentes (apenas se não for forceRefresh)
-    if (quizHistory.length > 0 && !forceRefresh) {
-      console.log('📊 [fetchQuizHistory] Dados já carregados, pulando busca');
-      return; // Já temos dados, não precisa buscar novamente
+    const now = Date.now();
+    const isCacheValid = quizHistory.length > 0 && 
+                        !forceRefresh && 
+                        (now - lastFetchTime) < cacheExpiry;
+    
+    // Cache inteligente: só busca se dados expiraram ou forceRefresh
+    if (isCacheValid) {
+      console.log('📊 [fetchQuizHistory] Cache válido, pulando busca');
+      return;
     }
     
     console.log('🔄 [fetchQuizHistory] Iniciando busca de dados...', { forceRefresh });
@@ -148,6 +158,7 @@ export const useQuiz = () => {
       }) || [];
 
       setQuizHistory(resultsWithStats as QuizResult[]);
+      setLastFetchTime(Date.now()); // Atualiza timestamp do cache
       console.log('✅ [fetchQuizHistory] Dados carregados com sucesso:', resultsWithStats.length, 'quizzes');
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
