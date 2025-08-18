@@ -1,3 +1,4 @@
+import { StudyCalendar } from '@/components/StudyCalendar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -222,12 +223,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* Conteúdo Principal */}
       <div className="container mx-auto p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-lg rounded-2xl p-1 dark:bg-muted/50 dark:border-border dark:shadow-none">
+          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-lg rounded-2xl p-1 dark:bg-muted/50 dark:border-border dark:shadow-none">
             <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Visão Geral
             </TabsTrigger>
             <TabsTrigger value="performance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Performance
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
+              Calendário
             </TabsTrigger>
             <TabsTrigger value="goals" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Metas
@@ -466,6 +470,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Tab: Calendário */}
+          <TabsContent value="calendar" className="space-y-8">
+            <StudyCalendar 
+              quizHistory={quizHistory || []} 
+              cadernos={cadernos || []} 
+            />
           </TabsContent>
 
           {/* Tab: Metas */}

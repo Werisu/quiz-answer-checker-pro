@@ -45,7 +45,7 @@ Analisando a aplicação atual, vejo várias oportunidades de melhoria que podem
 
 ### **7. Melhorias na Visualização**
 
-- **Calendário de estudos** com histórico visual
+- ✅ **Calendário de estudos** com histórico visual - **IMPLEMENTADO**
 - **Gráficos interativos** para estatísticas
 - **Timeline de progresso** visual
 
