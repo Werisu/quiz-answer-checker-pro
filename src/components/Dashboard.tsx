@@ -23,6 +23,7 @@ import {
   XCircle
 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface DashboardProps {
   onBack: () => void;
@@ -348,11 +349,63 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-64 flex items-center justify-center bg-gradient-to-br from-slate-500/10 to-blue-500/10 rounded-2xl border border-slate-200/50 dark:from-slate-500/20 dark:to-blue-500/20 dark:border-slate-600/40">
-                  <div className="text-center">
-                    <BarChart3 className="w-16 h-16 text-slate-400 mx-auto mb-4 dark:text-muted-foreground" />
-                    <p className="text-slate-600 dark:text-muted-foreground">Gráfico em desenvolvimento</p>
-                  </div>
+                <div className="h-64">
+                  {quizHistory && quizHistory.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                                             <LineChart
+                         data={quizHistory
+                           .slice(0, 10) // Primeiros 10 (mais recentes)
+                           .reverse() // Inverte para ordem cronológica correta
+                           .map((quiz, index) => ({
+                             name: `Quiz ${index + 1}`,
+                             acertos: quiz.correct_answers || 0,
+                             total: quiz.total_questions || 0,
+                             porcentagem: quiz.percentage || 0,
+                             data: new Date(quiz.completed_at).toLocaleDateString('pt-BR', { 
+                               day: '2-digit', 
+                               month: '2-digit' 
+                             })
+                           }))}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-600" />
+                        <XAxis 
+                          dataKey="data" 
+                          className="text-xs text-slate-600 dark:text-slate-400"
+                          tick={{ fontSize: 10 }}
+                        />
+                        <YAxis 
+                          className="text-xs text-slate-600 dark:text-slate-400"
+                          tick={{ fontSize: 10 }}
+                        />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            border: '1px solid rgba(148, 163, 184, 0.2)',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                          labelStyle={{ color: '#475569' }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="porcentagem" 
+                          stroke="#3b82f6" 
+                          strokeWidth={3}
+                          dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                          activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center bg-gradient-to-br from-slate-500/10 to-blue-500/10 rounded-2xl border border-slate-200/50 dark:from-slate-500/20 dark:to-blue-500/20 dark:border-slate-600/40">
+                      <div className="text-center">
+                        <BarChart3 className="w-16 h-16 text-slate-400 mx-auto mb-4 dark:text-muted-foreground" />
+                        <p className="text-slate-600 dark:text-muted-foreground">Nenhum quiz realizado ainda</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-500">Complete seu primeiro quiz para ver o gráfico</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
