@@ -85,15 +85,15 @@
 
 ### **1. Componentes React (Semana 1-2)**
 
-- [ ] **FriendsList** - Lista de amigos e solicitações
-- [ ] **FriendCard** - Card individual de amigo
-- [ ] **FriendRequestCard** - Card de solicitação pendente
+- [x] **FriendsList** - Lista de amigos e solicitações
+- [x] **FriendCard** - Card individual de amigo
+- [x] **FriendRequestCard** - Card de solicitação pendente
 - [ ] **AddFriendModal** - Modal para adicionar amigos
 - [ ] **FriendsSidebar** - Sidebar com amigos online
 
 ### **2. Hooks Personalizados**
 
-- [ ] **useFriends** - Gerenciamento de estado das amizades
+- [x] **useFriends** - Gerenciamento de estado das amizades
 - [ ] **useFriendRequests** - Estado das solicitações
 - [ ] **useOnlineFriends** - Amigos online em tempo real
 
