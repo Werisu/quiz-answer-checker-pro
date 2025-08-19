@@ -2,14 +2,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-    Activity,
-    BookOpen,
-    Calendar,
-    MessageCircle,
-    Target,
-    TrendingUp,
-    Trophy,
-    Users
+  Activity,
+  BookOpen,
+  Calendar,
+  MessageCircle,
+  Target,
+  TrendingUp,
+  Trophy,
+  Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { FriendsList } from './FriendsList';
@@ -57,24 +57,26 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   };
 
   return (
-    <div className={`flex h-screen ${className}`}>
-      {/* Sidebar Social */}
+    <div className={`flex flex-col lg:flex-row h-screen ${className}`}>
+      {/* Sidebar Social - Responsivo */}
       {sidebarOpen && (
-        <FriendsSidebar
-          onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
-          onSendMessage={handleSendMessage}
-          onViewProfile={handleViewProfile}
-        />
+        <div className="w-full lg:w-80 flex-shrink-0 border-r border-border">
+          <FriendsSidebar
+            onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
+            onSendMessage={handleSendMessage}
+            onViewProfile={handleViewProfile}
+          />
+        </div>
       )}
       
       {/* Conteúdo Principal */}
       <div className="flex-1 overflow-auto">
-        <div className="container mx-auto p-6 space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto p-3 lg:p-6 space-y-4 lg:space-y-6">
+          {/* Header Responsivo */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div>
-              <h1 className="text-4xl font-bold">🏠 Dashboard Social</h1>
-              <p className="text-xl text-muted-foreground">
+              <h1 className="text-2xl lg:text-4xl font-bold">🏠 Dashboard Social</h1>
+              <p className="text-base lg:text-xl text-muted-foreground">
                 Gerencie suas conexões e atividades sociais
               </p>
             </div>
@@ -82,39 +84,50 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="lg:hidden"
+              >
+                {sidebarOpen ? 'Ocultar' : 'Mostrar'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="hidden lg:flex"
               >
                 {sidebarOpen ? 'Ocultar Sidebar' : 'Mostrar Sidebar'}
               </Button>
             </div>
           </div>
 
-          {/* Tabs principais */}
+          {/* Tabs principais - Responsivos */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="overview" className="flex items-center space-x-2">
-                <Activity className="h-4 w-4" />
-                <span>Visão Geral</span>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1">
+              <TabsTrigger value="overview" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+                <Activity className="h-3 w-3 lg:h-4 lg:w-4" />
+                <span className="hidden sm:inline">Visão Geral</span>
+                <span className="sm:hidden">Geral</span>
               </TabsTrigger>
               
-              <TabsTrigger value="friends" className="flex items-center space-x-2">
-                <Users className="h-4 w-4" />
+              <TabsTrigger value="friends" className="flex items-center space-x-2 text-xs lg:text-sm">
+                <Users className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span>Amigos</span>
               </TabsTrigger>
               
-              <TabsTrigger value="groups" className="flex items-center space-x-2">
-                <BookOpen className="h-4 w-4" />
+              <TabsTrigger value="groups" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+                <BookOpen className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span>Grupos</span>
               </TabsTrigger>
               
-              <TabsTrigger value="chat" className="flex items-center space-x-2">
-                <MessageCircle className="h-4 w-4" />
+              <TabsTrigger value="chat" className="flex items-center space-x-2 text-xs lg:text-sm">
+                <MessageCircle className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span>Chat</span>
               </TabsTrigger>
               
-              <TabsTrigger value="achievements" className="flex items-center space-x-2">
-                <Trophy className="h-4 w-4" />
-                <span>Conquistas</span>
+              <TabsTrigger value="achievements" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+                <Trophy className="h-3 w-3 lg:h-4 lg:w-4" />
+                <span className="hidden sm:inline">Conquistas</span>
+                <span className="sm:hidden">Conq.</span>
               </TabsTrigger>
             </TabsList>
 

@@ -174,13 +174,13 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
         )}
       </DialogTrigger>
       
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] md:max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <UserPlus className="h-5 w-5" />
-            <span>Adicionar Novo Amigo</span>
+          <DialogTitle className="flex items-center space-x-1 lg:space-x-2">
+            <UserPlus className="h-4 w-4 lg:h-5 lg:w-5" />
+            <span className="text-base lg:text-lg">Adicionar Novo Amigo</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs lg:text-sm">
             Busque por usuários e envie solicitações de amizade para expandir sua rede de estudos.
           </DialogDescription>
         </DialogHeader>

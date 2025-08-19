@@ -227,14 +227,14 @@ export const FriendsList: React.FC<FriendsListProps> = ({
         </Alert>
       )}
 
-      {/* Estatísticas rápidas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Estatísticas rápidas - Responsivas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total de Amigos</CardTitle>
+          <CardHeader className="pb-2 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium">Total de Amigos</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{friends.length}</div>
+          <CardContent className="p-3 lg:p-6">
+            <div className="text-lg lg:text-2xl font-bold">{friends.length}</div>
             <p className="text-xs text-muted-foreground">
               {friends.filter(f => f.is_online).length} online
             </p>
@@ -242,11 +242,11 @@ export const FriendsList: React.FC<FriendsListProps> = ({
         </Card>
         
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Solicitações Pendentes</CardTitle>
+          <CardHeader className="pb-2 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium">Solicitações Pendentes</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingRequests.length}</div>
+          <CardContent className="p-3 lg:p-6">
+            <div className="text-lg lg:text-2xl font-bold">{pendingRequests.length}</div>
             <p className="text-xs text-muted-foreground">
               Aguardando resposta
             </p>
@@ -254,17 +254,17 @@ export const FriendsList: React.FC<FriendsListProps> = ({
         </Card>
         
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Status</CardTitle>
+          <CardHeader className="pb-2 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium">Status</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 lg:p-6">
             <div className="flex items-center space-x-2">
               {loading ? (
                 <Skeleton className="h-6 w-16" />
               ) : (
                 <>
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm">Sincronizado</span>
+                  <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4 text-green-500" />
+                  <span className="text-xs lg:text-sm">Sincronizado</span>
                 </>
               )}
             </div>
@@ -272,24 +272,26 @@ export const FriendsList: React.FC<FriendsListProps> = ({
         </Card>
       </div>
 
-      {/* Tabs principais */}
+      {/* Tabs principais - Responsivos */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="friends" className="flex items-center space-x-2">
-            <Users className="h-4 w-4" />
-            <span>Meus Amigos</span>
+        <TabsList className="grid w-full grid-cols-2 gap-1">
+          <TabsTrigger value="friends" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+            <Users className="h-3 w-3 lg:h-4 lg:w-4" />
+            <span className="hidden sm:inline">Meus Amigos</span>
+            <span className="sm:hidden">Amigos</span>
             {friends.length > 0 && (
-              <Badge variant="secondary" className="ml-1">
+              <Badge variant="secondary" className="ml-1 text-xs">
                 {friends.length}
               </Badge>
             )}
           </TabsTrigger>
           
-          <TabsTrigger value="requests" className="flex items-center space-x-2">
-            <UserPlus className="h-4 w-4" />
-            <span>Solicitações</span>
+          <TabsTrigger value="requests" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+            <UserPlus className="h-3 w-3 lg:h-4 lg:w-4" />
+            <span className="hidden sm:inline">Solicitações</span>
+            <span className="sm:hidden">Pendentes</span>
             {pendingRequests.length > 0 && (
-              <Badge variant="destructive" className="ml-1">
+              <Badge variant="destructive" className="ml-1 text-xs">
                 {pendingRequests.length}
               </Badge>
             )}

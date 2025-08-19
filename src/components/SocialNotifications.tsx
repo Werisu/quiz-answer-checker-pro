@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFriends } from '@/hooks/useFriends';
 import {
-    Bell,
-    Check,
-    Clock,
-    MessageCircle,
-    UserCheck,
-    UserPlus,
-    Users,
-    X
+  Bell,
+  Check,
+  Clock,
+  MessageCircle,
+  UserCheck,
+  UserPlus,
+  Users,
+  X
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -186,18 +186,18 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
 
   return (
     <Card className={className}>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Bell className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Notificações</CardTitle>
+      <CardHeader className="pb-3 p-4 lg:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+          <div className="flex items-center space-x-1 lg:space-x-2">
+            <Bell className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
+            <CardTitle className="text-base lg:text-lg">Notificações</CardTitle>
             {unreadCount > 0 && (
-              <Badge variant="destructive">
+              <Badge variant="destructive" className="text-xs">
                 {unreadCount}
               </Badge>
             )}
             {actionRequiredCount > 0 && (
-              <Badge variant="secondary">
+              <Badge variant="secondary" className="text-xs">
                 {actionRequiredCount} ações
               </Badge>
             )}
@@ -207,11 +207,12 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
             variant="ghost" 
             size="sm" 
             onClick={() => setShowAll(!showAll)}
+            className="self-start lg:self-auto"
           >
             {showAll ? 'Ver menos' : 'Ver todas'}
           </Button>
         </div>
-        <CardDescription>
+        <CardDescription className="text-xs lg:text-sm">
           {unreadCount} não lidas • {actionRequiredCount} requerem ação
         </CardDescription>
       </CardHeader>

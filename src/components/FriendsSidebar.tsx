@@ -168,16 +168,16 @@ export const FriendsSidebar: React.FC<FriendsSidebarProps> = ({
   );
 
   return (
-    <div className={`w-80 bg-background border-r border-border flex flex-col ${className}`}>
-      {/* Header da Sidebar */}
-      <div className="p-4 border-b border-border">
+    <div className={`w-full lg:w-80 bg-background border-r border-border flex flex-col ${className}`}>
+      {/* Header da Sidebar - Responsivo */}
+      <div className="p-3 lg:p-4 border-b border-border">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold flex items-center space-x-2">
-            <Users className="h-5 w-5" />
+          <h2 className="text-base lg:text-lg font-semibold flex items-center space-x-1 lg:space-x-2">
+            <Users className="h-4 w-4 lg:h-5 lg:w-5" />
             <span>Social</span>
           </h2>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <Settings className="h-4 w-4" />
+          <Button variant="ghost" size="sm" className="h-7 w-7 lg:h-8 lg:w-8 p-0">
+            <Settings className="h-3 w-3 lg:h-4 lg:w-4" />
           </Button>
         </div>
         
@@ -187,8 +187,9 @@ export const FriendsSidebar: React.FC<FriendsSidebarProps> = ({
           onOpenChange={setAddFriendModalOpen}
           trigger={
             <Button className="w-full" size="sm">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Adicionar Amigo
+              <UserPlus className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
+              <span className="hidden sm:inline">Adicionar Amigo</span>
+              <span className="sm:hidden">Adicionar</span>
             </Button>
           }
         />

@@ -54,48 +54,48 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
 
   return (
     <Card className={className}>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 p-4 lg:p-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Users className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Social</CardTitle>
+          <div className="flex items-center space-x-1 lg:space-x-2">
+            <Users className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
+            <CardTitle className="text-base lg:text-lg">Social</CardTitle>
             {pendingRequests.length > 0 && (
-              <Badge variant="destructive" className="ml-2">
+              <Badge variant="destructive" className="ml-1 lg:ml-2 text-xs">
                 {pendingRequests.length}
               </Badge>
             )}
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 lg:space-x-2">
             <AddFriendModal
               open={addFriendModalOpen}
               onOpenChange={setAddFriendModalOpen}
               trigger={
-                <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                  <Plus className="h-4 w-4" />
+                <Button size="sm" variant="outline" className="h-7 w-7 lg:h-8 lg:w-8 p-0">
+                  <Plus className="h-3 w-3 lg:h-4 lg:w-4" />
                 </Button>
               }
             />
             
-            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
+            <Button size="sm" variant="ghost" className="h-7 w-7 lg:h-8 lg:w-8 p-0">
+              <MoreHorizontal className="h-3 w-3 lg:h-4 lg:w-4" />
             </Button>
           </div>
         </div>
-        <CardDescription>
+        <CardDescription className="text-xs lg:text-sm">
           {totalOnline} amigos online • {pendingRequests.length} solicitações pendentes
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Estatísticas Rápidas */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="text-center p-3 bg-muted/50 rounded-lg">
-            <div className="text-2xl font-bold text-primary">{friends.length}</div>
+        {/* Estatísticas Rápidas - Responsivas */}
+        <div className="grid grid-cols-3 gap-2 lg:gap-3">
+          <div className="text-center p-2 lg:p-3 bg-muted/50 rounded-lg">
+            <div className="text-lg lg:text-2xl font-bold text-primary">{friends.length}</div>
             <div className="text-xs text-muted-foreground">Total</div>
           </div>
-          <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">{totalOnline}</div>
+          <div className="text-center p-2 lg:p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+            <div className="text-lg lg:text-2xl font-bold text-green-600">{totalOnline}</div>
             <div className="text-xs text-muted-foreground">Online</div>
           </div>
           <div className="text-center p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
