@@ -352,7 +352,7 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
         {/* Ações em lote */}
         {notifications.length > 0 && (
           <div className="pt-3 border-t border-border">
-            <div className="flex space-x-2">
+            <div className="flex flex-col xxl:flex-row space-y-2 xxl:space-x-2">
               <Button 
                 variant="outline" 
                 size="sm" 
