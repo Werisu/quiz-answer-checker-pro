@@ -82,7 +82,7 @@ Analisando a aplicação atual, vejo várias oportunidades de melhoria que podem
 
 - **Anotações** em cada questão
 - **Comentários** para revisão futura
-- **Tags personalizadas** para organização
+- ✅ **Tags personalizadas** para organização
 - **Busca por conteúdo** nas anotações
 
 ### **12. Colaboração e Compartilhamento**
