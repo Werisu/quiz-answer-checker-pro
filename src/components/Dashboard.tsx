@@ -641,7 +641,7 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
                   )}
 
                   {activeGoals.length === 0 && (
-                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-purple-50 to-violet-100 border border-purple-200/50 rounded-2xl">
+                    <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-purple-50 to-violet-100 border border-purple-200/50 rounded-2xl dark:from-purple-500/20 dark:to-violet-600/30 dark:border-purple-600/40">
                       <Target className="w-6 h-6 text-purple-600 mt-1" />
                       <div>
                         <h4 className="font-semibold text-purple-800 dark:text-foreground">Defina Metas</h4>
