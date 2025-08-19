@@ -19,7 +19,7 @@ import {
   Trophy,
   XCircle
 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Database } from '@/integrations/supabase/types';
 
@@ -74,7 +74,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
   });
 
   // Calcular progresso das metas baseado no histórico real
-  const calculateGoalProgress = (goal: Goal): number => {
+  const calculateGoalProgress = useCallback((goal: Goal): number => {
     const now = new Date();
     const startDate = new Date(goal.created_at);
     let endDate: Date;
@@ -89,14 +89,16 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
         endDate.setHours(23, 59, 59, 999);
         break;
       case 'weekly':
+        // Para metas semanais, calcular desde a criação até 7 dias depois
         startDateForCalculation = new Date(startDate);
         endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 7);
         break;
       case 'monthly':
+        // Para metas mensais, calcular desde a criação até 30 dias depois
         startDateForCalculation = new Date(startDate);
         endDate = new Date(startDate);
-        endDate.setMonth(startDate.getMonth() + 1);
+        endDate.setDate(startDate.getDate() + 30);
         break;
     }
 
@@ -125,10 +127,10 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
         return Math.round(totalPercentage / relevantHistory.length);
       }
     }
-  };
+  }, [quizHistory]);
 
   // Calcular progresso dos desafios
-  const calculateChallengeProgress = (challenge: Challenge): number => {
+  const calculateChallengeProgress = useCallback((challenge: Challenge): number => {
     const relevantHistory = quizHistory.filter(result => 
       result.quiz?.caderno_id === challenge.caderno_id
     );
@@ -136,30 +138,64 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     if (relevantHistory.length === 0) return 0;
     
     const totalPercentage = relevantHistory.reduce((sum, result) => sum + result.percentage, 0);
-    return Math.round(totalPercentage / relevantHistory.length);
-  };
+    const averagePercentage = Math.round(totalPercentage / relevantHistory.length);
+    
+    console.log(`Calculando progresso para desafio "${challenge.title}":`, {
+      cadernoId: challenge.caderno_id,
+      relevantResults: relevantHistory.length,
+      totalPercentage,
+      averagePercentage
+    });
+    
+    return averagePercentage;
+  }, [quizHistory]);
 
   // Buscar dados atualizados quando o componente montar
   useEffect(() => {
-    fetchQuizHistory(true);
-    loadGoalsAndChallenges();
-  }, []);
+    const loadData = async () => {
+      console.log('Carregando dados iniciais...');
+      await fetchQuizHistory(true);
+      await loadGoalsAndChallenges();
+      console.log('Dados iniciais carregados');
+    };
+    
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intencionalmente vazio para carregar apenas uma vez
 
-  // Atualizar progresso automaticamente quando quizHistory ou goals mudarem
+  // Atualizar progresso automaticamente quando quizHistory mudar
   useEffect(() => {
-    if (goals.length > 0 && quizHistory.length > 0) {
-      setUpdatingProgress(true);
-      
+    if (goals.length > 0 && quizHistory.length > 0 && !updatingProgress) {
       const updateGoals = async () => {
+        setUpdatingProgress(true);
+        
         try {
+          let hasUpdates = false;
+          
           for (const goal of goals) {
             const current = calculateGoalProgress(goal);
             const completed = current >= goal.target;
             
+            console.log(`Verificando meta "${goal.title}":`, {
+              current: goal.current,
+              calculated: current,
+              target: goal.target,
+              completed: goal.completed,
+              shouldComplete: completed,
+              needsUpdate: current !== goal.current || completed !== goal.completed
+            });
+            
             if (current !== goal.current || completed !== goal.completed) {
               console.log(`Atualizando meta "${goal.title}": ${goal.current} -> ${current}, completed: ${goal.completed} -> ${completed}`);
               await updateGoalProgressDB(goal.id, current, completed);
+              hasUpdates = true;
             }
+          }
+          
+          // Recarregar dados apenas se houve atualizações significativas
+          if (hasUpdates) {
+            console.log('Dados das metas foram atualizados no banco');
+            // Não recarregar aqui para evitar loops - o hook já atualiza o estado local
           }
         } catch (error) {
           console.error('Erro ao atualizar progresso das metas:', error);
@@ -170,23 +206,41 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
       
       updateGoals();
     }
-  }, [quizHistory, goals]);
+  }, [quizHistory, goals, calculateGoalProgress, updateGoalProgressDB, updatingProgress]);
 
   // Atualizar progresso dos desafios
   useEffect(() => {
-    if (challenges.length > 0 && quizHistory.length > 0) {
-      setUpdatingProgress(true);
-      
+    if (challenges.length > 0 && quizHistory.length > 0 && !updatingProgress) {
       const updateChallenges = async () => {
+        setUpdatingProgress(true);
+        
         try {
+          let hasUpdates = false;
+          
           for (const challenge of challenges) {
             const currentPercentage = calculateChallengeProgress(challenge);
             const completed = currentPercentage >= challenge.target_percentage;
             
+            console.log(`Verificando desafio "${challenge.title}":`, {
+              current: challenge.current_percentage,
+              calculated: currentPercentage,
+              target: challenge.target_percentage,
+              completed: challenge.completed,
+              shouldComplete: completed,
+              needsUpdate: currentPercentage !== challenge.current_percentage || completed !== challenge.completed
+            });
+            
             if (currentPercentage !== challenge.current_percentage || completed !== challenge.completed) {
               console.log(`Atualizando desafio "${challenge.title}": ${challenge.current_percentage}% -> ${currentPercentage}%, completed: ${challenge.completed} -> ${completed}`);
               await updateChallengeProgressDB(challenge.id, currentPercentage, completed);
+              hasUpdates = true;
             }
+          }
+          
+          // Recarregar dados apenas se houve atualizações significativas
+          if (hasUpdates) {
+            console.log('Dados dos desafios foram atualizados no banco');
+            // Não recarregar aqui para evitar loops - o hook já atualiza o estado local
           }
         } catch (error) {
           console.error('Erro ao atualizar progresso dos desafios:', error);
@@ -197,7 +251,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
       
       updateChallenges();
     }
-  }, [quizHistory, challenges]);
+  }, [quizHistory, challenges, calculateChallengeProgress, updateChallengeProgressDB, updatingProgress]);
 
   // Criar nova meta
   const createGoal = async () => {
@@ -338,11 +392,23 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
   const totalPoints = useMemo(() => {
     const goalPoints = goals.filter(g => g.completed).reduce((sum, g) => sum + g.points, 0);
     const challengePoints = challenges.filter(c => c.completed).reduce((sum, c) => sum + c.points, 0);
-    return goalPoints + challengePoints;
+    const total = goalPoints + challengePoints;
+    
+    console.log('Cálculo de pontos:', {
+      goals: goals.map(g => ({ title: g.title, completed: g.completed, points: g.points })),
+      challenges: challenges.map(c => ({ title: c.title, completed: c.completed, points: c.points })),
+      goalPoints,
+      challengePoints,
+      total
+    });
+    
+    return total;
   }, [goals, challenges]);
 
   // Calcular nível do usuário
   const userLevel = useMemo(() => {
+    console.log('Calculando nível do usuário com pontos:', totalPoints);
+    
     if (totalPoints < 100) return { level: 1, title: 'Iniciante', icon: '🌱' };
     if (totalPoints < 300) return { level: 2, title: 'Estudante', icon: '📚' };
     if (totalPoints < 600) return { level: 3, title: 'Aplicado', icon: '🎯' };
@@ -354,8 +420,18 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
   const nextLevelPoints = useMemo(() => {
     const levels = [100, 300, 600, 1000, Infinity];
     const currentLevelIndex = levels.findIndex(threshold => totalPoints < threshold);
-    return levels[currentLevelIndex];
-  }, [totalPoints]);
+    if (currentLevelIndex === -1 || currentLevelIndex >= levels.length) return Infinity;
+    
+    const nextLevel = levels[currentLevelIndex];
+    console.log('Próximo nível:', {
+      totalPoints,
+      currentLevel: userLevel.level,
+      nextLevel,
+      pointsNeeded: nextLevel - totalPoints
+    });
+    
+    return nextLevel;
+  }, [totalPoints, userLevel.level]);
 
   if (loading) {
     return (
@@ -426,7 +502,13 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
                 <div 
                   className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
                   style={{ 
-                    width: `${Math.min(100, ((totalPoints % (nextLevelPoints - (nextLevelPoints === 100 ? 0 : 100))) / (nextLevelPoints - (nextLevelPoints === 100 ? 0 : 100))) * 100)}%` 
+                    width: `${Math.min(100, (() => {
+                      const levelThresholds = [0, 100, 300, 600, 1000];
+                      const currentLevelStart = levelThresholds[userLevel.level - 1] || 0;
+                      const nextLevelStart = nextLevelPoints;
+                      const progress = ((totalPoints - currentLevelStart) / (nextLevelStart - currentLevelStart)) * 100;
+                      return Math.max(0, progress);
+                    })())}%` 
                   }}
                 ></div>
               </div>
@@ -452,9 +534,18 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
             Novo Desafio
           </Button>
           <Button
-            onClick={() => {
-              fetchQuizHistory(true);
-              loadGoalsAndChallenges();
+            onClick={async () => {
+              console.log('Atualizando dados manualmente...');
+              setUpdatingProgress(true);
+              try {
+                await fetchQuizHistory(true);
+                await loadGoalsAndChallenges();
+                console.log('Dados atualizados manualmente');
+              } catch (error) {
+                console.error('Erro ao atualizar dados:', error);
+              } finally {
+                setUpdatingProgress(false);
+              }
             }}
             variant="outline"
             className="border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-400/40 dark:text-blue-400 dark:hover:bg-blue-500/20"
@@ -462,6 +553,21 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
           >
             <TrendingUp className={`w-4 h-4 mr-2 ${updatingProgress ? 'animate-spin' : ''}`} />
             {updatingProgress ? 'Atualizando...' : 'Atualizar'}
+          </Button>
+          <Button
+            onClick={() => {
+              console.log('=== DEBUG: Estado atual ===');
+              console.log('Goals:', goals);
+              console.log('Challenges:', challenges);
+              console.log('Quiz History:', quizHistory);
+              console.log('Total Points:', totalPoints);
+              console.log('User Level:', userLevel);
+              console.log('Next Level Points:', nextLevelPoints);
+            }}
+            variant="outline"
+            className="border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-400/40 dark:text-orange-400 dark:hover:bg-orange-500/20"
+          >
+            Debug
           </Button>
         </div>
 
