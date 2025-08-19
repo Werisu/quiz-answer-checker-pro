@@ -46,6 +46,8 @@ export const useGoalsAndChallenges = () => {
         console.error('Erro ao carregar desafios:', challengesError);
       }
 
+
+      
       setGoals(goalsData || []);
       setChallenges(challengesData || []);
     } catch (error) {

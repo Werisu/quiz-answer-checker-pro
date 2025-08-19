@@ -11,6 +11,7 @@ import { useCadernos } from '@/hooks/useCadernos';
 import { useGoalsAndChallenges } from '@/hooks/useGoalsAndChallenges';
 import { useQuiz } from '@/hooks/useQuiz';
 import { useTags } from '@/hooks/useTags';
+import { useUserLevel } from '@/hooks/useUserLevel';
 import {
   ArrowLeft,
   Award,
@@ -52,6 +53,7 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
   const { goals, challenges } = useGoalsAndChallenges();
   const { cadernos } = useCadernos();
   const { tags } = useTags();
+  const userLevel = useUserLevel();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
@@ -204,11 +206,11 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
             <ThemeToggle />
             <Badge variant="outline" className="bg-gradient-to-r from-amber-500/10 to-yellow-600/20 border-amber-200/50 text-amber-800 shadow-sm dark:from-amber-500/20 dark:to-yellow-600/30 dark:border-amber-400/40 dark:text-amber-200">
               <Award className="w-4 h-4 mr-1" />
-              Nível 1
+              Nível {userLevel.level}
             </Badge>
             <Badge variant="outline" className="bg-gradient-to-r from-blue-500/10 to-indigo-600/20 border-blue-200/50 text-blue-800 shadow-sm dark:from-blue-500/20 dark:to-indigo-600/30 dark:border-blue-400/40 dark:text-blue-200">
               <Star className="w-4 h-4 mr-1" />
-              0 pts
+              {userLevel.totalPoints} pts
             </Badge>
           </div>
         </div>
