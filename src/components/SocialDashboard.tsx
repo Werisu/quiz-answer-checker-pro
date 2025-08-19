@@ -71,7 +71,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       )}
       
       {/* Conteúdo Principal */}
-      <div className={`flex-1 overflow-auto ${sidebarOpen ? 'hidden lg:block' : 'block'}`}>
+      <div className={`flex-1 overflow-auto lg:overflow-visible ${sidebarOpen ? 'hidden lg:block' : 'block'}`}>
         <div className="container mx-auto p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
           {/* Indicador Mobile */}
           {sidebarOpen && (
@@ -110,38 +110,54 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           </div>
 
           {/* Tabs principais - Responsivos */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1">
-              <TabsTrigger value="overview" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
-                <Activity className="h-3 w-3 lg:h-4 lg:w-4" />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-4 lg:mt-0">
+
+            <TabsList className="flex w-full overflow-x-auto gap-2 lg:gap-1 p-1 lg:p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                             <TabsTrigger 
+                 value="overview" 
+                 className="flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-sm px-3 lg:px-3 py-3 lg:py-2 h-auto lg:h-auto min-h-[44px] lg:min-h-0 min-w-[120px] lg:min-w-0 rounded-lg lg:rounded-md transition-all duration-200 hover:bg-primary/10 data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex-shrink-0"
+               >
+                <Activity className="h-4 w-4 lg:h-4 lg:w-4" />
                 <span className="hidden sm:inline">Visão Geral</span>
                 <span className="sm:hidden">Geral</span>
               </TabsTrigger>
               
-              <TabsTrigger value="friends" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
-                <Users className="h-3 w-3 lg:h-4 lg:w-4" />
+                             <TabsTrigger 
+                 value="friends" 
+                 className="flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-sm px-3 lg:px-3 py-3 lg:py-2 h-auto lg:h-auto min-h-[44px] lg:min-h-0 min-w-[120px] lg:min-w-0 rounded-lg lg:rounded-md transition-all duration-200 hover:bg-primary/10 data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex-shrink-0"
+               >
+                <Users className="h-4 w-4 lg:h-4 lg:w-4" />
                 <span>Amigos</span>
               </TabsTrigger>
               
-              <TabsTrigger value="groups" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
-                <BookOpen className="h-3 w-3 lg:h-4 lg:w-4" />
+                             <TabsTrigger 
+                 value="groups" 
+                 className="flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-sm px-3 lg:px-3 py-3 lg:py-2 h-auto lg:h-auto min-h-[44px] lg:min-h-0 min-w-[120px] lg:min-w-0 rounded-lg lg:rounded-md transition-all duration-200 hover:bg-primary/10 data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex-shrink-0"
+               >
+                <BookOpen className="h-4 w-4 lg:h-4 lg:w-4" />
                 <span>Grupos</span>
               </TabsTrigger>
               
-              <TabsTrigger value="chat" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
-                <MessageCircle className="h-3 w-3 lg:h-4 lg:w-4" />
+                             <TabsTrigger 
+                 value="chat" 
+                 className="flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-sm px-3 lg:px-3 py-3 lg:py-2 h-auto lg:h-auto min-h-[44px] lg:min-h-0 min-w-[120px] lg:min-w-0 rounded-lg lg:rounded-md transition-all duration-200 hover:bg-primary/10 data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex-shrink-0"
+               >
+                <MessageCircle className="h-4 w-4 lg:h-4 lg:w-4" />
                 <span>Chat</span>
               </TabsTrigger>
               
-              <TabsTrigger value="achievements" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
-                <Trophy className="h-3 w-3 lg:h-4 lg:w-4" />
+                             <TabsTrigger 
+                 value="achievements" 
+                 className="flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-sm px-3 lg:px-3 py-3 lg:py-2 h-auto lg:h-auto min-h-[44px] lg:min-h-0 min-w-[120px] lg:min-w-0 rounded-lg lg:rounded-md transition-all duration-200 hover:bg-primary/10 data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex-shrink-0"
+               >
+                <Trophy className="h-4 w-4 lg:h-4 lg:w-4" />
                 <span className="hidden sm:inline">Conquistas</span>
                 <span className="sm:hidden">Conq.</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Visão Geral */}
-            <TabsContent value="overview" className="mt-4 lg:mt-6">
+            <TabsContent value="overview" className="mt-6 lg:mt-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                 {/* Widget Social */}
                 <div className="lg:col-span-2">
@@ -229,7 +245,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </TabsContent>
 
             {/* Página de Amigos */}
-            <TabsContent value="friends" className="mt-6">
+            <TabsContent value="friends" className="mt-6 lg:mt-6">
               <FriendsList
                 onSendMessage={handleSendMessage}
                 onViewProfile={handleViewProfile}
@@ -237,7 +253,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </TabsContent>
 
             {/* Página de Grupos */}
-            <TabsContent value="groups" className="mt-6">
+            <TabsContent value="groups" className="mt-6 lg:mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Grupos de Estudo</CardTitle>
@@ -258,7 +274,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </TabsContent>
 
             {/* Página de Chat */}
-            <TabsContent value="chat" className="mt-6">
+            <TabsContent value="chat" className="mt-6 lg:mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Sistema de Chat</CardTitle>
@@ -279,7 +295,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </TabsContent>
 
             {/* Página de Conquistas */}
-            <TabsContent value="achievements" className="mt-6">
+            <TabsContent value="achievements" className="mt-6 lg:mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Conquistas Sociais</CardTitle>
