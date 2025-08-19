@@ -51,12 +51,12 @@ export const FriendsList: React.FC<FriendsListProps> = ({
 
   // Filtrar amigos por busca
   const filteredFriends = friends.filter(friend =>
-    friend.name.toLowerCase().includes(searchQuery.toLowerCase())
+    friend?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filtrar solicitações por busca
   const filteredRequests = pendingRequests.filter(request =>
-    request.requester_name.toLowerCase().includes(searchQuery.toLowerCase())
+    request?.requester_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAcceptRequest = async (requestId: string) => {
