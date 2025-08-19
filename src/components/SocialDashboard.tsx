@@ -71,7 +71,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${className}`}>
       {/* MOBILE FIRST - Header Principal */}
-      <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 lg:hidden">
         <div className="px-4 py-3">
           {/* Header Mobile */}
           <div className="flex items-center justify-between">
@@ -111,7 +111,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       </header>
 
       {/* MOBILE FIRST - Conteúdo Principal */}
-      <main className="px-4 py-6">
+      <main className="px-4 py-6 lg:hidden">
         {/* Cards de Estatísticas - Mobile First */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white">
