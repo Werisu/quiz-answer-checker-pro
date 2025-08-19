@@ -18,12 +18,38 @@ export class FriendsService {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase.rpc("get_friends", {
-        user_id: user.id,
-      });
+      // Query direta para buscar amigos aceitos
+      const { data, error } = await supabase
+        .from("friendships")
+        .select(
+          "id, requester_id, addressee_id, status, created_at, updated_at"
+        )
+        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
+        .eq("status", "accepted");
 
       if (error) throw error;
-      return data || [];
+
+      console.log("🔍 Dados brutos de amigos:", data);
+
+      // Transformar dados para o formato esperado
+      const transformed = (data || []).map((friendship) => {
+        const friendId =
+          friendship.requester_id === user.id
+            ? friendship.addressee_id
+            : friendship.requester_id;
+
+        return {
+          id: friendship.id,
+          name: `Usuário ${friendId.slice(0, 8)}`, // Nome temporário
+          status: friendship.status,
+          created_at: friendship.created_at,
+          is_online: false, // Por enquanto, sempre false
+          last_seen: new Date().toISOString(), // Por enquanto, sempre agora
+        };
+      });
+
+      console.log("🔍 Dados transformados de amigos:", transformed);
+      return transformed;
     } catch (error) {
       console.error("Error fetching friends:", error);
       throw error;
@@ -40,13 +66,34 @@ export class FriendsService {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase.rpc(
-        "get_pending_friend_requests",
-        { user_id: user.id }
-      );
+      // Query direta para buscar solicitações pendentes
+      const { data, error } = await supabase
+        .from("friendships")
+        .select(
+          "id, requester_id, addressee_id, status, created_at, updated_at"
+        )
+        .eq("addressee_id", user.id)
+        .eq("status", "pending");
 
       if (error) throw error;
-      return data || [];
+
+      console.log("🔍 Dados brutos do banco:", data);
+
+      // Transformar dados para o formato esperado
+      const transformed = (data || []).map((friendship) => {
+        console.log("🔍 Transformando friendship:", friendship);
+        return {
+          id: friendship.id,
+          requester_id: friendship.requester_id,
+          addressee_id: friendship.addressee_id,
+          requester_name: `Usuário ${friendship.requester_id.slice(0, 8)}`, // Nome temporário
+          status: friendship.status,
+          created_at: friendship.created_at,
+        };
+      });
+
+      console.log("🔍 Dados transformados:", transformed);
+      return transformed;
     } catch (error) {
       console.error("Error fetching pending requests:", error);
       throw error;

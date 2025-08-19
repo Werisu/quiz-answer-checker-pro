@@ -7,14 +7,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFriends } from '@/hooks/useFriends';
 import {
-    AlertCircle,
-    CheckCircle,
-    Plus,
-    RefreshCw,
-    Search,
-    UserCheck,
-    UserPlus,
-    Users
+  AlertCircle,
+  CheckCircle,
+  Plus,
+  RefreshCw,
+  Search,
+  UserCheck,
+  UserPlus,
+  Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { AddFriendModal } from './AddFriendModal';
@@ -51,12 +51,12 @@ export const FriendsList: React.FC<FriendsListProps> = ({
 
   // Filtrar amigos por busca
   const filteredFriends = friends.filter(friend =>
-    friend.name.toLowerCase().includes(searchQuery.toLowerCase())
+    friend?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filtrar solicitações por busca
   const filteredRequests = pendingRequests.filter(request =>
-    request.requester_name.toLowerCase().includes(searchQuery.toLowerCase())
+    request?.requester_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAcceptRequest = async (requestId: string) => {
@@ -172,7 +172,7 @@ export const FriendsList: React.FC<FriendsListProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Amigos</h1>
           <p className="text-muted-foreground">

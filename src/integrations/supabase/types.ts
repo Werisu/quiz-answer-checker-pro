@@ -498,6 +498,48 @@ export type Database = {
           }
         ];
       };
+      friendships: {
+        Row: {
+          id: string;
+          requester_id: string;
+          addressee_id: string;
+          status: Database["public"]["Enums"]["friendship_status"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          requester_id: string;
+          addressee_id: string;
+          status?: Database["public"]["Enums"]["friendship_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          requester_id?: string;
+          addressee_id?: string;
+          status?: Database["public"]["Enums"]["friendship_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "friendships_requester_id_fkey";
+            columns: ["requester_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "friendships_addressee_id_fkey";
+            columns: ["addressee_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -507,6 +549,11 @@ export type Database = {
     };
     Enums: {
       user_role: "admin" | "user";
+      friendship_status: "pending" | "accepted" | "rejected" | "blocked";
+      group_role: "admin" | "moderator" | "member";
+      invitation_status: "pending" | "accepted" | "declined" | "expired";
+      chat_room_type: "private" | "group" | "study";
+      message_type: "text" | "image" | "file" | "system";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -623,6 +670,11 @@ export const Constants = {
   public: {
     Enums: {
       user_role: ["admin", "user"],
+      friendship_status: ["pending", "accepted", "rejected", "blocked"],
+      group_role: ["admin", "moderator", "member"],
+      invitation_status: ["pending", "accepted", "declined", "expired"],
+      chat_room_type: ["private", "group", "study"],
+      message_type: ["text", "image", "file", "system"],
     },
   },
 } as const;
