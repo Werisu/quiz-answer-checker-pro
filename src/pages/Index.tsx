@@ -7,6 +7,7 @@ import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
 import { QuizHistory } from '@/components/QuizHistory';
 import { Results } from '@/components/Results';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
@@ -340,6 +341,8 @@ const MainContent = () => {
         onNavigateToQuizCreator={() => setShowQuizCreator(true)}
         showNavigationButtons={true}
       />
+
+
 
       <AuthModal
         isOpen={showAuthModal}
