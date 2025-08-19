@@ -299,7 +299,7 @@ const MainContent = () => {
                 <User className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-foreground truncate">{user.email}</span>
                 {userProfile?.role === 'admin' && (
-                  <Badge variant="destructive" className="bg-destructive/20 text-destructive text-xs">
+                  <Badge variant="destructive" className="bg-destructive/20 text-destructive text-xs dark:text-white dark:bg-destructive/40">
                     ADMIN
                   </Badge>
                 )}
