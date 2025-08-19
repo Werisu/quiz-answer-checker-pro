@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
+import { Tag, useTags } from '@/hooks/useTags';
 import { LogOut, Plus, User } from 'lucide-react';
 import { useState } from 'react';
 
@@ -23,8 +24,12 @@ const MainContent = () => {
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
   const [showGoalsAndChallenges, setShowGoalsAndChallenges] = useState(false);
   const [showQuizCreator, setShowQuizCreator] = useState(false);
+  const [currentQuizTags, setCurrentQuizTags] = useState<Tag[]>([]);
+  const [currentCadernoName, setCurrentCadernoName] = useState<string>('');
+  
   const { user, signOut, loading: authLoading, userProfile } = useAuth();
   const { cadernos, createCaderno } = useCadernos();
+  const { tags } = useTags();
   const {
     currentQuiz,
     loading: quizLoading,
@@ -35,11 +40,19 @@ const MainContent = () => {
     getResults,
   } = useQuiz();
 
-  const handleInitialize = async (count: number, pdfName: string, description: string, cadernoId: string) => {
+  const handleInitialize = async (count: number, pdfName: string, description: string, cadernoId: string, tags?: Tag[]) => {
     if (!user) {
       setShowAuthModal(true);
       return;
     }
+    
+    // Salvar informações do caderno e tags para usar nos resultados
+    const caderno = cadernos.find(c => c.id === cadernoId);
+    if (caderno) {
+      setCurrentCadernoName(caderno.nome);
+    }
+    setCurrentQuizTags(tags || []);
+    
     await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count, pdfName, description, cadernoId);
     setShowQuizCreator(false);
   };
@@ -62,6 +75,8 @@ const MainContent = () => {
   const handleReset = () => {
     resetQuiz();
     setShowResults(false);
+    setCurrentQuizTags([]);
+    setCurrentCadernoName('');
   };
 
   const handleUpdateStatus = (questionId: number, status: 'correct' | 'incorrect' | 'unanswered', legend?: 'circle' | 'star' | 'question' | 'exclamation' | null) => {
@@ -150,6 +165,8 @@ const MainContent = () => {
             <Results
               results={results}
               onBack={() => setShowResults(false)}
+              tags={currentQuizTags}
+              cadernoName={currentCadernoName}
             />
           ) : currentQuiz ? (
             <div className="mt-6">
@@ -197,6 +214,8 @@ const MainContent = () => {
           <Results
             results={results}
             onBack={() => setShowResults(false)}
+            tags={currentQuizTags}
+            cadernoName={currentCadernoName}
           />
         </div>
       </div>
@@ -280,7 +299,7 @@ const MainContent = () => {
                 <User className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-foreground truncate">{user.email}</span>
                 {userProfile?.role === 'admin' && (
-                  <Badge variant="destructive" className="bg-destructive/20 text-destructive text-xs">
+                  <Badge variant="destructive" className="bg-destructive/20 text-destructive text-xs dark:text-white dark:bg-destructive/40">
                     ADMIN
                   </Badge>
                 )}

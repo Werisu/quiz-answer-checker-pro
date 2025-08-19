@@ -1,11 +1,13 @@
+import { TagDisplay } from '@/components/TagDisplay';
+import { TagSelector } from '@/components/TagSelector';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Tag, useTags } from '@/hooks/useTags';
 import { AlertCircle, BookOpen, CheckCircle2, Circle, Clock, HelpCircle, Play, Plus, RotateCcw, Save, Star, XCircle } from 'lucide-react';
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
 
 interface Caderno {
   id: string;
@@ -14,7 +16,7 @@ interface Caderno {
 }
 
 interface HeaderProps {
-  onInitialize: (count: number, pdfName: string, description: string, cadernoId: string) => void;
+  onInitialize: (count: number, pdfName: string, description: string, cadernoId: string, tags?: Tag[]) => void;
   onReset: () => void;
   onSave: () => void;
   hasQuestions: boolean;
@@ -41,9 +43,31 @@ export const Header: React.FC<HeaderProps> = ({
   const [pdfName, setPdfName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCadernoId, setSelectedCadernoId] = useState('');
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [showNewCadernoForm, setShowNewCadernoForm] = useState(false);
   const [newCadernoNome, setNewCadernoNome] = useState('');
   const [newCadernoDescricao, setNewCadernoDescricao] = useState('');
+  const [newCadernoTags, setNewCadernoTags] = useState<Tag[]>([]);
+
+  const { getCadernoTags } = useTags();
+
+  // Carregar tags do caderno selecionado
+  useEffect(() => {
+    if (selectedCadernoId) {
+      loadCadernoTags();
+    } else {
+      setSelectedTags([]);
+    }
+  }, [selectedCadernoId]);
+
+  const loadCadernoTags = async () => {
+    try {
+      const tags = await getCadernoTags(selectedCadernoId);
+      setSelectedTags(tags);
+    } catch (error) {
+      console.error('Erro ao carregar tags do caderno:', error);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
       alert('Por favor, selecione um caderno');
       return;
     }
-    onInitialize(questionCount, pdfName, description, selectedCadernoId);
+    onInitialize(questionCount, pdfName, description, selectedCadernoId, selectedTags);
   };
 
   const handleCreateCaderno = () => {
@@ -62,6 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
     onCadernoCreate(newCadernoNome.trim(), newCadernoDescricao.trim());
     setNewCadernoNome('');
     setNewCadernoDescricao('');
+    setNewCadernoTags([]);
     setShowNewCadernoForm(false);
   };
 
@@ -94,15 +119,15 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                   Número de Questões
                 </label>
-                                 <Input
-                   type="number"
-                   min="1"
-                   max="200"
-                   value={questionCount}
-                   onChange={(e) => setQuestionCount(Number(e.target.value))}
-                   placeholder="Ex: 20"
-                   className="w-32 h-10 rounded-xl border-2 border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-center text-base font-medium bg-background text-foreground"
-                 />
+                <Input
+                  type="number"
+                  min="1"
+                  max="200"
+                  value={questionCount}
+                  onChange={(e) => setQuestionCount(Number(e.target.value))}
+                  placeholder="Ex: 20"
+                  className="w-32 h-10 rounded-xl border-2 border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-center text-base font-medium bg-background text-foreground"
+                />
               </div>
               
               <div className="space-y-1 flex-1">
@@ -110,13 +135,13 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                   Nome do PDF
                 </label>
-                                 <Input
-                   type="text"
-                   value={pdfName}
-                   onChange={(e) => setPdfName(e.target.value)}
-                   placeholder="Ex: Direito Constitucional"
-                   className="w-full h-10 rounded-xl border-2 border-border focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all duration-200 bg-background text-foreground"
-                 />
+                <Input
+                  type="text"
+                  value={pdfName}
+                  onChange={(e) => setPdfName(e.target.value)}
+                  placeholder="Ex: Direito Constitucional"
+                  className="w-full h-10 rounded-xl border-2 border-border focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all duration-200 bg-background text-foreground"
+                />
               </div>
             </div>
             
@@ -127,72 +152,95 @@ export const Header: React.FC<HeaderProps> = ({
                   <BookOpen className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                                     <h3 className="text-sm font-semibold text-foreground">Selecionar Caderno</h3>
-                   <p className="text-xs text-muted-foreground">Escolha onde salvar seu quiz</p>
+                  <h3 className="text-sm font-semibold text-foreground">Selecionar Caderno</h3>
+                  <p className="text-xs text-muted-foreground">Escolha onde salvar seu quiz</p>
                 </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3">
-                                 <Select value={selectedCadernoId} onValueChange={setSelectedCadernoId}>
-                   <SelectTrigger className="w-full sm:w-72 h-10 rounded-xl border-2 border-border focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200 bg-background text-foreground">
-                     <SelectValue placeholder="Escolha um caderno existente" />
-                   </SelectTrigger>
-                   <SelectContent className="rounded-xl border-2 border-border shadow-xl bg-background">
+                <Select value={selectedCadernoId} onValueChange={setSelectedCadernoId}>
+                  <SelectTrigger className="w-full sm:w-72 h-10 rounded-xl border-2 border-border focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200 bg-background text-foreground">
+                    <SelectValue placeholder="Escolha um caderno existente" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-2 border-border shadow-xl bg-background">
                     {cadernos.map((caderno) => (
-                                             <SelectItem key={caderno.id} value={caderno.id} className="rounded-lg text-foreground hover:bg-accent">
-                         <div className="flex items-center gap-2">
-                           <div>
-                             <div className="font-medium text-foreground text-sm">{caderno.nome}</div>
-                           </div>
-                         </div>
-                       </SelectItem>
+                      <SelectItem key={caderno.id} value={caderno.id} className="rounded-lg text-foreground hover:bg-accent">
+                        <div className="flex items-center gap-2">
+                          <div>
+                            <div className="font-medium text-foreground text-sm">{caderno.nome}</div>
+                          </div>
+                        </div>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 
-                                 <Button
-                   type="button"
-                   variant="outline"
-                   onClick={() => setShowNewCadernoForm(!showNewCadernoForm)}
-                   className="w-full sm:w-auto h-10 px-4 rounded-xl border-2 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium text-sm bg-background"
-                 >
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowNewCadernoForm(!showNewCadernoForm)}
+                  className="w-full sm:w-auto h-10 px-4 rounded-xl border-2 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium text-sm bg-background"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Novo Caderno
                 </Button>
               </div>
+
+              {/* Tags do Caderno Selecionado */}
+              {selectedCadernoId && selectedTags.length > 0 && (
+                <div className="p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-200 dark:from-purple-950/20 dark:to-blue-950/20 dark:border-purple-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+                      <BookOpen className="w-2 h-2 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-foreground">Tags do Caderno:</span>
+                  </div>
+                  <TagDisplay tags={selectedTags} size="sm" />
+                </div>
+              )}
             </div>
 
             {/* Formulário de Novo Caderno */}
-                         {showNewCadernoForm && (
-               <div className="p-4 border-2 border-purple-200 rounded-2xl bg-gradient-to-br from-purple-50/50 to-background shadow-lg">
+            {showNewCadernoForm && (
+              <div className="p-4 border-2 border-purple-200 rounded-2xl bg-gradient-to-br from-purple-50/50 to-background shadow-lg">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
                     <Plus className="w-3 h-3 text-white" />
                   </div>
-                                     <h4 className="text-sm font-semibold text-foreground">Criar Novo Caderno</h4>
+                  <h4 className="text-sm font-semibold text-foreground">Criar Novo Caderno</h4>
                 </div>
                 
                 <div className="space-y-3">
                   <div className="space-y-1">
-                                         <label className="text-xs font-medium text-foreground">Nome do Caderno</label>
-                                         <Input
-                       type="text"
-                       value={newCadernoNome}
-                       onChange={(e) => setNewCadernoNome(e.target.value)}
-                       placeholder="Ex: Direito Constitucional"
-                       className="w-full h-9 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200 bg-background text-foreground"
-                     />
+                    <label className="text-xs font-medium text-foreground">Nome do Caderno</label>
+                    <Input
+                      type="text"
+                      value={newCadernoNome}
+                      onChange={(e) => setNewCadernoNome(e.target.value)}
+                      placeholder="Ex: Direito Constitucional"
+                      className="w-full h-9 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200 bg-background text-foreground"
+                    />
                   </div>
                   
                   <div className="space-y-1">
-                                         <label className="text-xs font-medium text-foreground">Descrição (opcional)</label>
-                                         <Textarea
-                       value={newCadernoDescricao}
-                       onChange={(e) => setNewCadernoDescricao(e.target.value)}
-                       placeholder="Descreva o conteúdo deste caderno..."
-                       className="w-full rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200 resize-none bg-background text-foreground"
-                       rows={2}
-                     />
+                    <label className="text-xs font-medium text-foreground">Descrição (opcional)</label>
+                    <Textarea
+                      value={newCadernoDescricao}
+                      onChange={(e) => setNewCadernoDescricao(e.target.value)}
+                      placeholder="Descreva o conteúdo deste caderno..."
+                      className="w-full rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200 resize-none bg-background text-foreground"
+                      rows={2}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-foreground">Tags (opcional)</label>
+                    <TagSelector
+                      selectedTags={newCadernoTags}
+                      onTagsChange={setNewCadernoTags}
+                      placeholder="Selecionar tags para este caderno..."
+                      maxTags={5}
+                    />
                   </div>
                   
                   <div className="flex gap-2 pt-1">
@@ -262,7 +310,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                       <div>
                         <div className="text-xl font-bold text-green-600">{results.correct}</div>
-                                                 <div className="text-xs text-muted-foreground">Corretas</div>
+                        <div className="text-xs text-muted-foreground">Corretas</div>
                       </div>
                     </div>
                     
@@ -272,7 +320,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                       <div>
                         <div className="text-xl font-bold text-red-600">{results.incorrect}</div>
-                                                 <div className="text-xs text-muted-foreground">Incorretas</div>
+                        <div className="text-xs text-muted-foreground">Incorretas</div>
                       </div>
                     </div>
                     
@@ -282,14 +330,14 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                       <div>
                         <div className="text-xl font-bold text-gray-600">{results.unanswered}</div>
-                                                 <div className="text-xs text-muted-foreground">Pendentes</div>
+                        <div className="text-xs text-muted-foreground">Pendentes</div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-2">
                     <div className="text-2xl font-bold text-blue-600">{percentage.toFixed(1)}%</div>
-                                         <div className="text-xs text-muted-foreground">de questões respondidas</div>
+                    <div className="text-xs text-muted-foreground">de questões respondidas</div>
                   </div>
                 </div>
                 
@@ -304,7 +352,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Button 
                     variant="outline" 
                     onClick={onReset} 
-                    className="w-full sm:w-auto h-10 px-6 rounded-xl border-2 border-border hover:border-border hover:bg-accent transition-all duration-200 font-semibold text-sm bg-background"
+                    className="w-full sm:w-auto h-10 px-6 rounded-xl border-2 border-border hover:border-border hover:bg-accent transition-all duration-200 font-medium text-sm bg-background"
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Reiniciar Quiz
@@ -315,31 +363,31 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Legenda */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-2xl border-2 border-blue-100 shadow-lg dark:from-blue-950/20 dark:to-indigo-950/20 dark:border-blue-800">
-                             <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                 <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                   <HelpCircle className="w-3 h-3 text-white" />
                 </div>
                 Legenda das Respostas
               </h3>
               
-                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                   <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
-                     <Circle className="w-4 h-4 text-blue-500" />
-                     <span className="text-xs text-foreground">Não sabe, não responde</span>
-                   </div>
-                   <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
-                     <Star className="w-4 h-4 text-yellow-500" />
-                     <span className="text-xs text-foreground">Tem certeza, responde</span>
-                   </div>
-                   <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
-                     <HelpCircle className="w-4 h-4 text-purple-500" />
-                     <span className="text-xs text-foreground">Em dúvida, mas sabe a matéria</span>
-                   </div>
-                   <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
-                     <AlertCircle className="w-4 h-4 text-orange-500" />
-                     <span className="text-xs text-foreground">Sabe, mas precisa de mais tempo</span>
-                   </div>
-                 </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
+                  <Circle className="w-4 h-4 text-blue-500" />
+                  <span className="text-xs text-foreground">Não sabe, não responde</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  <span className="text-xs text-foreground">Tem certeza, responde</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
+                  <HelpCircle className="w-4 h-4 text-purple-500" />
+                  <span className="text-xs text-foreground">Em dúvida, mas sabe a matéria</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 bg-background/60 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-orange-500" />
+                  <span className="text-xs text-foreground">Sabe, mas precisa de mais tempo</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
