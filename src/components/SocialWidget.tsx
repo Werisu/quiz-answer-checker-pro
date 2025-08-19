@@ -89,17 +89,17 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
 
       <CardContent className="space-y-4">
         {/* Estatísticas Rápidas - Responsivas */}
-        <div className="grid grid-cols-3 gap-2 lg:gap-3">
-          <div className="text-center p-2 lg:p-3 bg-muted/50 rounded-lg">
-            <div className="text-lg lg:text-2xl font-bold text-primary">{friends.length}</div>
+        <div className="grid grid-cols-3 gap-1 sm:gap-2 lg:gap-3">
+          <div className="text-center p-1 sm:p-2 lg:p-3 bg-muted/50 rounded-lg">
+            <div className="text-sm sm:text-lg lg:text-2xl font-bold text-primary">{friends.length}</div>
             <div className="text-xs text-muted-foreground">Total</div>
           </div>
-          <div className="text-center p-2 lg:p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-            <div className="text-lg lg:text-2xl font-bold text-green-600">{totalOnline}</div>
+          <div className="text-center p-1 sm:p-2 lg:p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+            <div className="text-sm sm:text-lg lg:text-2xl font-bold text-green-600">{totalOnline}</div>
             <div className="text-xs text-muted-foreground">Online</div>
           </div>
-          <div className="text-center p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600">{pendingRequests.length}</div>
+          <div className="text-center p-1 sm:p-2 lg:p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+            <div className="text-sm sm:text-lg lg:text-2xl font-bold text-orange-600">{pendingRequests.length}</div>
             <div className="text-xs text-muted-foreground">Pendentes</div>
           </div>
         </div>

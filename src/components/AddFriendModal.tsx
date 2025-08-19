@@ -174,7 +174,7 @@ export const AddFriendModal: React.FC<AddFriendModalProps> = ({
         )}
       </DialogTrigger>
       
-      <DialogContent className="max-w-[95vw] md:max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-[98vw] sm:max-w-[95vw] md:max-w-2xl max-h-[90vh] sm:max-h-[80vh] overflow-y-auto mx-2 sm:mx-0">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-1 lg:space-x-2">
             <UserPlus className="h-4 w-4 lg:h-5 lg:w-5" />

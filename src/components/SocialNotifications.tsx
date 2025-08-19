@@ -187,7 +187,7 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
   return (
     <Card className={className}>
       <CardHeader className="pb-3 p-4 lg:p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+        <div className="flex flex-col xxl:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
           <div className="flex items-center space-x-1 lg:space-x-2">
             <Bell className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
             <CardTitle className="text-base lg:text-lg">Notificações</CardTitle>
@@ -300,44 +300,47 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
                         </div>
                       </div>
                       
-                      {/* Ações adicionais */}
-                      <div className="flex items-center space-x-2 mt-3">
-                        {onViewProfile && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 px-2 text-xs"
-                            onClick={() => onViewProfile(notification.user_id)}
-                          >
-                            <Users className="h-3 w-3 mr-1" />
-                            Ver perfil
-                          </Button>
-                        )}
-                        
-                        {onSendMessage && notification.type !== 'friend_request' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 px-2 text-xs"
-                            onClick={() => onSendMessage(notification.user_id)}
-                          >
-                            <MessageCircle className="h-3 w-3 mr-1" />
-                            Mensagem
-                          </Button>
-                        )}
-                        
-                        {!notification.is_read && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-6 px-2 text-xs"
-                            onClick={() => markAsRead(notification.id)}
-                          >
-                            <Clock className="h-3 w-3 mr-1" />
-                            Marcar como lida
-                          </Button>
-                        )}
-                      </div>
+                              {/* Ações adicionais */}
+        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2 sm:mt-3">
+          {onViewProfile && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 px-1 sm:px-2 text-xs"
+              onClick={() => onViewProfile(notification.user_id)}
+            >
+              <Users className="h-3 w-3 mr-1" />
+              <span className="hidden sm:inline">Ver perfil</span>
+              <span className="sm:hidden">Perfil</span>
+            </Button>
+          )}
+          
+          {onSendMessage && notification.type !== 'friend_request' && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 px-1 sm:px-2 text-xs"
+              onClick={() => onSendMessage(notification.user_id)}
+            >
+              <MessageCircle className="h-3 w-3 mr-1" />
+              <span className="hidden sm:inline">Mensagem</span>
+              <span className="sm:hidden">Msg</span>
+            </Button>
+          )}
+          
+          {!notification.is_read && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-1 sm:px-2 text-xs"
+              onClick={() => markAsRead(notification.id)}
+            >
+              <Clock className="h-3 w-3 mr-1" />
+              <span className="hidden sm:inline">Marcar como lida</span>
+              <span className="sm:hidden">Lida</span>
+            </Button>
+          )}
+        </div>
                     </div>
                   </div>
                 </div>

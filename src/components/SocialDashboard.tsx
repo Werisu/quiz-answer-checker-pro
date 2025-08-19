@@ -71,12 +71,12 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       
       {/* Conteúdo Principal */}
       <div className="flex-1 overflow-auto">
-        <div className="container mx-auto p-3 lg:p-6 space-y-4 lg:space-y-6">
+        <div className="container mx-auto p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
           {/* Header Responsivo */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div className="flex flex-col sm:flex-row lg:flex-row lg:items-center lg:justify-between space-y-3 sm:space-y-4 lg:space-y-0">
             <div>
-              <h1 className="text-2xl lg:text-4xl font-bold">🏠 Dashboard Social</h1>
-              <p className="text-base lg:text-xl text-muted-foreground">
+              <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold">🏠 Dashboard Social</h1>
+              <p className="text-sm sm:text-base lg:text-xl text-muted-foreground">
                 Gerencie suas conexões e atividades sociais
               </p>
             </div>
@@ -86,7 +86,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden"
+                className="lg:hidden text-xs px-2 py-1"
               >
                 {sidebarOpen ? 'Ocultar' : 'Mostrar'}
               </Button>
@@ -103,28 +103,28 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {/* Tabs principais - Responsivos */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1">
-              <TabsTrigger value="overview" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+              <TabsTrigger value="overview" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
                 <Activity className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span className="hidden sm:inline">Visão Geral</span>
                 <span className="sm:hidden">Geral</span>
               </TabsTrigger>
               
-              <TabsTrigger value="friends" className="flex items-center space-x-2 text-xs lg:text-sm">
+              <TabsTrigger value="friends" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
                 <Users className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span>Amigos</span>
               </TabsTrigger>
               
-              <TabsTrigger value="groups" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+              <TabsTrigger value="groups" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
                 <BookOpen className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span>Grupos</span>
               </TabsTrigger>
               
-              <TabsTrigger value="chat" className="flex items-center space-x-2 text-xs lg:text-sm">
+              <TabsTrigger value="chat" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
                 <MessageCircle className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span>Chat</span>
               </TabsTrigger>
               
-              <TabsTrigger value="achievements" className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm">
+              <TabsTrigger value="achievements" className="flex items-center justify-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-1 lg:px-3">
                 <Trophy className="h-3 w-3 lg:h-4 lg:w-4" />
                 <span className="hidden sm:inline">Conquistas</span>
                 <span className="sm:hidden">Conq.</span>
@@ -132,8 +132,8 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </TabsList>
 
             {/* Visão Geral */}
-            <TabsContent value="overview" className="mt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <TabsContent value="overview" className="mt-4 lg:mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                 {/* Widget Social */}
                 <div className="lg:col-span-2">
                   <SocialWidget
@@ -156,61 +156,61 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
               </div>
 
               {/* Estatísticas Sociais */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium flex items-center space-x-2">
-                      <TrendingUp className="h-4 w-4" />
-                      <span>Engajamento</span>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 lg:gap-4 mt-4 lg:mt-6">
+                <Card className="p-2 lg:p-6">
+                  <CardHeader className="pb-1 lg:pb-2 p-2 lg:p-6">
+                    <CardTitle className="text-xs lg:text-sm font-medium flex items-center space-x-1 lg:space-x-2">
+                      <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4" />
+                      <span className="text-xs lg:text-sm">Engajamento</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-green-600">+24%</div>
+                  <CardContent className="p-2 lg:p-6">
+                    <div className="text-lg lg:text-2xl font-bold text-green-600">+24%</div>
                     <p className="text-xs text-muted-foreground">
                       Esta semana
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium flex items-center space-x-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>Sessões</span>
+                <Card className="p-2 lg:p-6">
+                  <CardHeader className="pb-1 lg:pb-2 p-2 lg:p-6">
+                    <CardTitle className="text-xs lg:text-sm font-medium flex items-center space-x-1 lg:space-x-2">
+                      <Calendar className="h-3 w-3 lg:h-4 lg:w-4" />
+                      <span className="text-xs lg:text-sm">Sessões</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">12</div>
+                  <CardContent className="p-2 lg:p-6">
+                    <div className="text-lg lg:text-2xl font-bold">12</div>
                     <p className="text-xs text-muted-foreground">
                       Esta semana
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium flex items-center space-x-2">
-                      <Target className="h-4 w-4" />
-                      <span>Metas</span>
+                <Card className="p-2 lg:p-6">
+                  <CardHeader className="pb-1 lg:pb-2 p-2 lg:p-6">
+                    <CardTitle className="text-xs lg:text-sm font-medium flex items-center space-x-1 lg:space-x-2">
+                      <Target className="h-3 w-3 lg:h-4 lg:w-4" />
+                      <span className="text-xs lg:text-sm">Metas</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-blue-600">8/10</div>
+                  <CardContent className="p-2 lg:p-6">
+                    <div className="text-lg lg:text-2xl font-bold text-blue-600">8/10</div>
                     <p className="text-xs text-muted-foreground">
                       Completadas
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium flex items-center space-x-2">
-                      <Trophy className="h-4 w-4" />
-                      <span>Pontos</span>
+                <Card className="p-2 lg:p-6">
+                  <CardHeader className="pb-1 lg:pb-2 p-2 lg:p-6">
+                    <CardTitle className="text-xs lg:text-sm font-medium flex items-center space-x-1 lg:space-x-2">
+                      <Trophy className="h-3 w-3 lg:h-4 lg:w-4" />
+                      <span className="text-xs lg:text-sm">Pontos</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-purple-600">1,247</div>
+                  <CardContent className="p-2 lg:p-6">
+                    <div className="text-lg lg:text-2xl font-bold text-purple-600">1,247</div>
                     <p className="text-xs text-muted-foreground">
                       Total acumulado
                     </p>

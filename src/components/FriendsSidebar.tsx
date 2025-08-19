@@ -197,7 +197,7 @@ export const FriendsSidebar: React.FC<FriendsSidebarProps> = ({
 
       {/* Conteúdo da Sidebar */}
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+        <div className="p-2 sm:p-3 lg:p-4 space-y-3 lg:space-y-4">
           {/* Estatísticas Rápidas */}
           <Card>
             <CardHeader className="pb-3">
