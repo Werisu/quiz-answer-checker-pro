@@ -344,3 +344,20 @@ export interface SocialFilters {
     };
   };
 }
+
+// ===== USER SEARCH TYPES =====
+
+export interface UserSearchResult {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  created_at: string;
+  last_seen?: string;
+  is_online?: boolean;
+  study_stats?: {
+    quizzes_completed: number;
+    goals_achieved: number;
+    total_study_time: number;
+  };
+}

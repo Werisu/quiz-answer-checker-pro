@@ -88,7 +88,7 @@
 - [x] **FriendsList** - Lista de amigos e solicitações
 - [x] **FriendCard** - Card individual de amigo
 - [x] **FriendRequestCard** - Card de solicitação pendente
-- [ ] **AddFriendModal** - Modal para adicionar amigos
+- [x] **AddFriendModal** - Modal para adicionar amigos
 - [ ] **FriendsSidebar** - Sidebar com amigos online
 
 ### **2. Hooks Personalizados**

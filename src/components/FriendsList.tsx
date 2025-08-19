@@ -17,6 +17,7 @@ import {
     Users
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { AddFriendModal } from './AddFriendModal';
 import { FriendCard } from './FriendCard';
 import { FriendRequestCard } from './FriendRequestCard';
 
@@ -31,6 +32,7 @@ export const FriendsList: React.FC<FriendsListProps> = ({
   onViewProfile,
   onAddFriend
 }) => {
+  const [addFriendModalOpen, setAddFriendModalOpen] = useState(false);
   const {
     friends,
     pendingRequests,
@@ -184,12 +186,16 @@ export const FriendsList: React.FC<FriendsListProps> = ({
             Atualizar
           </Button>
           
-          {onAddFriend && (
-            <Button onClick={onAddFriend}>
-              <Plus className="h-4 w-4 mr-2" />
-              Adicionar amigo
-            </Button>
-          )}
+          <AddFriendModal
+            open={addFriendModalOpen}
+            onOpenChange={setAddFriendModalOpen}
+            trigger={
+              <Button onClick={() => setAddFriendModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar amigo
+              </Button>
+            }
+          />
         </div>
       </div>
 
