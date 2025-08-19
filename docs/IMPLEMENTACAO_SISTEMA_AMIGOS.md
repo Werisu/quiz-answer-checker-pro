@@ -99,9 +99,9 @@
 
 ### **3. Integração com Dashboard**
 
-- [ ] **Widget de amigos** no dashboard principal
-- [ ] **Notificações** de solicitações
-- [ ] **Indicador** de amigos online
+- [x] **Widget de amigos** no dashboard principal
+- [x] **Notificações** de solicitações
+- [x] **Indicador** de amigos online
 
 ### **4. Testes e Validação**
 
