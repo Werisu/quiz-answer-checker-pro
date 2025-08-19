@@ -1,4 +1,5 @@
 import { StudyCalendar } from '@/components/StudyCalendar';
+import { TagManager } from '@/components/TagManager';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useGoalsAndChallenges } from '@/hooks/useGoalsAndChallenges';
 import { useQuiz } from '@/hooks/useQuiz';
+import { useTags } from '@/hooks/useTags';
 import {
   ArrowLeft,
   Award,
@@ -49,6 +51,7 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
   const { quizHistory, fetchQuizHistory } = useQuiz();
   const { goals, challenges } = useGoalsAndChallenges();
   const { cadernos } = useCadernos();
+  const { tags } = useTags();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
@@ -279,7 +282,7 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
       {/* Conteúdo Principal */}
       <div className="container mx-auto p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-lg rounded-2xl p-1 dark:bg-muted/50 dark:border-border dark:shadow-none">
+          <TabsList className="grid w-full grid-cols-6 bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-lg rounded-2xl p-1 dark:bg-muted/50 dark:border-border dark:shadow-none">
             <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Visão Geral
             </TabsTrigger>
@@ -292,6 +295,9 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
             <TabsTrigger value="goals" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Metas
             </TabsTrigger>
+            <TabsTrigger value="tags" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
+              Tags
+            </TabsTrigger>
             <TabsTrigger value="insights" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all duration-200 dark:data-[state=active]:bg-background">
               Insights
             </TabsTrigger>
@@ -300,7 +306,7 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
           {/* Tab: Visão Geral */}
           <TabsContent value="overview" className="space-y-8">
             {/* Cards de Estatísticas Rápidas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/20 border-blue-200/30 shadow-lg hover:shadow-xl transition-all duration-300 dark:from-blue-500/20 dark:to-blue-600/30 dark:border-blue-400/30">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold text-blue-800 dark:text-blue-200">Total de Quizzes</CardTitle>
@@ -338,6 +344,16 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
                 <CardContent>
                   <div className="text-3xl font-bold text-rose-900 dark:text-rose-100">{activeGoals.length}</div>
                   <p className="text-xs text-rose-700 dark:text-rose-300">Metas em andamento</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-amber-500/10 to-orange-600/20 border-amber-200/30 shadow-lg hover:shadow-xl transition-all duration-300 dark:from-amber-500/20 dark:to-orange-600/30 dark:border-amber-400/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-amber-800 dark:text-amber-200">Tags</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-amber-900 dark:text-amber-100">{tags.length}</div>
+                  <p className="text-xs text-amber-700 dark:text-amber-300">Tags criadas</p>
                 </CardContent>
               </Card>
             </div>
@@ -580,6 +596,11 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Tab: Tags */}
+          <TabsContent value="tags" className="space-y-6">
+            <TagManager />
           </TabsContent>
 
           {/* Tab: Insights */}
