@@ -13,7 +13,8 @@ import {
     Search,
     Settings,
     UserPlus,
-    Users
+    Users,
+    X
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { AddFriendModal } from './AddFriendModal';
@@ -23,13 +24,15 @@ interface FriendsSidebarProps {
   onFriendSelect?: (friendId: string) => void;
   onSendMessage?: (friendId: string) => void;
   onViewProfile?: (userId: string) => void;
+  onClose?: () => void; // Novo prop para fechar no mobile
 }
 
 export const FriendsSidebar: React.FC<FriendsSidebarProps> = ({
   className = '',
   onFriendSelect,
   onSendMessage,
-  onViewProfile
+  onViewProfile,
+  onClose
 }) => {
   const { friends, pendingRequests } = useFriends();
   const [addFriendModalOpen, setAddFriendModalOpen] = useState(false);
@@ -176,9 +179,21 @@ export const FriendsSidebar: React.FC<FriendsSidebarProps> = ({
             <Users className="h-4 w-4 lg:h-5 lg:w-5" />
             <span>Social</span>
           </h2>
-          <Button variant="ghost" size="sm" className="h-7 w-7 lg:h-8 lg:w-8 p-0">
-            <Settings className="h-3 w-3 lg:h-4 lg:w-4" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            {onClose && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 w-7 lg:h-8 lg:w-8 p-0 lg:hidden"
+                onClick={onClose}
+              >
+                <X className="h-3 w-3 lg:h-4 lg:w-4" />
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" className="h-7 w-7 lg:h-8 lg:w-8 p-0">
+              <Settings className="h-3 w-3 lg:h-4 lg:w-4" />
+            </Button>
+          </div>
         </div>
         
         {/* Botão Adicionar Amigo */}

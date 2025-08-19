@@ -25,7 +25,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   className = ''
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile: sidebar fechada por padrão
 
   const handleSendMessage = (friendId: string) => {
     console.log('Enviar mensagem para:', friendId);
@@ -65,13 +65,22 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
             onSendMessage={handleSendMessage}
             onViewProfile={handleViewProfile}
+            onClose={() => setSidebarOpen(false)}
           />
         </div>
       )}
       
       {/* Conteúdo Principal */}
-      <div className="flex-1 overflow-auto">
+      <div className={`flex-1 overflow-auto ${sidebarOpen ? 'hidden lg:block' : 'block'}`}>
         <div className="container mx-auto p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
+          {/* Indicador Mobile */}
+          {sidebarOpen && (
+            <div className="lg:hidden mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-700 dark:text-blue-300 text-center">
+                📱 <strong>Sidebar Social ativa</strong> - Use o botão "Ver Conteúdo" para alternar
+              </p>
+            </div>
+          )}
           {/* Header Responsivo */}
           <div className="flex flex-col sm:flex-row lg:flex-row lg:items-center lg:justify-between space-y-3 sm:space-y-4 lg:space-y-0">
             <div>
@@ -88,7 +97,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="lg:hidden text-xs px-2 py-1"
               >
-                {sidebarOpen ? 'Ocultar' : 'Mostrar'}
+                {sidebarOpen ? '📱 Ver Conteúdo' : '👥 Ver Social'}
               </Button>
               <Button
                 variant="outline"
