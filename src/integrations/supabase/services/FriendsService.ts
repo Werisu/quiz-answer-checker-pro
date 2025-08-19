@@ -271,15 +271,20 @@ export class FriendsService {
   }
 
   /**
-   * Check if two users are friends
+   * Check if current user is friends with another user
    */
-  static async areFriends(userId1: string, userId2: string): Promise<boolean> {
+  static async areFriends(otherUserId: string): Promise<boolean> {
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
       const { data, error } = await supabase
         .from("friendships")
         .select("status")
         .or(
-          `and(requester_id.eq.${userId1},addressee_id.eq.${userId2}),and(requester_id.eq.${userId2},addressee_id.eq.${userId1})`
+          `and(requester_id.eq.${user.id},addressee_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},addressee_id.eq.${user.id})`
         )
         .eq("status", "accepted")
         .single();
@@ -293,18 +298,22 @@ export class FriendsService {
   }
 
   /**
-   * Get friendship status between two users
+   * Get friendship status between current user and another user
    */
   static async getFriendshipStatus(
-    userId1: string,
-    userId2: string
+    otherUserId: string
   ): Promise<string | null> {
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
       const { data, error } = await supabase
         .from("friendships")
         .select("status")
         .or(
-          `and(requester_id.eq.${userId1},addressee_id.eq.${userId2}),and(requester_id.eq.${userId2},addressee_id.eq.${userId1})`
+          `and(requester_id.eq.${user.id},addressee_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},addressee_id.eq.${user.id})`
         )
         .single();
 

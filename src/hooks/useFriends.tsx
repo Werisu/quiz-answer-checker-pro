@@ -45,7 +45,7 @@ export const useFriends = () => {
     if (!user) return false;
     
     try {
-      await FriendsService.sendFriendRequest(addresseeId);
+      await FriendsService.sendFriendRequest({ user_id: addresseeId });
       // Atualizar lista de solicitações pendentes
       await fetchPendingRequests();
       return true;
