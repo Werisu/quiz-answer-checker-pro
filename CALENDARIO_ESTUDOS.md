@@ -163,5 +163,3 @@ O **Calendário de Estudos** transforma dados brutos de estudo em uma visualiza�
 - **Acompanhar** seu progresso ao longo do tempo
 
 Esta funcionalidade representa um passo importante na transformação do EstudaPro em uma plataforma completa de gestão de estudos, oferecendo insights visuais que ajudam na tomada de decisões sobre sua rotina de preparação para concursos.
-
-
