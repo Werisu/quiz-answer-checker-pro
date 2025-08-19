@@ -7,7 +7,7 @@ import { Header } from '@/components/Header';
 import { QuestionTracker } from '@/components/QuestionTracker';
 import { QuizHistory } from '@/components/QuizHistory';
 import { Results } from '@/components/Results';
-import { SocialNavigation } from '@/components/SocialNavigation';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
@@ -342,10 +342,7 @@ const MainContent = () => {
         showNavigationButtons={true}
       />
 
-      {/* Navegação para o Sistema Social */}
-      <div className="container mx-auto py-6">
-        <SocialNavigation />
-      </div>
+
 
       <AuthModal
         isOpen={showAuthModal}

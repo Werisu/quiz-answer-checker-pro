@@ -24,6 +24,7 @@ import {
   Settings,
   Star,
   Target,
+  Users,
   XCircle
 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -265,17 +266,28 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
                   Metas
                 </Button>
               )}
-              {onNavigateToAdmin && userProfile?.role === 'admin' && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={onNavigateToAdmin}
-                  className="bg-gradient-to-r from-slate-500/10 to-gray-600/20 hover:from-slate-500/20 hover:to-gray-600/30 border-slate-200/50 hover:border-slate-300/70 text-slate-700 hover:text-slate-800 shadow-sm transition-all duration-200 dark:from-slate-500/20 dark:to-slate-600/30 dark:hover:from-slate-500/30 dark:hover:to-slate-600/40 dark:border-slate-400/40 dark:hover:border-slate-300/60 dark:text-slate-200 dark:hover:text-slate-100"
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Admin
-                </Button>
-              )}
+                             {onNavigateToAdmin && userProfile?.role === 'admin' && (
+                 <Button 
+                   variant="outline" 
+                   size="sm" 
+                   onClick={onNavigateToAdmin}
+                   className="bg-gradient-to-r from-slate-500/10 to-gray-600/20 hover:from-slate-500/20 hover:to-gray-600/30 border-slate-200/50 hover:border-slate-300/70 text-slate-700 hover:text-slate-800 shadow-sm transition-all duration-200 dark:from-slate-500/20 dark:to-slate-600/30 dark:hover:from-slate-500/30 dark:hover:to-slate-600/40 dark:border-slate-400/40 dark:hover:border-slate-300/60 dark:text-slate-200 dark:hover:text-slate-100"
+                 >
+                   <Settings className="w-4 h-4 mr-2" />
+                   Admin
+                 </Button>
+               )}
+               
+               {/* Botão Social */}
+               <Button 
+                 variant="outline" 
+                 size="sm" 
+                 onClick={() => window.location.href = '/social'}
+                 className="bg-gradient-to-r from-blue-500/10 to-indigo-600/20 hover:from-blue-500/20 hover:to-indigo-600/30 border-blue-200/50 hover:border-blue-300/70 text-blue-700 hover:text-blue-800 shadow-sm transition-all duration-200 dark:from-blue-500/20 dark:to-indigo-600/30 dark:hover:from-blue-500/30 dark:hover:to-indigo-600/40 dark:border-blue-400/40 dark:hover:border-blue-300/60 dark:text-blue-200 dark:hover:text-blue-100"
+               >
+                 <Users className="w-4 h-4 mr-2" />
+                 Social
+               </Button>
             </div>
           </div>
         </div>
@@ -745,7 +757,8 @@ export const Dashboard: React.FC<DashboardProps> = React.memo(({
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+
+                       </TabsContent>
         </Tabs>
              </div>
      </div>
