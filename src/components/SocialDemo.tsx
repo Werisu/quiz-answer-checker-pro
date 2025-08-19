@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, MessageCircle, Trophy, Users } from 'lucide-react';
 import React from 'react';
 import { FriendsList } from './FriendsList';
+import { FriendsSidebar } from './FriendsSidebar';
 
 export const SocialDemo: React.FC = () => {
   const handleSendMessage = (friendId: string) => {
@@ -17,7 +18,17 @@ export const SocialDemo: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="flex h-screen">
+      {/* Sidebar Social */}
+      <FriendsSidebar
+        onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
+        onSendMessage={handleSendMessage}
+        onViewProfile={handleViewProfile}
+      />
+      
+      {/* Conteúdo Principal */}
+      <div className="flex-1 overflow-auto">
+        <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-2">🚀 Sistema Social</h1>
@@ -205,12 +216,14 @@ export const SocialDemo: React.FC = () => {
             <span>✅ useFriends Hook</span>
             <Badge variant="default">Completo</Badge>
           </div>
-          <div className="flex items-center justify-between">
-            <span>⏳ FriendsSidebar Component</span>
-            <Badge variant="secondary">Próximo</Badge>
-          </div>
-        </CardContent>
-      </Card>
+                     <div className="flex items-center justify-between">
+             <span>✅ FriendsSidebar Component</span>
+             <Badge variant="default">Completo</Badge>
+           </div>
+                 </CardContent>
+       </Card>
+        </div>
+      </div>
     </div>
   );
 };
