@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFriends } from '@/hooks/useFriends';
 import {
-    ArrowRight,
-    Bell,
-    Circle,
-    MessageCircle,
-    MoreHorizontal,
-    Plus,
-    UserPlus,
-    Users
+  ArrowRight,
+  Bell,
+  Circle,
+  MessageCircle,
+  MoreHorizontal,
+  Plus,
+  UserPlus,
+  Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { AddFriendModal } from './AddFriendModal';
@@ -119,7 +119,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
                   className="h-6 px-2 text-xs"
                   onClick={onViewAllFriends}
                 >
-                  Ver todos
+                  Ver tod
                   <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               )}
@@ -249,7 +249,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
 
         {/* Ações Rápidas */}
         <div className="pt-2 border-t border-border">
-          <div className="flex space-x-2">
+          <div className="flex  flex-col xl:flex-row xl:space-x-2 space-y-2 xl:space-y-0">
             <Button 
               variant="outline" 
               size="sm" 

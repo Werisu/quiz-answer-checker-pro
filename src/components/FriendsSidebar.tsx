@@ -6,15 +6,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFriends } from '@/hooks/useFriends';
 import type { Friend } from '@/integrations/supabase/social-types';
 import {
-    Bell,
-    ChevronRight,
-    Circle,
-    MessageCircle,
-    Search,
-    Settings,
-    UserPlus,
-    Users,
-    X
+  Bell,
+  ChevronRight,
+  Circle,
+  MessageCircle,
+  Search,
+  Settings,
+  UserPlus,
+  Users,
+  X
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { AddFriendModal } from './AddFriendModal';
