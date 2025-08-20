@@ -20,6 +20,7 @@ interface Notification {
   isRead: boolean;
   userId?: string;
   actionRequired?: boolean;
+  requestId?: string; // ID real da solicitação de amizade
 }
 
 interface NotificationsDropdownProps {
@@ -61,6 +62,8 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
         isRead: false,
         userId: request.requester_id,
         actionRequired: true,
+        // Armazenar o ID real para referência
+        requestId: request.id,
       });
     });
 
@@ -128,13 +131,21 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
   };
 
   const handleAcceptRequest = (notificationId: string) => {
-    onAcceptRequest(notificationId);
-    onMarkAsRead(notificationId);
+    // Encontrar a notificação para pegar o requestId real
+    const notification = notifications.find(n => n.id === notificationId);
+    if (notification?.requestId) {
+      onAcceptRequest(notification.requestId);
+      onMarkAsRead(notificationId);
+    }
   };
 
   const handleRejectRequest = (notificationId: string) => {
-    onRejectRequest(notificationId);
-    onDismiss(notificationId);
+    // Encontrar a notificação para pegar o requestId real
+    const notification = notifications.find(n => n.id === notificationId);
+    if (notification?.requestId) {
+      onRejectRequest(notification.requestId);
+      onDismiss(notificationId);
+    }
   };
 
   const handleMarkAsRead = (notificationId: string) => {
