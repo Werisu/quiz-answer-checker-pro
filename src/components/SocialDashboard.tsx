@@ -23,8 +23,10 @@ import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
 import { FriendsSidebar } from './FriendsSidebar';
+import { GroupDetails } from './GroupDetails';
 import { GroupInviteModal } from './GroupInviteModal';
 import { GroupList } from './GroupList';
+import { GroupMemberManagement } from './GroupMemberManagement';
 import { NotificationsDropdown } from './NotificationsDropdown';
 import { SocialWidget } from './SocialWidget';
 
@@ -42,6 +44,10 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
   const [showExploreGroups, setShowExploreGroups] = useState(false);
+  const [groupDetailsOpen, setGroupDetailsOpen] = useState(false);
+  const [selectedGroupForDetails, setSelectedGroupForDetails] = useState<StudyGroup | null>(null);
+  const [memberManagementOpen, setMemberManagementOpen] = useState(false);
+  const [selectedGroupForManagement, setSelectedGroupForManagement] = useState<StudyGroup | null>(null);
   
   // Usar dados reais do hook useFriends
   const { 
@@ -139,12 +145,20 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
   const handleViewGroup = (groupId: string) => {
     console.log('Ver grupo:', groupId);
-    // TODO: Implementar visualização detalhada do grupo
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroupForDetails(group);
+      setGroupDetailsOpen(true);
+    }
   };
 
   const handleManageGroup = (groupId: string) => {
     console.log('Gerenciar grupo:', groupId);
-    // TODO: Implementar gerenciamento do grupo
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroupForManagement(group);
+      setMemberManagementOpen(true);
+    }
   };
 
   const handleLeaveGroup = async (groupId: string) => {
@@ -704,6 +718,38 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           }}
           group={selectedGroup}
           onInviteUser={inviteUser}
+          loading={groupsLoading}
+        />
+      )}
+
+      {/* Modal de Detalhes do Grupo */}
+      {selectedGroupForDetails && (
+        <GroupDetails
+          group={selectedGroupForDetails}
+          userRole={selectedGroupForDetails.user_role}
+          onJoinGroup={handleJoinGroup}
+          onLeaveGroup={handleLeaveGroup}
+          onManageGroup={handleManageGroup}
+          onInviteMembers={handleInviteMembers}
+          onClose={() => {
+            setGroupDetailsOpen(false);
+            setSelectedGroupForDetails(null);
+          }}
+          loading={groupsLoading}
+        />
+      )}
+
+      {/* Modal de Gerenciamento de Membros */}
+      {selectedGroupForManagement && (
+        <GroupMemberManagement
+          group={selectedGroupForManagement}
+          currentUserRole={selectedGroupForManagement.user_role}
+          onUpdateMemberRole={updateMemberRole}
+          onRemoveMember={removeMember}
+          onClose={() => {
+            setMemberManagementOpen(false);
+            setSelectedGroupForManagement(null);
+          }}
           loading={groupsLoading}
         />
       )}
