@@ -27,6 +27,7 @@ import { GroupDetails } from './GroupDetails';
 import { GroupInviteModal } from './GroupInviteModal';
 import { GroupList } from './GroupList';
 import { GroupMemberManagement } from './GroupMemberManagement';
+import { GroupSettings } from './GroupSettings';
 import { NotificationsDropdown } from './NotificationsDropdown';
 import { SocialWidget } from './SocialWidget';
 
@@ -48,6 +49,8 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const [selectedGroupForDetails, setSelectedGroupForDetails] = useState<StudyGroup | null>(null);
   const [memberManagementOpen, setMemberManagementOpen] = useState(false);
   const [selectedGroupForManagement, setSelectedGroupForManagement] = useState<StudyGroup | null>(null);
+  const [groupSettingsOpen, setGroupSettingsOpen] = useState(false);
+  const [selectedGroupForSettings, setSelectedGroupForSettings] = useState<StudyGroup | null>(null);
   
   // Usar dados reais do hook useFriends
   const { 
@@ -158,6 +161,39 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     if (group) {
       setSelectedGroupForManagement(group);
       setMemberManagementOpen(true);
+    }
+  };
+
+  const handleGroupSettings = (groupId: string) => {
+    console.log('Configurações do grupo:', groupId);
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroupForSettings(group);
+      setGroupSettingsOpen(true);
+    }
+  };
+
+  const updateGroup = async (groupId: string, updates: Partial<StudyGroup>) => {
+    try {
+      // TODO: Implementar atualização do grupo na API
+      console.log('Atualizando grupo:', groupId, updates);
+      // Por enquanto, apenas simular sucesso
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar grupo:', error);
+      return false;
+    }
+  };
+
+  const deleteGroup = async (groupId: string) => {
+    try {
+      // TODO: Implementar deleção do grupo na API
+      console.log('Deletando grupo:', groupId);
+      // Por enquanto, apenas simular sucesso
+      return true;
+    } catch (error) {
+      console.error('Erro ao deletar grupo:', error);
+      return false;
     }
   };
 
@@ -642,6 +678,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                          onManageGroup={handleManageGroup}
                          onLeaveGroup={handleLeaveGroup}
                          onInviteMembers={handleInviteMembers}
+                         onGroupSettings={handleGroupSettings}
                        />
                      )}
                    </div>
@@ -749,6 +786,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           onClose={() => {
             setMemberManagementOpen(false);
             setSelectedGroupForManagement(null);
+          }}
+          loading={groupsLoading}
+        />
+      )}
+
+      {/* Modal de Configurações do Grupo */}
+      {selectedGroupForSettings && (
+        <GroupSettings
+          group={selectedGroupForSettings}
+          currentUserRole={selectedGroupForSettings.user_role}
+          onUpdateGroup={updateGroup}
+          onDeleteGroup={deleteGroup}
+          onClose={() => {
+            setGroupSettingsOpen(false);
+            setSelectedGroupForSettings(null);
           }}
           loading={groupsLoading}
         />

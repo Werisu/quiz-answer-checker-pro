@@ -26,6 +26,7 @@ interface GroupCardProps {
   onInviteMembers: (groupId: string) => void;
   onLeaveGroup: (groupId: string) => void;
   onJoinGroup: (groupId: string) => void;
+  onGroupSettings?: (groupId: string) => void;
 }
 
 export const GroupCard: React.FC<GroupCardProps> = ({
@@ -35,7 +36,8 @@ export const GroupCard: React.FC<GroupCardProps> = ({
   onManageGroup,
   onInviteMembers,
   onLeaveGroup,
-  onJoinGroup
+  onJoinGroup,
+  onGroupSettings
 }) => {
   const isOwner = userRole === 'admin';
   const isModerator = userRole === 'moderator';
@@ -215,15 +217,27 @@ export const GroupCard: React.FC<GroupCardProps> = ({
 
             {/* Botões baseados no papel do usuário */}
             {isOwner && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onManageGroup(group.id)}
-                className="flex items-center space-x-2"
-              >
-                <Settings className="w-4 h-4" />
-                <span>Gerenciar</span>
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onManageGroup(group.id)}
+                  className="flex items-center space-x-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Gerenciar</span>
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onGroupSettings?.(group.id)}
+                  className="flex items-center space-x-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Configurações</span>
+                </Button>
+              </>
             )}
 
             {(isOwner || isModerator) && (

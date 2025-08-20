@@ -20,6 +20,7 @@ interface GroupListProps {
   onManageGroup: (groupId: string) => void;
   onLeaveGroup: (groupId: string) => void;
   onInviteMembers: (groupId: string) => void;
+  onGroupSettings?: (groupId: string) => void;
 }
 
 export const GroupList: React.FC<GroupListProps> = ({
@@ -31,6 +32,7 @@ export const GroupList: React.FC<GroupListProps> = ({
   onManageGroup,
   onLeaveGroup,
   onInviteMembers,
+  onGroupSettings,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterVisibility, setFilterVisibility] = useState<'all' | 'public' | 'private'>('all');
@@ -174,6 +176,7 @@ export const GroupList: React.FC<GroupListProps> = ({
             onInviteMembers={onInviteMembers}
             onLeaveGroup={onLeaveGroup}
             onJoinGroup={onJoinGroup}
+            onGroupSettings={onGroupSettings}
           />
         ))}
       </div>
