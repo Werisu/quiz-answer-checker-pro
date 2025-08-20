@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFriends } from '@/hooks/useFriends';
+import { useStudyGroups } from '@/hooks/useStudyGroups';
 import {
     Activity,
     ArrowLeft,
@@ -43,6 +44,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     rejectFriendRequest,
     loading 
   } = useFriends();
+
+  // Usar dados reais do hook useStudyGroups
+  const {
+    groups,
+    loading: groupsLoading,
+    error: groupsError,
+    createGroup,
+    joinGroup,
+    leaveGroup,
+    acceptInvitation,
+    rejectInvitation,
+    inviteUser,
+    removeMember,
+    updateMemberRole,
+  } = useStudyGroups();
 
   const handleGoBack = () => {
     navigate('/');
@@ -87,14 +103,33 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   };
 
   // Funções para gerenciamento de grupos
-  const handleCreateGroup = () => {
+  const handleCreateGroup = async () => {
     console.log('Criar novo grupo');
     // TODO: Implementar modal de criação de grupo
+    // Por enquanto, vamos criar um grupo de exemplo
+    const success = await createGroup({
+      name: 'Grupo de Estudo Exemplo',
+      description: 'Um grupo para testar o sistema',
+      visibility: 'public',
+      max_members: 20,
+      tags: ['estudo', 'exemplo', 'teste']
+    });
+    
+    if (success) {
+      console.log('✅ Grupo criado com sucesso!');
+    } else {
+      console.error('❌ Erro ao criar grupo');
+    }
   };
 
-  const handleJoinGroup = (groupId: string) => {
+  const handleJoinGroup = async (groupId: string) => {
     console.log('Entrar no grupo:', groupId);
-    // TODO: Implementar lógica de entrada em grupo
+    const success = await joinGroup(groupId);
+    if (success) {
+      console.log('✅ Entrou no grupo com sucesso!');
+    } else {
+      console.error('❌ Erro ao entrar no grupo');
+    }
   };
 
   const handleViewGroup = (groupId: string) => {
@@ -107,9 +142,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     // TODO: Implementar gerenciamento do grupo
   };
 
-  const handleLeaveGroup = (groupId: string) => {
+  const handleLeaveGroup = async (groupId: string) => {
     console.log('Sair do grupo:', groupId);
-    // TODO: Implementar lógica de saída do grupo
+    const success = await leaveGroup(groupId);
+    if (success) {
+      console.log('✅ Saiu do grupo com sucesso!');
+    } else {
+      console.error('❌ Erro ao sair do grupo');
+    }
   };
 
   const handleInviteMembers = (groupId: string) => {
@@ -334,8 +374,8 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {/* Tab: Grupos */}
           {activeTab === 'groups' && (
             <GroupList
-              groups={[]} // TODO: Implementar hook useStudyGroups
-              loading={false}
+              groups={groups}
+              loading={groupsLoading}
               onCreateGroup={handleCreateGroup}
               onJoinGroup={handleJoinGroup}
               onViewGroup={handleViewGroup}
@@ -488,8 +528,8 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
                 <TabsContent value="groups">
                   <GroupList
-                    groups={[]} // TODO: Implementar hook useStudyGroups
-                    loading={false}
+                    groups={groups}
+                    loading={groupsLoading}
                     onCreateGroup={handleCreateGroup}
                     onJoinGroup={handleJoinGroup}
                     onViewGroup={handleViewGroup}

@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { StudyGroup } from '@/hooks/useStudyGroups';
 import {
     BookOpen,
     Calendar,
@@ -14,31 +15,6 @@ import {
     Users
 } from 'lucide-react';
 import React, { useState } from 'react';
-
-interface GroupMember {
-  id: string;
-  name: string;
-  role: 'admin' | 'moderator' | 'member';
-  avatar?: string;
-  joined_at: string;
-}
-
-interface StudyGroup {
-  id: string;
-  name: string;
-  description: string;
-  visibility: 'public' | 'private';
-  member_count: number;
-  max_members: number;
-  created_at: string;
-  updated_at: string;
-  owner_id: string;
-  owner_name: string;
-  members: GroupMember[];
-  tags: string[];
-  is_owner: boolean;
-  user_role: 'admin' | 'moderator' | 'member';
-}
 
 interface GroupListProps {
   groups: StudyGroup[];
