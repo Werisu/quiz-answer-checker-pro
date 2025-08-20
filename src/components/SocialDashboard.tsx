@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,7 +5,6 @@ import { useFriends } from '@/hooks/useFriends';
 import {
   Activity,
   ArrowLeft,
-  Bell,
   BookOpen,
   Calendar,
   MessageCircle,
@@ -22,7 +20,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FriendsList } from './FriendsList';
 import { FriendsSidebar } from './FriendsSidebar';
-import { SocialNotifications } from './SocialNotifications';
+import { NotificationsDropdown } from './NotificationsDropdown';
 import { SocialWidget } from './SocialWidget';
 
 interface SocialDashboardProps {
@@ -113,13 +111,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </div>
             
             <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-              >
-                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              </Button>
+              <NotificationsDropdown
+                onAcceptRequest={handleAcceptRequest}
+                onRejectRequest={handleRejectRequest}
+                onViewProfile={handleViewProfile}
+                onSendMessage={handleSendMessage}
+                onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                onDismiss={(id) => console.log('Dispensar:', id)}
+              />
               <Button
                 variant="ghost"
                 size="sm"
@@ -250,25 +249,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </CardContent>
               </Card>
 
-              {/* Widget de Notificações */}
-              <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-gray-900 dark:text-white">Notificações</CardTitle>
-                    <Badge variant="secondary" className="bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                      2 novas
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <SocialNotifications
-                    onAcceptRequest={handleAcceptRequest}
-                    onRejectRequest={handleRejectRequest}
-                    onViewProfile={handleViewProfile}
-                    onSendMessage={handleSendMessage}
-                  />
-                </CardContent>
-              </Card>
+
 
               {/* Estatísticas Rápidas */}
               <div className="grid grid-cols-2 gap-3">
@@ -405,6 +386,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </div>
             
             <div className="flex items-center space-x-4">
+              <NotificationsDropdown
+                onAcceptRequest={handleAcceptRequest}
+                onRejectRequest={handleRejectRequest}
+                onViewProfile={handleViewProfile}
+                onSendMessage={handleSendMessage}
+                onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                onDismiss={(id) => console.log('Dispensar:', id)}
+              />
               <Button
                 variant="outline"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -444,21 +433,13 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
                 {/* Conteúdo das Tabs Desktop */}
                 <TabsContent value="overview" className="space-y-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div className="lg:col-span-4">
                       <SocialWidget
                         onViewAllFriends={handleViewAllFriends}
                         onSendMessage={handleSendMessage}
                         onViewProfile={handleViewProfile}
                         onViewRequests={handleViewRequests}
-                      />
-                    </div>
-                    <div>
-                      <SocialNotifications
-                        onAcceptRequest={handleAcceptRequest}
-                        onRejectRequest={handleRejectRequest}
-                        onViewProfile={handleViewProfile}
-                        onSendMessage={handleSendMessage}
                       />
                     </div>
                   </div>
