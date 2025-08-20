@@ -19,8 +19,10 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CreateGroupModal } from './CreateGroupModal';
 import { FriendsList } from './FriendsList';
 import { FriendsSidebar } from './FriendsSidebar';
+import { GroupInviteModal } from './GroupInviteModal';
 import { GroupList } from './GroupList';
 import { NotificationsDropdown } from './NotificationsDropdown';
 import { SocialWidget } from './SocialWidget';
@@ -35,6 +37,9 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [createGroupModalOpen, setCreateGroupModalOpen] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
   
   // Usar dados reais do hook useFriends
   const { 
@@ -103,23 +108,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   };
 
   // Funções para gerenciamento de grupos
-  const handleCreateGroup = async () => {
-    console.log('Criar novo grupo');
-    // TODO: Implementar modal de criação de grupo
-    // Por enquanto, vamos criar um grupo de exemplo
-    const success = await createGroup({
-      name: 'Grupo de Estudo Exemplo',
-      description: 'Um grupo para testar o sistema',
-      visibility: 'public',
-      max_members: 20,
-      tags: ['estudo', 'exemplo', 'teste']
-    });
+  const handleCreateGroup = () => {
+    setCreateGroupModalOpen(true);
+  };
+
+  const handleCreateGroupSubmit = async (groupData: any) => {
+    console.log('Criando grupo:', groupData);
+    const success = await createGroup(groupData);
     
     if (success) {
       console.log('✅ Grupo criado com sucesso!');
     } else {
       console.error('❌ Erro ao criar grupo');
     }
+    
+    return success;
   };
 
   const handleJoinGroup = async (groupId: string) => {
@@ -153,8 +156,11 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   };
 
   const handleInviteMembers = (groupId: string) => {
-    console.log('Convidar membros para o grupo:', groupId);
-    // TODO: Implementar convite de membros
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroup(group);
+      setInviteModalOpen(true);
+    }
   };
 
   return (
@@ -591,6 +597,28 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Modal de Criação de Grupo */}
+      <CreateGroupModal
+        isOpen={createGroupModalOpen}
+        onClose={() => setCreateGroupModalOpen(false)}
+        onSubmit={handleCreateGroupSubmit}
+        loading={groupsLoading}
+      />
+
+      {/* Modal de Convite de Usuários */}
+      {selectedGroup && (
+        <GroupInviteModal
+          isOpen={inviteModalOpen}
+          onClose={() => {
+            setInviteModalOpen(false);
+            setSelectedGroup(null);
+          }}
+          group={selectedGroup}
+          onInviteUser={inviteUser}
+          loading={groupsLoading}
+        />
+      )}
     </div>
   );
 };
