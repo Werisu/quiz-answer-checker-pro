@@ -110,28 +110,30 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <NotificationsDropdown
-                onAcceptRequest={handleAcceptRequest}
-                onRejectRequest={handleRejectRequest}
-                onViewProfile={handleViewProfile}
-                onSendMessage={handleSendMessage}
-                onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
-                onDismiss={(id) => console.log('Dispensar:', id)}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                {sidebarOpen ? (
-                  <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                ) : (
-                  <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                )}
-              </Button>
-            </div>
+                         <div className="flex items-center space-x-2">
+               <NotificationsDropdown
+                 onAcceptRequest={handleAcceptRequest}
+                 onRejectRequest={handleRejectRequest}
+                 onViewProfile={handleViewProfile}
+                 onSendMessage={handleSendMessage}
+                 onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                 onDismiss={(id) => console.log('Dispensar:', id)}
+                 friends={friends}
+                 pendingRequests={pendingRequests}
+               />
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
+                 onClick={() => setSidebarOpen(!sidebarOpen)}
+               >
+                 {sidebarOpen ? (
+                   <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                 ) : (
+                   <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                 )}
+               </Button>
+             </div>
           </div>
         </div>
       </header>
@@ -385,22 +387,24 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <NotificationsDropdown
-                onAcceptRequest={handleAcceptRequest}
-                onRejectRequest={handleRejectRequest}
-                onViewProfile={handleViewProfile}
-                onSendMessage={handleSendMessage}
-                onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
-                onDismiss={(id) => console.log('Dispensar:', id)}
-              />
-              <Button
-                variant="outline"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                {sidebarOpen ? 'Ocultar Sidebar' : 'Mostrar Sidebar'}
-              </Button>
-            </div>
+                         <div className="flex items-center space-x-4">
+               <NotificationsDropdown
+                 onAcceptRequest={handleAcceptRequest}
+                 onRejectRequest={handleRejectRequest}
+                 onViewProfile={handleViewProfile}
+                 onSendMessage={handleSendMessage}
+                 onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                 onDismiss={(id) => console.log('Dispensar:', id)}
+                 friends={friends}
+                 pendingRequests={pendingRequests}
+               />
+               <Button
+                 variant="outline"
+                 onClick={() => setSidebarOpen(!sidebarOpen)}
+               >
+                 {sidebarOpen ? 'Ocultar Sidebar' : 'Mostrar Sidebar'}
+               </Button>
+             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

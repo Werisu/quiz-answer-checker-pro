@@ -29,6 +29,9 @@ interface NotificationsDropdownProps {
   onSendMessage: (userId: string) => void;
   onMarkAsRead: (notificationId: string) => void;
   onDismiss: (notificationId: string) => void;
+  // Dados reais do sistema
+  friends: Array<{ id: string; name: string; is_online?: boolean }>;
+  pendingRequests: Array<{ id: string; requester_name: string; requester_id: string }>;
 }
 
 export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
@@ -38,48 +41,74 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
   onSendMessage,
   onMarkAsRead,
   onDismiss,
+  friends,
+  pendingRequests,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Simular notificações (substituir por dados reais)
-  const [notifications] = useState<Notification[]>([
-    {
-      id: '1',
-      type: 'friend_request',
-      title: 'Nova solicitação de amizade',
-      message: 'João Silva quer ser seu amigo',
-      timestamp: '2 min atrás',
-      isRead: false,
-      userId: 'user1',
-      actionRequired: true,
-    },
-    {
-      id: '2',
-      type: 'message',
-      title: 'Nova mensagem',
-      message: 'Maria Santos enviou uma mensagem',
-      timestamp: '5 min atrás',
-      isRead: false,
-      userId: 'user2',
-    },
-    {
-      id: '3',
-      type: 'online_friend',
-      title: 'Amigo online',
-      message: 'Pedro Costa está online agora',
-      timestamp: '10 min atrás',
-      isRead: true,
-      userId: 'user3',
-    },
-    {
-      id: '4',
-      type: 'achievement',
-      title: 'Nova conquista',
-      message: 'Você desbloqueou "Primeiro Amigo"',
-      timestamp: '1 hora atrás',
-      isRead: false,
-    },
-  ]);
+  // Gerar notificações baseadas em dados reais
+  const generateNotifications = (): Notification[] => {
+    const notifications: Notification[] = [];
+
+    // Notificações de solicitações pendentes (prioridade alta)
+    pendingRequests.forEach((request) => {
+      notifications.push({
+        id: `request_${request.id}`,
+        type: 'friend_request',
+        title: 'Nova solicitação de amizade',
+        message: `${request.requester_name} quer ser seu amigo`,
+        timestamp: 'Agora',
+        isRead: false,
+        userId: request.requester_id,
+        actionRequired: true,
+      });
+    });
+
+    // Notificações de amigos online (se houver)
+    const onlineFriends = friends.filter(f => f.is_online === true);
+    if (onlineFriends.length > 0) {
+      onlineFriends.slice(0, 2).forEach((friend) => {
+        notifications.push({
+          id: `online_${friend.id}`,
+          type: 'online_friend',
+          title: 'Amigo online',
+          message: `${friend.name} está online agora`,
+          timestamp: 'Agora',
+          isRead: true,
+          userId: friend.id,
+        });
+      });
+    }
+
+    // Notificação de conquista se tiver amigos
+    if (friends.length > 0) {
+      notifications.push({
+        id: 'achievement_1',
+        type: 'achievement',
+        title: 'Nova conquista',
+        message: `Você tem ${friends.length} amigo${friends.length > 1 ? 's' : ''}!`,
+        timestamp: 'Hoje',
+        isRead: false,
+      });
+    }
+
+    // Simular mensagens (quando implementar chat)
+    if (friends.length > 0 && pendingRequests.length === 0) {
+      notifications.push({
+        id: 'message_1',
+        type: 'message',
+        title: 'Nova mensagem',
+        message: `${friends[0]?.name || 'Amigo'} enviou uma mensagem`,
+        timestamp: '5 min atrás',
+        isRead: false,
+        userId: friends[0]?.id,
+      });
+    }
+
+    return notifications;
+  };
+
+  const notifications = generateNotifications();
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
