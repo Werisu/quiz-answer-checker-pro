@@ -5,22 +5,6 @@
       "destination": "/index.html"
     }
   ],
-  "routes": [
-    {
-      "src": "/social",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/dashboard",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/profile",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/settings",
-      "dest": "/index.html"
-    }
-  ]
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
 }
