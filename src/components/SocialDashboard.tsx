@@ -20,6 +20,7 @@ import {
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreateGroupModal } from './CreateGroupModal';
+import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
 import { FriendsSidebar } from './FriendsSidebar';
 import { GroupInviteModal } from './GroupInviteModal';
@@ -40,6 +41,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const [createGroupModalOpen, setCreateGroupModalOpen] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
+  const [showExploreGroups, setShowExploreGroups] = useState(false);
   
   // Usar dados reais do hook useFriends
   const { 
@@ -377,19 +379,62 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </Card>
           )}
 
-          {/* Tab: Grupos */}
-          {activeTab === 'groups' && (
-            <GroupList
-              groups={groups}
-              loading={groupsLoading}
-              onCreateGroup={handleCreateGroup}
-              onJoinGroup={handleJoinGroup}
-              onViewGroup={handleViewGroup}
-              onManageGroup={handleManageGroup}
-              onLeaveGroup={handleLeaveGroup}
-              onInviteMembers={handleInviteMembers}
-            />
-          )}
+                     {/* Tab: Grupos */}
+           {activeTab === 'groups' && (
+             <div className="space-y-6">
+               {/* Header com botões de ação */}
+               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                 <div>
+                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                     {showExploreGroups ? 'Explorar Grupos Públicos' : 'Meus Grupos de Estudo'}
+                   </h2>
+                   <p className="text-gray-600 dark:text-gray-400 mt-1">
+                     {showExploreGroups 
+                       ? 'Descubra e participe de grupos incríveis'
+                       : `${groups.length} grupos • Gerencie suas participações`
+                     }
+                   </p>
+                 </div>
+                 
+                 <div className="flex flex-col sm:flex-row gap-3">
+                   {!showExploreGroups && (
+                     <Button onClick={handleCreateGroup} className="bg-green-600 hover:bg-green-700">
+                       <Plus className="w-4 h-4 mr-2" />
+                       Criar Grupo
+                     </Button>
+                   )}
+                   <Button 
+                     variant={showExploreGroups ? "default" : "outline"}
+                     onClick={() => setShowExploreGroups(!showExploreGroups)}
+                     className={showExploreGroups ? "bg-blue-600 hover:bg-blue-700" : ""}
+                   >
+                     <Search className="w-4 h-4 mr-2" />
+                     {showExploreGroups ? 'Meus Grupos' : 'Explorar Grupos'}
+                   </Button>
+                 </div>
+               </div>
+
+               {/* Conteúdo baseado no estado */}
+               {showExploreGroups ? (
+                 <ExploreGroups
+                   onJoinGroup={handleJoinGroup}
+                   onViewGroup={handleViewGroup}
+                   loading={groupsLoading}
+                 />
+               ) : (
+                 <GroupList
+                   groups={groups}
+                   loading={groupsLoading}
+                   onCreateGroup={handleCreateGroup}
+                   onJoinGroup={handleJoinGroup}
+                   onViewGroup={handleViewGroup}
+                   onManageGroup={handleManageGroup}
+                   onLeaveGroup={handleLeaveGroup}
+                   onInviteMembers={handleInviteMembers}
+                 />
+               )}
+             </div>
+           )}
 
           {/* Tab: Chat */}
           {activeTab === 'chat' && (
@@ -532,18 +577,61 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                   />
                 </TabsContent>
 
-                <TabsContent value="groups">
-                  <GroupList
-                    groups={groups}
-                    loading={groupsLoading}
-                    onCreateGroup={handleCreateGroup}
-                    onJoinGroup={handleJoinGroup}
-                    onViewGroup={handleViewGroup}
-                    onManageGroup={handleManageGroup}
-                    onLeaveGroup={handleLeaveGroup}
-                    onInviteMembers={handleInviteMembers}
-                  />
-                </TabsContent>
+                                 <TabsContent value="groups">
+                   <div className="space-y-6">
+                     {/* Header com botões de ação */}
+                     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                       <div>
+                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                           {showExploreGroups ? 'Explorar Grupos Públicos' : 'Meus Grupos de Estudo'}
+                         </h2>
+                         <p className="text-gray-600 dark:text-gray-400 mt-1">
+                           {showExploreGroups 
+                             ? 'Descubra e participe de grupos incríveis'
+                             : `${groups.length} grupos • Gerencie suas participações`
+                           }
+                         </p>
+                       </div>
+                       
+                       <div className="flex flex-col sm:flex-row gap-3">
+                         {!showExploreGroups && (
+                           <Button onClick={handleCreateGroup} className="bg-green-600 hover:bg-green-700">
+                             <Plus className="w-4 h-4 mr-2" />
+                             Criar Grupo
+                           </Button>
+                         )}
+                         <Button 
+                           variant={showExploreGroups ? "default" : "outline"}
+                           onClick={() => setShowExploreGroups(!showExploreGroups)}
+                           className={showExploreGroups ? "bg-blue-600 hover:bg-blue-700" : ""}
+                         >
+                           <Search className="w-4 h-4 mr-2" />
+                           {showExploreGroups ? 'Meus Grupos' : 'Explorar Grupos'}
+                         </Button>
+                       </div>
+                     </div>
+
+                     {/* Conteúdo baseado no estado */}
+                     {showExploreGroups ? (
+                       <ExploreGroups
+                         onJoinGroup={handleJoinGroup}
+                         onViewGroup={handleViewGroup}
+                         loading={groupsLoading}
+                       />
+                     ) : (
+                       <GroupList
+                         groups={groups}
+                         loading={groupsLoading}
+                         onCreateGroup={handleCreateGroup}
+                         onJoinGroup={handleJoinGroup}
+                         onViewGroup={handleViewGroup}
+                         onManageGroup={handleManageGroup}
+                         onLeaveGroup={handleLeaveGroup}
+                         onInviteMembers={handleInviteMembers}
+                       />
+                     )}
+                   </div>
+                 </TabsContent>
 
                 <TabsContent value="chat">
                   <Card>

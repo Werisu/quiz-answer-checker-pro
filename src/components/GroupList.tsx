@@ -85,14 +85,10 @@ export const GroupList: React.FC<GroupListProps> = ({
             Você ainda não participa de nenhum grupo de estudo. Crie um novo grupo ou participe de grupos existentes!
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={onCreateGroup} className="bg-green-600 hover:bg-green-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Criar Grupo
-            </Button>
-            <Button variant="outline">
-              <Search className="w-4 h-4 mr-2" />
-              Explorar Grupos
-            </Button>
+                         <Button onClick={onCreateGroup} className="bg-green-600 hover:bg-green-700">
+               <Plus className="w-4 h-4 mr-2" />
+               Criar Grupo
+             </Button>
           </div>
         </CardContent>
       </Card>
