@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useFriends } from '@/hooks/useFriends';
 import {
   Activity,
   Bell,
@@ -32,17 +33,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  // Dados mock para demonstração
-  const friends = [
-    { id: '1', name: 'João Silva', is_online: true, last_seen: new Date().toISOString() },
-    { id: '2', name: 'Maria Santos', is_online: false, last_seen: new Date(Date.now() - 3600000).toISOString() },
-    { id: '3', name: 'Pedro Costa', is_online: true, last_seen: new Date().toISOString() }
-  ];
-  
-  const pendingRequests = [
-    { id: '1', requester_name: 'Ana Oliveira' },
-    { id: '2', requester_name: 'Carlos Lima' }
-  ];
+  // Usar dados reais do hook useFriends
+  const { 
+    friends, 
+    pendingRequests, 
+    acceptFriendRequest, 
+    rejectFriendRequest,
+    loading 
+  } = useFriends();
 
   const handleSendMessage = (friendId: string) => {
     console.log('Enviar mensagem para:', friendId);
@@ -52,12 +50,26 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     console.log('Ver perfil de:', userId);
   };
 
-  const handleAcceptRequest = (requestId: string) => {
+  const handleAcceptRequest = async (requestId: string) => {
     console.log('Aceitar solicitação:', requestId);
+    const success = await acceptFriendRequest(requestId);
+    if (success) {
+      console.log('✅ Solicitação aceita com sucesso!');
+      // O hook useFriends já atualiza automaticamente as listas
+    } else {
+      console.error('❌ Erro ao aceitar solicitação');
+    }
   };
 
-  const handleRejectRequest = (requestId: string) => {
+  const handleRejectRequest = async (requestId: string) => {
     console.log('Rejeitar solicitação:', requestId);
+    const success = await rejectFriendRequest(requestId);
+    if (success) {
+      console.log('✅ Solicitação rejeitada com sucesso!');
+      // O hook useFriends já atualiza automaticamente as listas
+    } else {
+      console.error('❌ Erro ao rejeitar solicitação');
+    }
   };
 
   const handleViewAllFriends = () => {
@@ -115,15 +127,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
         {/* Cards de Estatísticas - Mobile First */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white">
-            <div className="text-2xl font-bold">{friends.length}</div>
+            <div className="text-2xl font-bold">
+              {loading ? '...' : friends.length}
+            </div>
             <div className="text-xs opacity-90">Amigos</div>
           </div>
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 text-white">
-            <div className="text-2xl font-bold">{friends.filter(f => f.is_online).length}</div>
+            <div className="text-2xl font-bold">
+              {loading ? '...' : friends.filter(f => f.is_online).length}
+            </div>
             <div className="text-xs opacity-90">Online</div>
           </div>
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-4 text-white">
-            <div className="text-2xl font-bold">{pendingRequests.length}</div>
+            <div className="text-2xl font-bold">
+              {loading ? '...' : pendingRequests.length}
+            </div>
             <div className="text-xs opacity-90">Pendentes</div>
           </div>
         </div>
