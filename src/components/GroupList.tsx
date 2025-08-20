@@ -1,20 +1,15 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { StudyGroup } from '@/hooks/useStudyGroups';
 import {
     BookOpen,
-    Calendar,
-    Crown,
     Filter,
     Plus,
     Search,
-    Settings,
-    Shield,
-    User,
     Users
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { GroupCard } from './GroupCard';
 
 interface GroupListProps {
   groups: StudyGroup[];
@@ -53,37 +48,7 @@ export const GroupList: React.FC<GroupListProps> = ({
     return matchesSearch && matchesVisibility && matchesRole;
   });
 
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return <Crown className="w-4 h-4 text-yellow-500" />;
-      case 'moderator':
-        return <Shield className="w-4 h-4 text-blue-500" />;
-      case 'member':
-        return <User className="w-4 h-4 text-gray-500" />;
-      default:
-        return <User className="w-4 h-4 text-gray-500" />;
-    }
-  };
 
-  const getRoleBadge = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">Admin</Badge>;
-      case 'moderator':
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">Moderador</Badge>;
-      case 'member':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400">Membro</Badge>;
-      default:
-        return null;
-    }
-  };
-
-  const getVisibilityBadge = (visibility: string) => {
-    return visibility === 'public' 
-      ? <Badge variant="outline" className="text-green-600 border-green-600">Público</Badge>
-      : <Badge variant="outline" className="text-orange-600 border-orange-600">Privado</Badge>;
-  };
 
   if (loading) {
     return (
@@ -202,119 +167,18 @@ export const GroupList: React.FC<GroupListProps> = ({
       </Card>
 
       {/* Lista de grupos */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredGroups.map((group) => (
-          <Card key={group.id} className="hover:shadow-md transition-shadow duration-200">
-            <CardContent className="p-6">
-              <div className="flex flex-col lg:flex-row gap-4">
-                {/* Avatar do grupo */}
-                <div className="flex-shrink-0">
-                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
-                    <BookOpen className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-
-                {/* Informações do grupo */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                          {group.name}
-                        </h3>
-                        {getVisibilityBadge(group.visibility)}
-                        {getRoleBadge(group.user_role)}
-                      </div>
-                      
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                        {group.description}
-                      </p>
-
-                      {/* Tags */}
-                      {group.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {group.tags.slice(0, 3).map((tag, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {group.tags.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{group.tags.length - 3}
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Estatísticas */}
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          <span>{group.member_count}/{group.max_members} membros</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>Criado em {new Date(group.created_at).toLocaleDateString('pt-BR')}</span>
-                        </div>
-                        {group.owner_name && (
-                          <div className="flex items-center gap-1">
-                            <Crown className="w-4 h-4" />
-                            <span>Dono: {group.owner_name}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Ações */}
-                    <div className="flex flex-col sm:flex-row gap-2 flex-shrink-0">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onViewGroup(group.id)}
-                        className="flex items-center gap-2"
-                      >
-                        <BookOpen className="w-4 h-4" />
-                        Ver
-                      </Button>
-                      
-                      {group.is_owner || group.user_role === 'admin' ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onManageGroup(group.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <Settings className="w-4 h-4" />
-                          Gerenciar
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onInviteMembers(group.id)}
-                          className="flex items-center gap-2"
-                        >
-                          <Users className="w-4 h-4" />
-                          Convidar
-                        </Button>
-                      )}
-                      
-                      {!group.is_owner && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onLeaveGroup(group.id)}
-                          className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-50"
-                        >
-                          Sair
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <GroupCard
+            key={group.id}
+            group={group}
+            userRole={group.user_role}
+            onViewGroup={onViewGroup}
+            onManageGroup={onManageGroup}
+            onInviteMembers={onInviteMembers}
+            onLeaveGroup={onLeaveGroup}
+            onJoinGroup={onJoinGroup}
+          />
         ))}
       </div>
 
