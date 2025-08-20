@@ -18,11 +18,20 @@ export class FriendsService {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // Query direta para buscar amigos aceitos
+      // Query com JOIN para buscar amigos aceitos e nomes dos usuários
       const { data, error } = await supabase
         .from("friendships")
         .select(
-          "id, requester_id, addressee_id, status, created_at, updated_at"
+          `
+            id, 
+            requester_id, 
+            addressee_id, 
+            status, 
+            created_at, 
+            updated_at,
+            requester_profile:profiles!friendships_requester_id_fkey(name),
+            addressee_profile:profiles!friendships_addressee_id_fkey(name)
+          `
         )
         .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
         .eq("status", "accepted");
@@ -33,14 +42,17 @@ export class FriendsService {
 
       // Transformar dados para o formato esperado
       const transformed = (data || []).map((friendship) => {
-        const friendId =
-          friendship.requester_id === user.id
-            ? friendship.addressee_id
-            : friendship.requester_id;
+        const isRequester = friendship.requester_id === user.id;
+        const friendId = isRequester
+          ? friendship.addressee_id
+          : friendship.requester_id;
+        const friendName = isRequester
+          ? friendship.addressee_profile?.name // nome do addressee
+          : friendship.requester_profile?.name; // nome do requester
 
         return {
           id: friendship.id,
-          name: `Usuário ${friendId.slice(0, 8)}`, // Nome temporário
+          name: friendName || `Usuário ${friendId.slice(0, 8)}`, // Nome real ou fallback
           status: friendship.status,
           created_at: friendship.created_at,
           is_online: false, // Por enquanto, sempre false
@@ -66,11 +78,19 @@ export class FriendsService {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // Query direta para buscar solicitações pendentes
+      // Query com JOIN para buscar solicitações pendentes e nomes dos usuários
       const { data, error } = await supabase
         .from("friendships")
         .select(
-          "id, requester_id, addressee_id, status, created_at, updated_at"
+          `
+            id, 
+            requester_id, 
+            addressee_id, 
+            status, 
+            created_at, 
+            updated_at,
+            requester_profile:profiles!friendships_requester_id_fkey(name)
+          `
         )
         .eq("addressee_id", user.id)
         .eq("status", "pending");
@@ -86,7 +106,9 @@ export class FriendsService {
           id: friendship.id,
           requester_id: friendship.requester_id,
           addressee_id: friendship.addressee_id,
-          requester_name: `Usuário ${friendship.requester_id.slice(0, 8)}`, // Nome temporário
+          requester_name:
+            friendship.requester_profile?.name ||
+            `Usuário ${friendship.requester_id.slice(0, 8)}`, // Nome real ou fallback
           status: friendship.status,
           created_at: friendship.created_at,
         };
