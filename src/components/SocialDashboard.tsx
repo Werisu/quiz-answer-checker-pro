@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFriends } from '@/hooks/useFriends';
 import {
   Activity,
+  ArrowLeft,
   Bell,
   BookOpen,
   Calendar,
@@ -18,6 +19,7 @@ import {
   X
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FriendsList } from './FriendsList';
 import { FriendsSidebar } from './FriendsSidebar';
 import { SocialNotifications } from './SocialNotifications';
@@ -30,6 +32,7 @@ interface SocialDashboardProps {
 export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   className = ''
 }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
@@ -41,6 +44,10 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     rejectFriendRequest,
     loading 
   } = useFriends();
+
+  const handleGoBack = () => {
+    navigate('/');
+  };
 
   const handleSendMessage = (friendId: string) => {
     console.log('Enviar mensagem para:', friendId);
@@ -88,6 +95,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {/* Header Mobile */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGoBack}
+                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800 mr-2"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </Button>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
                 <span className="text-white text-xl font-bold">S</span>
               </div>
@@ -372,11 +387,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       <div className="hidden lg:block">
         <div className="container mx-auto px-6 py-8">
           <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Social</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Gerencie suas conexões e atividades sociais
-              </p>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGoBack}
+                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Social</h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  Gerencie suas conexões e atividades sociais
+                </p>
+              </div>
             </div>
             
             <div className="flex items-center space-x-4">
