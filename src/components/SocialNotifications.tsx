@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFriends } from '@/hooks/useFriends';
 import {
-  Bell,
-  Check,
-  Clock,
-  MessageCircle,
-  UserCheck,
-  UserPlus,
-  Users,
-  X
+    Bell,
+    Check,
+    Clock,
+    MessageCircle,
+    UserCheck,
+    UserPlus,
+    Users,
+    X
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -153,15 +153,17 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
   const handleAcceptRequest = (notification: SocialNotification) => {
     if (onAcceptRequest && notification.type === 'friend_request') {
       onAcceptRequest(notification.id.replace('request_', ''));
+      // Remover a notificação imediatamente após aceitar
+      dismissNotification(notification.id);
     }
-    markAsRead(notification.id);
   };
 
   const handleRejectRequest = (notification: SocialNotification) => {
     if (onRejectRequest && notification.type === 'friend_request') {
       onRejectRequest(notification.id.replace('request_', ''));
+      // Remover a notificação imediatamente após rejeitar
+      dismissNotification(notification.id);
     }
-    markAsRead(notification.id);
   };
 
   const markAsRead = (notificationId: string) => {
