@@ -1,26 +1,34 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFriends } from '@/hooks/useFriends';
+import { useStudyGroups } from '@/hooks/useStudyGroups';
 import {
-  Activity,
-  Bell,
-  BookOpen,
-  Calendar,
-  MessageCircle,
-  Plus,
-  Search,
-  Settings,
-  TrendingUp,
-  Trophy,
-  Users,
-  X
+    Activity,
+    ArrowLeft,
+    BookOpen,
+    Calendar,
+    MessageCircle,
+    Plus,
+    Search,
+    Settings,
+    TrendingUp,
+    Trophy,
+    Users,
+    X
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CreateGroupModal } from './CreateGroupModal';
+import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
 import { FriendsSidebar } from './FriendsSidebar';
-import { SocialNotifications } from './SocialNotifications';
+import { GroupDetails } from './GroupDetails';
+import { GroupInviteModal } from './GroupInviteModal';
+import { GroupList } from './GroupList';
+import { GroupMemberManagement } from './GroupMemberManagement';
+import { GroupSettings } from './GroupSettings';
+import { NotificationsDropdown } from './NotificationsDropdown';
 import { SocialWidget } from './SocialWidget';
 
 interface SocialDashboardProps {
@@ -30,8 +38,19 @@ interface SocialDashboardProps {
 export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   className = ''
 }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [createGroupModalOpen, setCreateGroupModalOpen] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
+  const [showExploreGroups, setShowExploreGroups] = useState(false);
+  const [groupDetailsOpen, setGroupDetailsOpen] = useState(false);
+  const [selectedGroupForDetails, setSelectedGroupForDetails] = useState<StudyGroup | null>(null);
+  const [memberManagementOpen, setMemberManagementOpen] = useState(false);
+  const [selectedGroupForManagement, setSelectedGroupForManagement] = useState<StudyGroup | null>(null);
+  const [groupSettingsOpen, setGroupSettingsOpen] = useState(false);
+  const [selectedGroupForSettings, setSelectedGroupForSettings] = useState<StudyGroup | null>(null);
   
   // Usar dados reais do hook useFriends
   const { 
@@ -41,6 +60,25 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     rejectFriendRequest,
     loading 
   } = useFriends();
+
+  // Usar dados reais do hook useStudyGroups
+  const {
+    groups,
+    loading: groupsLoading,
+    error: groupsError,
+    createGroup,
+    joinGroup,
+    leaveGroup,
+    acceptInvitation,
+    rejectInvitation,
+    inviteUser,
+    removeMember,
+    updateMemberRole,
+  } = useStudyGroups();
+
+  const handleGoBack = () => {
+    navigate('/');
+  };
 
   const handleSendMessage = (friendId: string) => {
     console.log('Enviar mensagem para:', friendId);
@@ -80,6 +118,103 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     setActiveTab('friends');
   };
 
+  // Funções para gerenciamento de grupos
+  const handleCreateGroup = () => {
+    setCreateGroupModalOpen(true);
+  };
+
+  const handleCreateGroupSubmit = async (groupData: any) => {
+    console.log('Criando grupo:', groupData);
+    const success = await createGroup(groupData);
+    
+    if (success) {
+      console.log('✅ Grupo criado com sucesso!');
+    } else {
+      console.error('❌ Erro ao criar grupo');
+    }
+    
+    return success;
+  };
+
+  const handleJoinGroup = async (groupId: string) => {
+    console.log('Entrar no grupo:', groupId);
+    const success = await joinGroup(groupId);
+    if (success) {
+      console.log('✅ Entrou no grupo com sucesso!');
+    } else {
+      console.error('❌ Erro ao entrar no grupo');
+    }
+  };
+
+  const handleViewGroup = (groupId: string) => {
+    console.log('Ver grupo:', groupId);
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroupForDetails(group);
+      setGroupDetailsOpen(true);
+    }
+  };
+
+  const handleManageGroup = (groupId: string) => {
+    console.log('Gerenciar grupo:', groupId);
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroupForManagement(group);
+      setMemberManagementOpen(true);
+    }
+  };
+
+  const handleGroupSettings = (groupId: string) => {
+    console.log('Configurações do grupo:', groupId);
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroupForSettings(group);
+      setGroupSettingsOpen(true);
+    }
+  };
+
+  const updateGroup = async (groupId: string, updates: Partial<StudyGroup>) => {
+    try {
+      // TODO: Implementar atualização do grupo na API
+      console.log('Atualizando grupo:', groupId, updates);
+      // Por enquanto, apenas simular sucesso
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar grupo:', error);
+      return false;
+    }
+  };
+
+  const deleteGroup = async (groupId: string) => {
+    try {
+      // TODO: Implementar deleção do grupo na API
+      console.log('Deletando grupo:', groupId);
+      // Por enquanto, apenas simular sucesso
+      return true;
+    } catch (error) {
+      console.error('Erro ao deletar grupo:', error);
+      return false;
+    }
+  };
+
+  const handleLeaveGroup = async (groupId: string) => {
+    console.log('Sair do grupo:', groupId);
+    const success = await leaveGroup(groupId);
+    if (success) {
+      console.log('✅ Saiu do grupo com sucesso!');
+    } else {
+      console.error('❌ Erro ao sair do grupo');
+    }
+  };
+
+  const handleInviteMembers = (groupId: string) => {
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+      setSelectedGroup(group);
+      setInviteModalOpen(true);
+    }
+  };
+
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${className}`}>
       {/* MOBILE FIRST - Header Principal */}
@@ -88,6 +223,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {/* Header Mobile */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGoBack}
+                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800 mr-2"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </Button>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
                 <span className="text-white text-xl font-bold">S</span>
               </div>
@@ -97,27 +240,30 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-              >
-                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                {sidebarOpen ? (
-                  <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                ) : (
-                  <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                )}
-              </Button>
-            </div>
+                         <div className="flex items-center space-x-2">
+               <NotificationsDropdown
+                 onAcceptRequest={handleAcceptRequest}
+                 onRejectRequest={handleRejectRequest}
+                 onViewProfile={handleViewProfile}
+                 onSendMessage={handleSendMessage}
+                 onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                 onDismiss={(id) => console.log('Dispensar:', id)}
+                 friends={friends}
+                 pendingRequests={pendingRequests}
+               />
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
+                 onClick={() => setSidebarOpen(!sidebarOpen)}
+               >
+                 {sidebarOpen ? (
+                   <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                 ) : (
+                   <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                 )}
+               </Button>
+             </div>
           </div>
         </div>
       </header>
@@ -152,6 +298,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             variant="outline"
             size="sm"
             className="flex items-center space-x-2 px-4 py-2 rounded-xl"
+            onClick={handleCreateGroup}
           >
             <Plus className="w-4 h-4" />
             <span>Adicionar</span>
@@ -225,7 +372,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-0">
                   <SocialWidget
                     onViewAllFriends={handleViewAllFriends}
                     onSendMessage={handleSendMessage}
@@ -235,25 +382,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </CardContent>
               </Card>
 
-              {/* Widget de Notificações */}
-              <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-gray-900 dark:text-white">Notificações</CardTitle>
-                    <Badge variant="secondary" className="bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                      2 novas
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <SocialNotifications
-                    onAcceptRequest={handleAcceptRequest}
-                    onRejectRequest={handleRejectRequest}
-                    onViewProfile={handleViewProfile}
-                    onSendMessage={handleSendMessage}
-                  />
-                </CardContent>
-              </Card>
+
 
               {/* Estatísticas Rápidas */}
               <div className="grid grid-cols-2 gap-3">
@@ -300,22 +429,62 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </Card>
           )}
 
-          {/* Tab: Grupos */}
-          {activeTab === 'groups' && (
-            <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
-              <CardContent className="p-8">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                    <BookOpen className="w-10 h-10 text-green-600 dark:text-green-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Grupos em breve!</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    O sistema de grupos de estudo está sendo implementado.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                     {/* Tab: Grupos */}
+           {activeTab === 'groups' && (
+             <div className="space-y-6">
+               {/* Header com botões de ação */}
+               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                 <div>
+                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                     {showExploreGroups ? 'Explorar Grupos Públicos' : 'Meus Grupos de Estudo'}
+                   </h2>
+                   <p className="text-gray-600 dark:text-gray-400 mt-1">
+                     {showExploreGroups 
+                       ? 'Descubra e participe de grupos incríveis'
+                       : `${groups.length} grupos • Gerencie suas participações`
+                     }
+                   </p>
+                 </div>
+                 
+                 <div className="flex flex-col sm:flex-row gap-3">
+                   {!showExploreGroups && (
+                     <Button onClick={handleCreateGroup} className="bg-green-600 hover:bg-green-700">
+                       <Plus className="w-4 h-4 mr-2" />
+                       Criar Grupo
+                     </Button>
+                   )}
+                   <Button 
+                     variant={showExploreGroups ? "default" : "outline"}
+                     onClick={() => setShowExploreGroups(!showExploreGroups)}
+                     className={showExploreGroups ? "bg-blue-600 hover:bg-blue-700" : ""}
+                   >
+                     <Search className="w-4 h-4 mr-2" />
+                     {showExploreGroups ? 'Meus Grupos' : 'Explorar Grupos'}
+                   </Button>
+                 </div>
+               </div>
+
+               {/* Conteúdo baseado no estado */}
+               {showExploreGroups ? (
+                 <ExploreGroups
+                   onJoinGroup={handleJoinGroup}
+                   onViewGroup={handleViewGroup}
+                   loading={groupsLoading}
+                 />
+               ) : (
+                 <GroupList
+                   groups={groups}
+                   loading={groupsLoading}
+                   onCreateGroup={handleCreateGroup}
+                   onJoinGroup={handleJoinGroup}
+                   onViewGroup={handleViewGroup}
+                   onManageGroup={handleManageGroup}
+                   onLeaveGroup={handleLeaveGroup}
+                   onInviteMembers={handleInviteMembers}
+                 />
+               )}
+             </div>
+           )}
 
           {/* Tab: Chat */}
           {activeTab === 'chat' && (
@@ -372,21 +541,41 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       <div className="hidden lg:block">
         <div className="container mx-auto px-6 py-8">
           <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Social</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Gerencie suas conexões e atividades sociais
-              </p>
-            </div>
-            
             <div className="flex items-center space-x-4">
               <Button
-                variant="outline"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                variant="ghost"
+                size="sm"
+                onClick={handleGoBack}
+                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
               >
-                {sidebarOpen ? 'Ocultar Sidebar' : 'Mostrar Sidebar'}
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </Button>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Social</h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  Gerencie suas conexões e atividades sociais
+                </p>
+              </div>
             </div>
+            
+                         <div className="flex items-center space-x-4">
+               <NotificationsDropdown
+                 onAcceptRequest={handleAcceptRequest}
+                 onRejectRequest={handleRejectRequest}
+                 onViewProfile={handleViewProfile}
+                 onSendMessage={handleSendMessage}
+                 onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                 onDismiss={(id) => console.log('Dispensar:', id)}
+                 friends={friends}
+                 pendingRequests={pendingRequests}
+               />
+               <Button
+                 variant="outline"
+                 onClick={() => setSidebarOpen(!sidebarOpen)}
+               >
+                 {sidebarOpen ? 'Ocultar Sidebar' : 'Mostrar Sidebar'}
+               </Button>
+             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -419,21 +608,13 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
                 {/* Conteúdo das Tabs Desktop */}
                 <TabsContent value="overview" className="space-y-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div className="lg:col-span-4">
                       <SocialWidget
                         onViewAllFriends={handleViewAllFriends}
                         onSendMessage={handleSendMessage}
                         onViewProfile={handleViewProfile}
                         onViewRequests={handleViewRequests}
-                      />
-                    </div>
-                    <div>
-                      <SocialNotifications
-                        onAcceptRequest={handleAcceptRequest}
-                        onRejectRequest={handleRejectRequest}
-                        onViewProfile={handleViewProfile}
-                        onSendMessage={handleSendMessage}
                       />
                     </div>
                   </div>
@@ -446,23 +627,62 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                   />
                 </TabsContent>
 
-                <TabsContent value="groups">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Grupos de Estudo</CardTitle>
-                      <CardDescription>Funcionalidade em desenvolvimento</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">Grupos em breve!</h3>
-                        <p className="text-muted-foreground">
-                          O sistema de grupos de estudo está sendo implementado.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                                 <TabsContent value="groups">
+                   <div className="space-y-6">
+                     {/* Header com botões de ação */}
+                     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                       <div>
+                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                           {showExploreGroups ? 'Explorar Grupos Públicos' : 'Meus Grupos de Estudo'}
+                         </h2>
+                         <p className="text-gray-600 dark:text-gray-400 mt-1">
+                           {showExploreGroups 
+                             ? 'Descubra e participe de grupos incríveis'
+                             : `${groups.length} grupos • Gerencie suas participações`
+                           }
+                         </p>
+                       </div>
+                       
+                       <div className="flex flex-col sm:flex-row gap-3">
+                         {!showExploreGroups && (
+                           <Button onClick={handleCreateGroup} className="bg-green-600 hover:bg-green-700">
+                             <Plus className="w-4 h-4 mr-2" />
+                             Criar Grupo
+                           </Button>
+                         )}
+                         <Button 
+                           variant={showExploreGroups ? "default" : "outline"}
+                           onClick={() => setShowExploreGroups(!showExploreGroups)}
+                           className={showExploreGroups ? "bg-blue-600 hover:bg-blue-700" : ""}
+                         >
+                           <Search className="w-4 h-4 mr-2" />
+                           {showExploreGroups ? 'Meus Grupos' : 'Explorar Grupos'}
+                         </Button>
+                       </div>
+                     </div>
+
+                     {/* Conteúdo baseado no estado */}
+                     {showExploreGroups ? (
+                       <ExploreGroups
+                         onJoinGroup={handleJoinGroup}
+                         onViewGroup={handleViewGroup}
+                         loading={groupsLoading}
+                       />
+                     ) : (
+                       <GroupList
+                         groups={groups}
+                         loading={groupsLoading}
+                         onCreateGroup={handleCreateGroup}
+                         onJoinGroup={handleJoinGroup}
+                         onViewGroup={handleViewGroup}
+                         onManageGroup={handleManageGroup}
+                         onLeaveGroup={handleLeaveGroup}
+                         onInviteMembers={handleInviteMembers}
+                         onGroupSettings={handleGroupSettings}
+                       />
+                     )}
+                   </div>
+                 </TabsContent>
 
                 <TabsContent value="chat">
                   <Card>
@@ -516,6 +736,75 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Modal de Criação de Grupo */}
+      <CreateGroupModal
+        isOpen={createGroupModalOpen}
+        onClose={() => setCreateGroupModalOpen(false)}
+        onSubmit={handleCreateGroupSubmit}
+        loading={groupsLoading}
+      />
+
+      {/* Modal de Convite de Usuários */}
+      {selectedGroup && (
+        <GroupInviteModal
+          isOpen={inviteModalOpen}
+          onClose={() => {
+            setInviteModalOpen(false);
+            setSelectedGroup(null);
+          }}
+          group={selectedGroup}
+          onInviteUser={inviteUser}
+          loading={groupsLoading}
+        />
+      )}
+
+      {/* Modal de Detalhes do Grupo */}
+      {selectedGroupForDetails && (
+        <GroupDetails
+          group={selectedGroupForDetails}
+          userRole={selectedGroupForDetails.user_role}
+          onJoinGroup={handleJoinGroup}
+          onLeaveGroup={handleLeaveGroup}
+          onManageGroup={handleManageGroup}
+          onInviteMembers={handleInviteMembers}
+          onClose={() => {
+            setGroupDetailsOpen(false);
+            setSelectedGroupForDetails(null);
+          }}
+          loading={groupsLoading}
+        />
+      )}
+
+      {/* Modal de Gerenciamento de Membros */}
+      {selectedGroupForManagement && (
+        <GroupMemberManagement
+          group={selectedGroupForManagement}
+          currentUserRole={selectedGroupForManagement.user_role}
+          onUpdateMemberRole={updateMemberRole}
+          onRemoveMember={removeMember}
+          onClose={() => {
+            setMemberManagementOpen(false);
+            setSelectedGroupForManagement(null);
+          }}
+          loading={groupsLoading}
+        />
+      )}
+
+      {/* Modal de Configurações do Grupo */}
+      {selectedGroupForSettings && (
+        <GroupSettings
+          group={selectedGroupForSettings}
+          currentUserRole={selectedGroupForSettings.user_role}
+          onUpdateGroup={updateGroup}
+          onDeleteGroup={deleteGroup}
+          onClose={() => {
+            setGroupSettingsOpen(false);
+            setSelectedGroupForSettings(null);
+          }}
+          loading={groupsLoading}
+        />
+      )}
     </div>
   );
 };
