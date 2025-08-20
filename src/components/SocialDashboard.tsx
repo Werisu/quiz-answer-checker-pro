@@ -3,23 +3,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFriends } from '@/hooks/useFriends';
 import {
-  Activity,
-  ArrowLeft,
-  BookOpen,
-  Calendar,
-  MessageCircle,
-  Plus,
-  Search,
-  Settings,
-  TrendingUp,
-  Trophy,
-  Users,
-  X
+    Activity,
+    ArrowLeft,
+    BookOpen,
+    Calendar,
+    MessageCircle,
+    Plus,
+    Search,
+    Settings,
+    TrendingUp,
+    Trophy,
+    Users,
+    X
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FriendsList } from './FriendsList';
 import { FriendsSidebar } from './FriendsSidebar';
+import { GroupList } from './GroupList';
 import { NotificationsDropdown } from './NotificationsDropdown';
 import { SocialWidget } from './SocialWidget';
 
@@ -83,6 +84,37 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
   const handleViewRequests = () => {
     setActiveTab('friends');
+  };
+
+  // Funções para gerenciamento de grupos
+  const handleCreateGroup = () => {
+    console.log('Criar novo grupo');
+    // TODO: Implementar modal de criação de grupo
+  };
+
+  const handleJoinGroup = (groupId: string) => {
+    console.log('Entrar no grupo:', groupId);
+    // TODO: Implementar lógica de entrada em grupo
+  };
+
+  const handleViewGroup = (groupId: string) => {
+    console.log('Ver grupo:', groupId);
+    // TODO: Implementar visualização detalhada do grupo
+  };
+
+  const handleManageGroup = (groupId: string) => {
+    console.log('Gerenciar grupo:', groupId);
+    // TODO: Implementar gerenciamento do grupo
+  };
+
+  const handleLeaveGroup = (groupId: string) => {
+    console.log('Sair do grupo:', groupId);
+    // TODO: Implementar lógica de saída do grupo
+  };
+
+  const handleInviteMembers = (groupId: string) => {
+    console.log('Convidar membros para o grupo:', groupId);
+    // TODO: Implementar convite de membros
   };
 
   return (
@@ -168,6 +200,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             variant="outline"
             size="sm"
             className="flex items-center space-x-2 px-4 py-2 rounded-xl"
+            onClick={handleCreateGroup}
           >
             <Plus className="w-4 h-4" />
             <span>Adicionar</span>
@@ -300,19 +333,16 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
           {/* Tab: Grupos */}
           {activeTab === 'groups' && (
-            <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
-              <CardContent className="p-8">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                    <BookOpen className="w-10 h-10 text-green-600 dark:text-green-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Grupos em breve!</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    O sistema de grupos de estudo está sendo implementado.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <GroupList
+              groups={[]} // TODO: Implementar hook useStudyGroups
+              loading={false}
+              onCreateGroup={handleCreateGroup}
+              onJoinGroup={handleJoinGroup}
+              onViewGroup={handleViewGroup}
+              onManageGroup={handleManageGroup}
+              onLeaveGroup={handleLeaveGroup}
+              onInviteMembers={handleInviteMembers}
+            />
           )}
 
           {/* Tab: Chat */}
@@ -457,21 +487,16 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </TabsContent>
 
                 <TabsContent value="groups">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Grupos de Estudo</CardTitle>
-                      <CardDescription>Funcionalidade em desenvolvimento</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">Grupos em breve!</h3>
-                        <p className="text-muted-foreground">
-                          O sistema de grupos de estudo está sendo implementado.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <GroupList
+                    groups={[]} // TODO: Implementar hook useStudyGroups
+                    loading={false}
+                    onCreateGroup={handleCreateGroup}
+                    onJoinGroup={handleJoinGroup}
+                    onViewGroup={handleViewGroup}
+                    onManageGroup={handleManageGroup}
+                    onLeaveGroup={handleLeaveGroup}
+                    onInviteMembers={handleInviteMembers}
+                  />
                 </TabsContent>
 
                 <TabsContent value="chat">
