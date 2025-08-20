@@ -239,7 +239,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-0">
                   <SocialWidget
                     onViewAllFriends={handleViewAllFriends}
                     onSendMessage={handleSendMessage}
