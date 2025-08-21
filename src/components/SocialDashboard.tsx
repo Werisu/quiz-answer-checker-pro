@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChatDemo } from './ChatDemo';
 import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
@@ -685,21 +686,9 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                  </TabsContent>
 
                 <TabsContent value="chat">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Sistema de Chat</CardTitle>
-                      <CardDescription>Funcionalidade em desenvolvimento</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <MessageCircle className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">Chat em breve!</h3>
-                        <p className="text-muted-foreground">
-                          O sistema de chat está sendo implementado.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="h-[600px] border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+                    <ChatDemo />
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="achievements">
