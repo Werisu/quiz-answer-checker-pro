@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { AchievementProgress } from '@/hooks/useAchievements';
 import { Book, Star, Target, Trophy, Users, Zap } from 'lucide-react';
-import React from 'react';
+import React, { memo } from 'react';
 
 interface AchievementStatsProps {
   progress: AchievementProgress;
@@ -28,7 +28,7 @@ const categoryColors = {
   special: 'from-pink-500 to-pink-600'
 };
 
-export const AchievementStats: React.FC<AchievementStatsProps> = ({
+export const AchievementStats: React.FC<AchievementStatsProps> = memo(({
   progress,
   className = ''
 }) => {
@@ -173,6 +173,6 @@ export const AchievementStats: React.FC<AchievementStatsProps> = ({
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-};
+         </div>
+   );
+ });

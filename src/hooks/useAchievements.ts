@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export interface Achievement {
   id: string;
@@ -31,6 +31,10 @@ export interface AchievementProgress {
   };
 }
 
+// Cache para evitar refetches desnecessários
+const achievementCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
 export const useAchievements = (userId: string) => {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [progress, setProgress] = useState<AchievementProgress>({
@@ -50,62 +54,154 @@ export const useAchievements = (userId: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Buscar dados do usuário para calcular conquistas
-  const fetchUserData = async () => {
-    try {
-      setLoading(true);
+  // Refs para controlar requests e debounce
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchRef = useRef<number>(0);
 
-      // Buscar dados em paralelo
-      const [
-        { data: quizResults },
-        { data: userAnswers },
-        { data: friendships },
-        { data: studyGroups },
-        { data: groupMembers },
-        { data: goals },
-        { data: challenges },
-        { data: cadernos },
-      ] = await Promise.all([
-        supabase.from("quiz_results").select("*").eq("user_id", userId),
-        supabase.from("user_answers").select("*").eq("user_id", userId),
-        supabase
-          .from("friendships")
-          .select("*")
-          .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`),
-        supabase.from("study_groups").select("*").eq("owner_id", userId),
-        supabase.from("group_members").select("*").eq("user_id", userId),
-        supabase.from("goals").select("*").eq("user_id", userId),
-        supabase.from("challenges").select("*").eq("user_id", userId),
-        supabase.from("cadernos").select("*").eq("user_id", userId),
-      ]);
+  // Função otimizada para buscar dados com cache e queries eficientes
+  const fetchUserData = useCallback(
+    async (forceRefresh = false) => {
+      if (!userId) return;
 
-      // Calcular conquistas baseadas nos dados reais
-      const calculatedAchievements = calculateAchievements({
-        quizResults: quizResults || [],
-        userAnswers: userAnswers || [],
-        friendships: friendships || [],
-        studyGroups: studyGroups || [],
-        groupMembers: groupMembers || [],
-        goals: goals || [],
-        challenges: challenges || [],
-        cadernos: cadernos || [],
-      });
+      // Verificar cache primeiro
+      const cacheKey = `achievements_${userId}`;
+      const cached = achievementCache.get(cacheKey);
 
-      setAchievements(calculatedAchievements);
+      if (
+        !forceRefresh &&
+        cached &&
+        Date.now() - cached.timestamp < CACHE_DURATION
+      ) {
+        setAchievements(cached.data.achievements);
+        setProgress(cached.data.progress);
+        setLoading(false);
+        return;
+      }
 
-      // Calcular progresso geral
-      const calculatedProgress = calculateProgress(calculatedAchievements);
-      setProgress(calculatedProgress);
-    } catch (err) {
-      console.error("Erro ao buscar dados para conquistas:", err);
-      setError("Erro ao carregar conquistas");
-    } finally {
-      setLoading(false);
-    }
-  };
+      // Cancelar request anterior se existir
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
 
-  // Calcular conquistas baseadas nos dados reais
-  const calculateAchievements = (userData: any): Achievement[] => {
+      // Criar novo controller para este request
+      abortControllerRef.current = new AbortController();
+      const signal = abortControllerRef.current.signal;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Debounce para evitar múltiplas chamadas
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+
+        debounceTimeoutRef.current = setTimeout(async () => {
+          // Verificar se não foi cancelado durante o debounce
+          if (signal.aborted) return;
+
+          // Queries otimizadas com seleção específica de campos
+          const [
+            { data: quizResults, error: quizError },
+            { data: userAnswers, error: answersError },
+            { data: friendships, error: friendsError },
+            { data: studyGroups, error: groupsError },
+            { data: groupMembers, error: membersError },
+            { data: goals, error: goalsError },
+            { data: challenges, error: challengesError },
+            { data: cadernos, error: cadernosError },
+          ] = await Promise.allSettled([
+            // Query otimizada para quiz_results - apenas campos necessários
+            supabase
+              .from("quiz_results")
+              .select("percentage, completed_at")
+              .eq("user_id", userId)
+              .gte("percentage", 60) // Filtrar apenas resultados relevantes
+              .order("completed_at", { ascending: false })
+              .limit(50), // Limitar resultados para performance
+
+            // Query otimizada para user_answers
+            supabase
+              .from("user_answers")
+              .select("is_correct, answered_at")
+              .eq("user_id", userId)
+              .order("answered_at", { ascending: false })
+              .limit(100),
+
+            // Query otimizada para friendships
+            supabase
+              .from("friendships")
+              .select("status")
+              .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`),
+
+            // Query otimizada para study_groups
+            supabase.from("study_groups").select("id").eq("owner_id", userId),
+
+            // Query otimizada para group_members
+            supabase.from("group_members").select("id").eq("user_id", userId),
+
+            // Query otimizada para goals
+            supabase.from("goals").select("completed").eq("user_id", userId),
+
+            // Query otimizada para challenges
+            supabase
+              .from("challenges")
+              .select("completed")
+              .eq("user_id", userId),
+
+            // Query otimizada para cadernos
+            supabase.from("cadernos").select("id").eq("user_id", userId),
+          ]);
+
+          // Verificar se foi cancelado
+          if (signal.aborted) return;
+
+          // Processar resultados com tratamento de erro
+          const processedData = {
+            quizResults: quizResults?.data || [],
+            userAnswers: userAnswers?.data || [],
+            friendships: friendships?.data || [],
+            studyGroups: studyGroups?.data || [],
+            groupMembers: groupMembers?.data || [],
+            goals: goals?.data || [],
+            challenges: challenges?.data || [],
+            cadernos: cadernos?.data || [],
+          };
+
+          // Calcular conquistas
+          const calculatedAchievements = calculateAchievements(processedData);
+          const calculatedProgress = calculateProgress(calculatedAchievements);
+
+          // Atualizar estado
+          setAchievements(calculatedAchievements);
+          setProgress(calculatedProgress);
+
+          // Salvar no cache
+          achievementCache.set(cacheKey, {
+            data: {
+              achievements: calculatedAchievements,
+              progress: calculatedProgress,
+            },
+            timestamp: Date.now(),
+          });
+
+          setLoading(false);
+          lastFetchRef.current = Date.now();
+        }, 300); // Debounce de 300ms
+      } catch (err) {
+        if (!signal.aborted) {
+          console.error("Erro ao buscar dados para conquistas:", err);
+          setError("Erro ao carregar conquistas");
+          setLoading(false);
+        }
+      }
+    },
+    [userId]
+  );
+
+  // Função otimizada para calcular conquistas
+  const calculateAchievements = useCallback((userData: any): Achievement[] => {
     const {
       quizResults,
       userAnswers,
@@ -117,11 +213,17 @@ export const useAchievements = (userId: string) => {
       cadernos,
     } = userData;
 
-    // Conquistas baseadas em quiz_results
+    // Usar Set para operações mais eficientes
+    const quizPercentages = new Set(quizResults.map((r: any) => r.percentage));
+    const quizDates = quizResults
+      .map((r: any) => r.completed_at)
+      .filter(Boolean);
+
+    // Conquistas baseadas em quiz_results com cache de cálculos
     const quizMasterProgress = quizResults.filter(
       (r: any) => r.percentage >= 80
     ).length;
-    const quizStreakProgress = calculateQuizStreak(quizResults);
+    const quizStreakProgress = calculateQuizStreak(quizDates);
     const perfectQuizProgress = quizResults.filter(
       (r: any) => r.percentage === 100
     ).length;
@@ -302,92 +404,109 @@ export const useAchievements = (userId: string) => {
         requirements: ["Crie 5 cadernos"],
       },
     ];
-  };
+  }, []);
 
-  // Calcular sequência de quizzes
-  const calculateQuizStreak = (quizResults: any[]): number => {
-    if (quizResults.length === 0) return 0;
+  // Função otimizada para calcular sequência de quizzes
+  const calculateQuizStreak = useCallback((quizDates: string[]): number => {
+    if (quizDates.length === 0) return 0;
 
-    // Ordenar por data de conclusão
-    const sortedResults = quizResults
-      .filter((r) => r.completed_at)
-      .sort(
-        (a, b) =>
-          new Date(a.completed_at).getTime() -
-          new Date(b.completed_at).getTime()
-      );
+    // Ordenar datas uma vez
+    const sortedDates = quizDates.sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    );
 
     let currentStreak = 0;
     let maxStreak = 0;
 
-    for (let i = 0; i < sortedResults.length; i++) {
-      if (sortedResults[i].percentage >= 60) {
-        // Considerar 60%+ como sucesso
-        currentStreak++;
-        maxStreak = Math.max(maxStreak, currentStreak);
-      } else {
-        currentStreak = 0;
-      }
+    for (let i = 0; i < sortedDates.length; i++) {
+      currentStreak++;
+      maxStreak = Math.max(maxStreak, currentStreak);
     }
 
     return maxStreak;
-  };
+  }, []);
 
-  // Calcular progresso geral
-  const calculateProgress = (
-    achievements: Achievement[]
-  ): AchievementProgress => {
-    const unlockedAchievements = achievements.filter((a) => a.unlocked);
-    const totalPoints = unlockedAchievements.reduce(
-      (sum, a) => sum + a.points,
-      0
-    );
-    const level = Math.floor(totalPoints / 100) + 1;
+  // Função otimizada para calcular progresso geral
+  const calculateProgress = useCallback(
+    (achievements: Achievement[]): AchievementProgress => {
+      const unlockedAchievements = achievements.filter((a) => a.unlocked);
+      const totalPoints = unlockedAchievements.reduce(
+        (sum, a) => sum + a.points,
+        0
+      );
+      const level = Math.floor(totalPoints / 100) + 1;
 
-    const categoryProgress = {
-      social: achievements.filter((a) => a.category === "social" && a.unlocked)
-        .length,
-      study: achievements.filter((a) => a.category === "study" && a.unlocked)
-        .length,
-      quiz: achievements.filter((a) => a.category === "quiz" && a.unlocked)
-        .length,
-      group: achievements.filter((a) => a.category === "group" && a.unlocked)
-        .length,
-      streak: achievements.filter((a) => a.category === "streak" && a.unlocked)
-        .length,
-      special: achievements.filter(
-        (a) => a.category === "special" && a.unlocked
-      ).length,
+      // Usar reduce para calcular progresso por categoria em uma passada
+      const categoryProgress = achievements.reduce(
+        (acc, achievement) => {
+          if (achievement.unlocked) {
+            acc[achievement.category]++;
+          }
+          return acc;
+        },
+        {
+          social: 0,
+          study: 0,
+          quiz: 0,
+          group: 0,
+          streak: 0,
+          special: 0,
+        }
+      );
+
+      return {
+        totalPoints,
+        level,
+        achievementsUnlocked: unlockedAchievements.length,
+        totalAchievements: achievements.length,
+        categoryProgress,
+      };
+    },
+    []
+  );
+
+  // Memoizar conquistas para evitar recálculos desnecessários
+  const memoizedAchievements = useMemo(() => achievements, [achievements]);
+  const memoizedProgress = useMemo(() => progress, [progress]);
+
+  // Função para limpar cache
+  const clearCache = useCallback(() => {
+    achievementCache.clear();
+  }, []);
+
+  // Função para recarregar conquistas
+  const refreshAchievements = useCallback(() => {
+    if (userId) {
+      fetchUserData(true); // Force refresh
+    }
+  }, [userId, fetchUserData]);
+
+  // Cleanup ao desmontar
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
     };
-
-    return {
-      totalPoints,
-      level,
-      achievementsUnlocked: unlockedAchievements.length,
-      totalAchievements: achievements.length,
-      categoryProgress,
-    };
-  };
+  }, []);
 
   // Buscar dados quando userId mudar
   useEffect(() => {
     if (userId) {
       fetchUserData();
     }
-  }, [userId]);
-
-  // Função para recarregar conquistas
-  const refreshAchievements = () => {
-    if (userId) {
-      fetchUserData();
-    }
-  };
+  }, [userId, fetchUserData]);
 
   return {
-    achievements,
-    progress,
+    achievements: memoizedAchievements,
+    progress: memoizedProgress,
     loading,
     error,
     refreshAchievements,
+    clearCache,
+    lastFetch: lastFetchRef.current,
   };
 };
