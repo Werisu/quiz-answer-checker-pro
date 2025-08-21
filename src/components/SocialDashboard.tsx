@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLoading } from '@/contexts/LoadingContext';
 import { useAchievements } from '@/hooks/useAchievements';
 import { useAuth } from '@/hooks/useAuth';
 import { useFriends } from '@/hooks/useFriends';
@@ -20,7 +21,7 @@ import {
   Users,
   X
 } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Achievement } from './AchievementCard';
 import { AchievementList } from './AchievementList';
@@ -31,7 +32,6 @@ import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
 import { FriendsListSkeleton } from './FriendsListSkeleton';
 import { FriendsSidebar } from './FriendsSidebar';
-import { GlobalLoading } from './GlobalLoading';
 import { GroupDetails } from './GroupDetails';
 import { GroupInviteModal } from './GroupInviteModal';
 import { GroupList } from './GroupList';
@@ -67,15 +67,8 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const [groupSettingsOpen, setGroupSettingsOpen] = useState(false);
   const [selectedGroupForSettings, setSelectedGroupForSettings] = useState<StudyGroup | null>(null);
   
-  // Estado de loading progressivo para melhor UX
-  const [loadingStates, setLoadingStates] = useState({
-    header: true,
-    stats: true,
-    socialWidget: true,
-    achievements: true,
-    friends: true,
-    groups: true
-  });
+  // Usar o LoadingContext global para controlar loading states
+  const { setLoading, isLoading } = useLoading();
   
   // Usar dados reais do hook useFriends
   const { 
@@ -265,40 +258,18 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     }
   };
 
-  // Função para atualizar loading progressivo
-  const updateLoadingState = useCallback((key: keyof typeof loadingStates, value: boolean) => {
-    setLoadingStates(prev => ({ ...prev, [key]: value }));
-  }, []);
-
-  // Efeito para sincronizar loading states progressivamente
-  useEffect(() => {
-    if (!loading) {
-      // Carregar componentes progressivamente para melhor UX
-      const timer = setTimeout(() => updateLoadingState('header', false), 100);
-      const timer2 = setTimeout(() => updateLoadingState('stats', false), 200);
-      const timer3 = setTimeout(() => updateLoadingState('socialWidget', false), 300);
-      const timer4 = setTimeout(() => updateLoadingState('achievements', false), 400);
-      const timer5 = setTimeout(() => updateLoadingState('friends', false), 500);
-      const timer6 = setTimeout(() => updateLoadingState('groups', false), 600);
-
-      return () => {
-        clearTimeout(timer);
-        clearTimeout(timer2);
-        clearTimeout(timer3);
-        clearTimeout(timer4);
-        clearTimeout(timer5);
-        clearTimeout(timer6);
-      };
-    }
-  }, [loading, updateLoadingState]);
+  // Usar loading states reais dos hooks
+  const isHeaderLoading = loading || groupsLoading || achievementsLoading;
+  const isStatsLoading = loading || groupsLoading;
+  const isSocialWidgetLoading = loading;
+  const isAchievementsLoading = achievementsLoading;
+  const isFriendsLoading = loading;
+  const isGroupsLoading = groupsLoading;
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${className}`}>
-      {/* Loading Global */}
-      <GlobalLoading />
-      
       {/* MOBILE FIRST - Header Principal */}
-      {loadingStates.header ? (
+      {isHeaderLoading ? (
         <HeaderSkeleton />
       ) : (
         <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 lg:hidden">
@@ -355,7 +326,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       {/* MOBILE FIRST - Conteúdo Principal */}
       <main className="px-4 py-6 lg:hidden">
         {/* Cards de Estatísticas - Mobile First */}
-        {loadingStates.stats ? (
+        {isStatsLoading ? (
           <StatsCardsSkeleton />
         ) : (
           <div className="grid grid-cols-3 gap-3 mb-6">
@@ -461,7 +432,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                   </div>
                 </CardHeader>
                 <CardContent className="px-0">
-                  {loadingStates.socialWidget ? (
+                  {isSocialWidgetLoading ? (
                     <SocialWidgetSkeleton />
                   ) : (
                     <SocialWidget
@@ -492,7 +463,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                )}
 
                {/* Estatísticas Rápidas */}
-               {loadingStates.stats ? (
+               {isStatsLoading ? (
                  <QuickStatsSkeleton />
                ) : (
                  <div className="grid grid-cols-2 gap-3">
@@ -535,7 +506,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {activeTab === 'friends' && (
             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
               <CardContent className="p-0">
-                {loadingStates.friends ? (
+                {isFriendsLoading ? (
                   <FriendsListSkeleton />
                 ) : (
                   <FriendsList
@@ -583,7 +554,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                </div>
 
                                {/* Conteúdo baseado no estado */}
-                {loadingStates.groups ? (
+                {isGroupsLoading ? (
                   <GroupListSkeleton />
                 ) : showExploreGroups ? (
                   <ExploreGroups
@@ -742,9 +713,9 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 <TabsContent value="overview" className="space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div className="lg:col-span-4">
-                      {loadingStates.socialWidget ? (
-                        <SocialWidgetSkeleton />
-                      ) : (
+                                          {isSocialWidgetLoading ? (
+                      <SocialWidgetSkeleton />
+                    ) : (
                         <SocialWidget
                           onViewAllFriends={handleViewAllFriends}
                           onSendMessage={handleSendMessage}
@@ -757,7 +728,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </TabsContent>
 
                 <TabsContent value="friends">
-                  {loadingStates.friends ? (
+                  {isFriendsLoading ? (
                     <FriendsListSkeleton />
                   ) : (
                     <FriendsList
@@ -802,7 +773,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                      </div>
 
                      {/* Conteúdo baseado no estado */}
-                     {loadingStates.groups ? (
+                     {isGroupsLoading ? (
                        <GroupListSkeleton />
                      ) : showExploreGroups ? (
                        <ExploreGroups
