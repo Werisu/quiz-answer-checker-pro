@@ -1,24 +1,29 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAchievements } from '@/hooks/useAchievements';
+import { useAuth } from '@/hooks/useAuth';
 import { useFriends } from '@/hooks/useFriends';
 import { useStudyGroups } from '@/hooks/useStudyGroups';
 import {
-    Activity,
-    ArrowLeft,
-    BookOpen,
-    Calendar,
-    MessageCircle,
-    Plus,
-    Search,
-    Settings,
-    TrendingUp,
-    Trophy,
-    Users,
-    X
+  Activity,
+  ArrowLeft,
+  BookOpen,
+  Calendar,
+  MessageCircle,
+  Plus,
+  Search,
+  Settings,
+  TrendingUp,
+  Trophy,
+  Users,
+  X
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Achievement } from './AchievementCard';
+import { AchievementList } from './AchievementList';
+import { AchievementStats } from './AchievementStats';
 import { ChatDemo } from './ChatDemo';
 import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
@@ -76,6 +81,18 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     removeMember,
     updateMemberRole,
   } = useStudyGroups();
+
+  // Usar dados reais do hook useAuth para pegar o userId
+  const { user } = useAuth();
+
+  // Usar dados reais do hook useAchievements
+  const {
+    achievements,
+    progress,
+    loading: achievementsLoading,
+    error: achievementsError,
+    refreshAchievements
+  } = useAchievements(user?.id || '');
 
   const handleGoBack = () => {
     navigate('/');
@@ -154,6 +171,11 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       setSelectedGroupForDetails(group);
       setGroupDetailsOpen(true);
     }
+  };
+
+  const handleAchievementClick = (achievement: Achievement) => {
+    console.log('Conquista clicada:', achievement);
+    // Aqui você pode implementar a lógica para mostrar detalhes da conquista
   };
 
   const handleManageGroup = (groupId: string) => {
@@ -385,36 +407,51 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
 
 
-              {/* Estatísticas Rápidas */}
-              <div className="grid grid-cols-2 gap-3">
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-0 shadow-sm rounded-2xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-blue-600 dark:text-blue-400">+24%</div>
-                        <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Engajamento</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                             {/* Estatísticas de Conquistas */}
+               {!achievementsLoading && !achievementsError && (
+                 <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
+                   <CardHeader className="pb-4">
+                     <CardTitle className="text-lg text-gray-900 dark:text-white flex items-center space-x-2">
+                       <Trophy className="w-5 h-5 text-yellow-600" />
+                       <span>Suas Conquistas</span>
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent className="px-0">
+                     <AchievementStats progress={progress} />
+                   </CardContent>
+                 </Card>
+               )}
 
-                <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-0 shadow-sm rounded-2xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-green-600 dark:text-green-400">12</div>
-                        <div className="text-xs text-green-600/70 dark:text-green-400/70">Sessões</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+               {/* Estatísticas Rápidas */}
+               <div className="grid grid-cols-2 gap-3">
+                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-0 shadow-sm rounded-2xl">
+                   <CardContent className="p-4">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                         <TrendingUp className="w-5 h-5 text-white" />
+                       </div>
+                       <div>
+                         <div className="text-lg font-bold text-blue-600 dark:text-blue-400">+24%</div>
+                         <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Engajamento</div>
+                       </div>
+                     </div>
+                   </CardContent>
+                 </Card>
+
+                 <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-0 shadow-sm rounded-2xl">
+                   <CardContent className="p-4">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                         <Calendar className="w-5 h-5 text-white" />
+                       </div>
+                       <div>
+                         <div className="text-lg font-bold text-green-600 dark:text-green-400">12</div>
+                         <div className="text-xs text-green-600/70 dark:text-green-400/70">Sessões</div>
+                       </div>
+                     </div>
+                   </CardContent>
+                 </Card>
+               </div>
             </div>
           )}
 
@@ -504,22 +541,42 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </Card>
           )}
 
-          {/* Tab: Conquistas */}
-          {activeTab === 'achievements' && (
-            <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
-              <CardContent className="p-8">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                    <Trophy className="w-10 h-10 text-yellow-600 dark:text-yellow-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Conquistas em breve!</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    O sistema de conquistas está sendo implementado.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                     {/* Tab: Conquistas */}
+           {activeTab === 'achievements' && (
+             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
+               <CardContent className="p-0">
+                 {achievementsLoading ? (
+                   <div className="p-8 text-center">
+                     <div className="w-20 h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                       <Trophy className="w-10 h-10 text-yellow-600 dark:text-yellow-400" />
+                     </div>
+                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Carregando conquistas...</h3>
+                   </div>
+                 ) : achievementsError ? (
+                   <div className="p-8 text-center">
+                     <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/20 dark:to-red-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                       <Trophy className="w-10 h-10 text-red-600 dark:text-red-400" />
+                     </div>
+                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Erro ao carregar</h3>
+                     <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                       {achievementsError}
+                     </p>
+                     <Button onClick={refreshAchievements} variant="outline">
+                       Tentar novamente
+                     </Button>
+                   </div>
+                 ) : (
+                   <AchievementList
+                     achievements={achievements}
+                     onAchievementClick={handleAchievementClick}
+                     showFilters={false}
+                     showStats={true}
+                     variant="list"
+                   />
+                 )}
+               </CardContent>
+             </Card>
+           )}
         </div>
       </main>
 
@@ -691,23 +748,15 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                   </div>
                 </TabsContent>
 
-                <TabsContent value="achievements">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Conquistas Sociais</CardTitle>
-                      <CardDescription>Funcionalidade em desenvolvimento</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <Trophy className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">Conquistas em breve!</h3>
-                        <p className="text-muted-foreground">
-                          O sistema de conquistas está sendo implementado.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                                 <TabsContent value="achievements">
+                   <AchievementList 
+                     achievements={achievements}
+                     onAchievementClick={handleAchievementClick}
+                     showFilters={true}
+                     showStats={true}
+                     variant="grid"
+                   />
+                 </TabsContent>
               </Tabs>
             </div>
 
