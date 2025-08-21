@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, MessageCircle, Trophy, Users } from 'lucide-react';
 import React from 'react';
 import { FriendsList } from './FriendsList';
-import { FriendsSidebar } from './FriendsSidebar';
 import { SocialDashboard } from './SocialDashboard';
 
 export const SocialDemo: React.FC = () => {
@@ -33,16 +32,9 @@ export const SocialDemo: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="components" className="mt-6">
-          <div className="flex h-screen">
-            {/* Sidebar Social */}
-            <FriendsSidebar
-              onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
-              onSendMessage={handleSendMessage}
-              onViewProfile={handleViewProfile}
-            />
-            
+          <div className="w-full">
             {/* Conteúdo Principal */}
-            <div className="flex-1 overflow-auto">
+            <div className="w-full overflow-auto">
               <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="text-center">
@@ -231,10 +223,7 @@ export const SocialDemo: React.FC = () => {
             <span>✅ useFriends Hook</span>
             <Badge variant="default">Completo</Badge>
           </div>
-                     <div className="flex items-center justify-between">
-             <span>✅ FriendsSidebar Component</span>
-             <Badge variant="default">Completo</Badge>
-           </div>
+
                  </CardContent>
        </Card>
               </div>
@@ -243,16 +232,9 @@ export const SocialDemo: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="demo" className="mt-6">
-          <div className="flex h-screen">
-            {/* Sidebar Social */}
-            <FriendsSidebar
-              onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
-              onSendMessage={handleSendMessage}
-              onViewProfile={handleViewProfile}
-            />
-            
+          <div className="w-full">
             {/* Conteúdo Principal */}
-            <div className="flex-1 overflow-auto">
+            <div className="w-full overflow-auto">
               <div className="container mx-auto p-6 space-y-6">
                 {/* Header */}
                 <div className="text-center">
@@ -441,10 +423,7 @@ export const SocialDemo: React.FC = () => {
                       <span>✅ useFriends Hook</span>
                       <Badge variant="default">Completo</Badge>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span>✅ FriendsSidebar Component</span>
-                      <Badge variant="default">Completo</Badge>
-                    </div>
+
                     <div className="flex items-center justify-between">
                       <span>✅ SocialWidget Component</span>
                       <Badge variant="default">Completo</Badge>

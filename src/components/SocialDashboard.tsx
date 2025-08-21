@@ -18,8 +18,7 @@ import {
   Settings,
   TrendingUp,
   Trophy,
-  Users,
-  X
+  Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +30,6 @@ import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
 import { FriendsListSkeleton } from './FriendsListSkeleton';
-import { FriendsSidebar } from './FriendsSidebar';
 import { GroupDetails } from './GroupDetails';
 import { GroupInviteModal } from './GroupInviteModal';
 import { GroupList } from './GroupList';
@@ -55,7 +53,6 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [createGroupModalOpen, setCreateGroupModalOpen] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
@@ -294,30 +291,18 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <NotificationsDropdown
-                  onAcceptRequest={handleAcceptRequest}
-                  onRejectRequest={handleRejectRequest}
-                  onViewProfile={handleViewProfile}
-                  onSendMessage={handleSendMessage}
-                  onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
-                  onDismiss={(id) => console.log('Dispensar:', id)}
-                  friends={friends}
-                  pendingRequests={pendingRequests}
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                >
-                  {sidebarOpen ? (
-                    <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                  ) : (
-                    <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                  )}
-                </Button>
-              </div>
+                             <div className="flex items-center space-x-2">
+                 <NotificationsDropdown
+                   onAcceptRequest={handleAcceptRequest}
+                   onRejectRequest={handleRejectRequest}
+                   onViewProfile={handleViewProfile}
+                   onSendMessage={handleSendMessage}
+                   onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                   onDismiss={(id) => console.log('Dispensar:', id)}
+                   friends={friends}
+                   pendingRequests={pendingRequests}
+                 />
+               </div>
             </div>
           </div>
         </header>
@@ -625,20 +610,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
         </div>
       </main>
 
-      {/* Sidebar Mobile - Overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-80 bg-white dark:bg-gray-900 shadow-2xl">
-            <FriendsSidebar
-              onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
-              onSendMessage={handleSendMessage}
-              onViewProfile={handleViewProfile}
-              onClose={() => setSidebarOpen(false)}
-            />
-          </div>
-        </div>
-      )}
+      
 
       {/* DESKTOP - Adaptação Mobile First */}
       <div className="hidden lg:block">
@@ -661,7 +633,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
               </div>
             </div>
             
-                         <div className="flex items-center space-x-4">
+                                      <div className="flex items-center space-x-4">
                <NotificationsDropdown
                  onAcceptRequest={handleAcceptRequest}
                  onRejectRequest={handleRejectRequest}
@@ -672,18 +644,12 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                  friends={friends}
                  pendingRequests={pendingRequests}
                />
-               <Button
-                 variant="outline"
-                 onClick={() => setSidebarOpen(!sidebarOpen)}
-               >
-                 {sidebarOpen ? 'Ocultar Sidebar' : 'Mostrar Sidebar'}
-               </Button>
              </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="w-full">
             {/* Conteúdo Principal Desktop */}
-            <div className={`${sidebarOpen ? 'lg:col-span-3' : 'lg:col-span-4'}`}>
+            <div className="w-full">
               {/* Tabs Desktop */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-5 mb-6">
@@ -813,20 +779,8 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                    />
                  </TabsContent>
               </Tabs>
-            </div>
-
-            {/* Sidebar Desktop */}
-            {sidebarOpen && (
-              <div className="lg:col-span-1">
-                <FriendsSidebar
-                  onFriendSelect={(friendId) => console.log('Amigo selecionado:', friendId)}
-                  onSendMessage={handleSendMessage}
-                  onViewProfile={handleViewProfile}
-                  onClose={() => setSidebarOpen(false)}
-                />
-              </div>
-            )}
-          </div>
+                         </div>
+           </div>
         </div>
       </div>
 
