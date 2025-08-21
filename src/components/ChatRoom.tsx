@@ -1,18 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import {
-    ArrowLeft,
-    MoreVertical,
-    Phone,
-    Search,
-    Settings,
-    Video
+  ArrowLeft,
+  MoreVertical,
+  Phone,
+  Plus,
+  Search,
+  Send,
+  Settings,
+  Video
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { MessageInput } from './MessageInput';
 import { MessageList } from './MessageList';
 
 interface ChatMessage {
@@ -120,12 +122,22 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
-    // Esta função agora é chamada pelo MessageInput
-    console.log('Mensagem enviada');
+  const handleSendMessage = (content: string, type: 'text' | 'image' | 'file' = 'text') => {
+    if (!user) return;
+
+    const newMessage: ChatMessage = {
+      id: Date.now().toString(),
+      content,
+      sender_id: user.id,
+      sender_name: 'Você',
+      sender_avatar: user.user_metadata?.avatar_url,
+      timestamp: new Date().toISOString(),
+      message_type: type,
+      is_read: false
+    };
+
+    setMessages(prev => [...prev, newMessage]);
   };
-
-
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
@@ -242,34 +254,53 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
             messages={messages}
             participants={currentParticipants}
             onMessageClick={(message) => console.log('Message clicked:', message)}
-            className="flex-1"
+            className="flex-1 min-h-0"
           />
 
           {/* Message Input */}
-          <MessageInput
-            onSendMessage={(content, type) => {
-              if (type === 'text') {
-                setNewMessage(content);
-                handleSendMessage();
-              } else {
-                // Simular envio de outros tipos de mensagem
-                const message: ChatMessage = {
-                  id: Date.now().toString(),
-                  content,
-                  sender_id: user?.id || '',
-                  sender_name: 'Você',
-                  sender_avatar: user?.user_metadata?.avatar_url,
-                  timestamp: new Date().toISOString(),
-                  message_type: type,
-                  is_read: false
-                };
-                setMessages(prev => [...prev, message]);
-              }
-            }}
-            onTyping={setIsTyping}
-            placeholder="Digite sua mensagem..."
-            disabled={!user}
-          />
+          <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex-shrink-0">
+            <div className="flex items-center space-x-2">
+              {/* Attachment Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => console.log('Attachment button clicked')}
+                disabled={!user}
+                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Plus className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </Button>
+
+              {/* Message Input Field */}
+              <div className="flex-1 relative">
+                <Input
+                  value="" // Placeholder for message input
+                  onChange={(e) => console.log('Message input changed:', e.target.value)}
+                  onKeyPress={(e) => console.log('Message input key pressed:', e.key)}
+                  placeholder="Digite sua mensagem..."
+                  disabled={!user}
+                  className="pr-12 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                />
+                
+                {/* Send Button */}
+                <Button
+                  onClick={() => console.log('Send button clicked')}
+                  disabled={!user}
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 rounded-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Send className="w-4 h-4 text-white" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Typing Indicator */}
+            {isTyping && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 ml-4">
+                Digitando...
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Sidebar - Desktop Only */}
