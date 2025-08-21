@@ -24,18 +24,24 @@ import { useNavigate } from 'react-router-dom';
 import { Achievement } from './AchievementCard';
 import { AchievementList } from './AchievementList';
 import { AchievementStats } from './AchievementStats';
-import { ChatDemo } from './ChatDemo';
+import { ChatSkeleton } from './ChatSkeleton';
 import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
+import { FriendsListSkeleton } from './FriendsListSkeleton';
 import { FriendsSidebar } from './FriendsSidebar';
 import { GroupDetails } from './GroupDetails';
 import { GroupInviteModal } from './GroupInviteModal';
 import { GroupList } from './GroupList';
+import { GroupListSkeleton } from './GroupListSkeleton';
 import { GroupMemberManagement } from './GroupMemberManagement';
 import { GroupSettings } from './GroupSettings';
+import { HeaderSkeleton } from './HeaderSkeleton';
 import { NotificationsDropdown } from './NotificationsDropdown';
+import { QuickStatsSkeleton } from './QuickStatsSkeleton';
 import { SocialWidget } from './SocialWidget';
+import { SocialWidgetSkeleton } from './SocialWidgetSkeleton';
+import { StatsCardsSkeleton } from './StatsCardsSkeleton';
 
 interface SocialDashboardProps {
   className?: string;
@@ -241,79 +247,87 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${className}`}>
       {/* MOBILE FIRST - Header Principal */}
-      <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 lg:hidden">
-        <div className="px-4 py-3">
-          {/* Header Mobile */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleGoBack}
-                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800 mr-2"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              </Button>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                <span className="text-white text-xl font-bold">S</span>
+      {loading ? (
+        <HeaderSkeleton />
+      ) : (
+        <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 lg:hidden">
+          <div className="px-4 py-3">
+            {/* Header Mobile */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleGoBack}
+                  className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800 mr-2"
+                >
+                  <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </Button>
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                  <span className="text-white text-xl font-bold">S</span>
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-white">Social</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Dashboard</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white">Social</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Dashboard</p>
+              
+              <div className="flex items-center space-x-2">
+                <NotificationsDropdown
+                  onAcceptRequest={handleAcceptRequest}
+                  onRejectRequest={handleRejectRequest}
+                  onViewProfile={handleViewProfile}
+                  onSendMessage={handleSendMessage}
+                  onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
+                  onDismiss={(id) => console.log('Dispensar:', id)}
+                  friends={friends}
+                  pendingRequests={pendingRequests}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                >
+                  {sidebarOpen ? (
+                    <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  ) : (
+                    <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  )}
+                </Button>
               </div>
             </div>
-            
-                         <div className="flex items-center space-x-2">
-               <NotificationsDropdown
-                 onAcceptRequest={handleAcceptRequest}
-                 onRejectRequest={handleRejectRequest}
-                 onViewProfile={handleViewProfile}
-                 onSendMessage={handleSendMessage}
-                 onMarkAsRead={(id) => console.log('Marcar como lida:', id)}
-                 onDismiss={(id) => console.log('Dispensar:', id)}
-                 friends={friends}
-                 pendingRequests={pendingRequests}
-               />
-               <Button
-                 variant="ghost"
-                 size="sm"
-                 className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-                 onClick={() => setSidebarOpen(!sidebarOpen)}
-               >
-                 {sidebarOpen ? (
-                   <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                 ) : (
-                   <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                 )}
-               </Button>
-             </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* MOBILE FIRST - Conteúdo Principal */}
       <main className="px-4 py-6 lg:hidden">
         {/* Cards de Estatísticas - Mobile First */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white">
-            <div className="text-2xl font-bold">
-              {loading ? '...' : friends.length}
+        {loading ? (
+          <StatsCardsSkeleton />
+        ) : (
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white">
+              <div className="text-2xl font-bold">
+                {friends.length}
+              </div>
+              <div className="text-xs opacity-90">Amigos</div>
             </div>
-            <div className="text-xs opacity-90">Amigos</div>
-          </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 text-white">
-            <div className="text-2xl font-bold">
-              {loading ? '...' : friends.filter(f => f.is_online).length}
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 text-white">
+              <div className="text-2xl font-bold">
+                {friends.filter(f => f.is_online).length}
+              </div>
+              <div className="text-xs opacity-90">Online</div>
             </div>
-            <div className="text-xs opacity-90">Online</div>
-          </div>
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-4 text-white">
-            <div className="text-2xl font-bold">
-              {loading ? '...' : pendingRequests.length}
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-4 text-white">
+              <div className="text-2xl font-bold">
+                {pendingRequests.length}
+              </div>
+              <div className="text-xs opacity-90">Pendentes</div>
             </div>
-            <div className="text-xs opacity-90">Pendentes</div>
           </div>
-        </div>
+        )}
 
         {/* Barra de Ações - Mobile First */}
         <div className="flex items-center justify-between mb-6">
@@ -396,12 +410,16 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                   </div>
                 </CardHeader>
                 <CardContent className="px-0">
-                  <SocialWidget
-                    onViewAllFriends={handleViewAllFriends}
-                    onSendMessage={handleSendMessage}
-                    onViewProfile={handleViewProfile}
-                    onViewRequests={handleViewRequests}
-                  />
+                  {loading ? (
+                    <SocialWidgetSkeleton />
+                  ) : (
+                    <SocialWidget
+                      onViewAllFriends={handleViewAllFriends}
+                      onSendMessage={handleSendMessage}
+                      onViewProfile={handleViewProfile}
+                      onViewRequests={handleViewRequests}
+                    />
+                  )}
                 </CardContent>
               </Card>
 
@@ -423,35 +441,39 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                )}
 
                {/* Estatísticas Rápidas */}
-               <div className="grid grid-cols-2 gap-3">
-                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-0 shadow-sm rounded-2xl">
-                   <CardContent className="p-4">
-                     <div className="flex items-center space-x-3">
-                       <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                         <TrendingUp className="w-5 h-5 text-white" />
+               {loading ? (
+                 <QuickStatsSkeleton />
+               ) : (
+                 <div className="grid grid-cols-2 gap-3">
+                   <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-0 shadow-sm rounded-2xl">
+                     <CardContent className="p-4">
+                       <div className="flex items-center space-x-3">
+                         <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                           <TrendingUp className="w-5 h-5 text-white" />
+                         </div>
+                         <div>
+                           <div className="text-lg font-bold text-blue-600 dark:text-blue-400">+24%</div>
+                           <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Engajamento</div>
+                         </div>
                        </div>
-                       <div>
-                         <div className="text-lg font-bold text-blue-600 dark:text-blue-400">+24%</div>
-                         <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Engajamento</div>
-                       </div>
-                     </div>
-                   </CardContent>
-                 </Card>
+                     </CardContent>
+                   </Card>
 
-                 <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-0 shadow-sm rounded-2xl">
-                   <CardContent className="p-4">
-                     <div className="flex items-center space-x-3">
-                       <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                         <Calendar className="w-5 h-5 text-white" />
+                   <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-0 shadow-sm rounded-2xl">
+                     <CardContent className="p-4">
+                       <div className="flex items-center space-x-3">
+                         <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                           <Calendar className="w-5 h-5 text-white" />
+                         </div>
+                         <div>
+                           <div className="text-lg font-bold text-green-600 dark:text-green-400">12</div>
+                           <div className="text-xs text-green-600/70 dark:text-green-400/70">Sessões</div>
+                         </div>
                        </div>
-                       <div>
-                         <div className="text-lg font-bold text-green-600 dark:text-green-400">12</div>
-                         <div className="text-xs text-green-600/70 dark:text-green-400/70">Sessões</div>
-                       </div>
-                     </div>
-                   </CardContent>
-                 </Card>
-               </div>
+                     </CardContent>
+                   </Card>
+                 </div>
+               )}
             </div>
           )}
 
@@ -459,10 +481,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {activeTab === 'friends' && (
             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
               <CardContent className="p-0">
-                <FriendsList
-                  onSendMessage={handleSendMessage}
-                  onViewProfile={handleViewProfile}
-                />
+                {loading ? (
+                  <FriendsListSkeleton />
+                ) : (
+                  <FriendsList
+                    onSendMessage={handleSendMessage}
+                    onViewProfile={handleViewProfile}
+                  />
+                )}
               </CardContent>
             </Card>
           )}
@@ -502,41 +528,35 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                  </div>
                </div>
 
-               {/* Conteúdo baseado no estado */}
-               {showExploreGroups ? (
-                 <ExploreGroups
-                   onJoinGroup={handleJoinGroup}
-                   onViewGroup={handleViewGroup}
-                   loading={groupsLoading}
-                 />
-               ) : (
-                 <GroupList
-                   groups={groups}
-                   loading={groupsLoading}
-                   onCreateGroup={handleCreateGroup}
-                   onJoinGroup={handleJoinGroup}
-                   onViewGroup={handleViewGroup}
-                   onManageGroup={handleManageGroup}
-                   onLeaveGroup={handleLeaveGroup}
-                   onInviteMembers={handleInviteMembers}
-                 />
-               )}
+                               {/* Conteúdo baseado no estado */}
+                {groupsLoading ? (
+                  <GroupListSkeleton />
+                ) : showExploreGroups ? (
+                  <ExploreGroups
+                    onJoinGroup={handleJoinGroup}
+                    onViewGroup={handleViewGroup}
+                    loading={groupsLoading}
+                  />
+                ) : (
+                  <GroupList
+                    groups={groups}
+                    loading={groupsLoading}
+                    onCreateGroup={handleCreateGroup}
+                    onJoinGroup={handleJoinGroup}
+                    onViewGroup={handleViewGroup}
+                    onManageGroup={handleManageGroup}
+                    onLeaveGroup={handleLeaveGroup}
+                    onInviteMembers={handleInviteMembers}
+                  />
+                )}
              </div>
            )}
 
           {/* Tab: Chat */}
           {activeTab === 'chat' && (
             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
-              <CardContent className="p-8">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-pink-100 to-pink-200 dark:from-pink-900/20 dark:to-pink-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                    <MessageCircle className="w-10 h-10 text-pink-600 dark:text-pink-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Chat em breve!</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    O sistema de chat está sendo implementado.
-                  </p>
-                </div>
+              <CardContent className="p-0">
+                <ChatSkeleton />
               </CardContent>
             </Card>
           )}
@@ -668,21 +688,29 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 <TabsContent value="overview" className="space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div className="lg:col-span-4">
-                      <SocialWidget
-                        onViewAllFriends={handleViewAllFriends}
-                        onSendMessage={handleSendMessage}
-                        onViewProfile={handleViewProfile}
-                        onViewRequests={handleViewRequests}
-                      />
+                      {loading ? (
+                        <SocialWidgetSkeleton />
+                      ) : (
+                        <SocialWidget
+                          onViewAllFriends={handleViewAllFriends}
+                          onSendMessage={handleSendMessage}
+                          onViewProfile={handleViewProfile}
+                          onViewRequests={handleViewRequests}
+                        />
+                      )}
                     </div>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="friends">
-                  <FriendsList
-                    onSendMessage={handleSendMessage}
-                    onViewProfile={handleViewProfile}
-                  />
+                  {loading ? (
+                    <FriendsListSkeleton />
+                  ) : (
+                    <FriendsList
+                      onSendMessage={handleSendMessage}
+                      onViewProfile={handleViewProfile}
+                    />
+                  )}
                 </TabsContent>
 
                                  <TabsContent value="groups">
@@ -720,7 +748,9 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                      </div>
 
                      {/* Conteúdo baseado no estado */}
-                     {showExploreGroups ? (
+                     {groupsLoading ? (
+                       <GroupListSkeleton />
+                     ) : showExploreGroups ? (
                        <ExploreGroups
                          onJoinGroup={handleJoinGroup}
                          onViewGroup={handleViewGroup}
@@ -744,7 +774,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
                 <TabsContent value="chat">
                   <div className="h-[600px] border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
-                    <ChatDemo />
+                    <ChatSkeleton />
                   </div>
                 </TabsContent>
 
