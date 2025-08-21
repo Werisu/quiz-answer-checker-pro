@@ -54,8 +54,7 @@ export const ExploreGroups: React.FC<ExploreGroupsProps> = ({
       member_count: 32,
       created_at: '2024-01-15T10:00:00Z',
       tags: ['matemática', 'cálculo', 'álgebra', 'avançado'],
-      owner_id: 'owner-1',
-      tags: ['matemática', 'cálculo', 'álgebra', 'avançado']
+      owner_id: 'owner-1'
     },
     {
       id: 'group-2',
@@ -66,8 +65,7 @@ export const ExploreGroups: React.FC<ExploreGroupsProps> = ({
       member_count: 28,
       created_at: '2024-02-01T14:30:00Z',
       tags: ['programação', 'web', 'react', 'nodejs'],
-      owner_id: 'owner-2',
-      tags: ['programação', 'web', 'react', 'nodejs']
+      owner_id: 'owner-2'
     },
     {
       id: 'group-3',
@@ -78,8 +76,7 @@ export const ExploreGroups: React.FC<ExploreGroupsProps> = ({
       member_count: 15,
       created_at: '2024-01-20T09:15:00Z',
       tags: ['arte', 'história', 'renascença', 'contemporâneo'],
-      owner_id: 'owner-3',
-      tags: ['arte', 'história', 'renascença', 'contemporâneo']
+      owner_id: 'owner-3'
     },
     {
       id: 'group-4',
@@ -90,8 +87,7 @@ export const ExploreGroups: React.FC<ExploreGroupsProps> = ({
       member_count: 25,
       created_at: '2024-02-10T16:45:00Z',
       tags: ['física', 'quântica', 'teoria das cordas', 'moderna'],
-      owner_id: 'owner-4',
-      tags: ['física', 'quântica', 'teoria das cordas', 'moderna']
+      owner_id: 'owner-4'
     },
     {
       id: 'group-5',
@@ -102,8 +98,7 @@ export const ExploreGroups: React.FC<ExploreGroupsProps> = ({
       member_count: 22,
       created_at: '2024-01-25T11:20:00Z',
       tags: ['literatura', 'clássica', 'análise', 'discussão'],
-      owner_id: 'owner-5',
-      tags: ['literatura', 'clássica', 'análise', 'discussão']
+      owner_id: 'owner-5'
     }
   ];
 

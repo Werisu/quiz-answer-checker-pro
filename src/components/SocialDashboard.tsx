@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAchievements } from '@/hooks/useAchievements';
 import { useAuth } from '@/hooks/useAuth';
 import { useFriends } from '@/hooks/useFriends';
+import type { StudyGroup } from '@/hooks/useStudyGroups';
 import { useStudyGroups } from '@/hooks/useStudyGroups';
 import {
   Activity,
@@ -19,7 +20,7 @@ import {
   Users,
   X
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Achievement } from './AchievementCard';
 import { AchievementList } from './AchievementList';
@@ -30,6 +31,7 @@ import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
 import { FriendsListSkeleton } from './FriendsListSkeleton';
 import { FriendsSidebar } from './FriendsSidebar';
+import { GlobalLoading } from './GlobalLoading';
 import { GroupDetails } from './GroupDetails';
 import { GroupInviteModal } from './GroupInviteModal';
 import { GroupList } from './GroupList';
@@ -38,6 +40,7 @@ import { GroupMemberManagement } from './GroupMemberManagement';
 import { GroupSettings } from './GroupSettings';
 import { HeaderSkeleton } from './HeaderSkeleton';
 import { NotificationsDropdown } from './NotificationsDropdown';
+import { PerformanceMonitor } from './PerformanceMonitor';
 import { QuickStatsSkeleton } from './QuickStatsSkeleton';
 import { SocialWidget } from './SocialWidget';
 import { SocialWidgetSkeleton } from './SocialWidgetSkeleton';
@@ -63,6 +66,16 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const [selectedGroupForManagement, setSelectedGroupForManagement] = useState<StudyGroup | null>(null);
   const [groupSettingsOpen, setGroupSettingsOpen] = useState(false);
   const [selectedGroupForSettings, setSelectedGroupForSettings] = useState<StudyGroup | null>(null);
+  
+  // Estado de loading progressivo para melhor UX
+  const [loadingStates, setLoadingStates] = useState({
+    header: true,
+    stats: true,
+    socialWidget: true,
+    achievements: true,
+    friends: true,
+    groups: true
+  });
   
   // Usar dados reais do hook useFriends
   const { 
@@ -147,7 +160,13 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     setCreateGroupModalOpen(true);
   };
 
-  const handleCreateGroupSubmit = async (groupData: any) => {
+  const handleCreateGroupSubmit = async (groupData: {
+    name: string;
+    description: string;
+    visibility: 'public' | 'private';
+    max_members: number;
+    tags: string[];
+  }) => {
     console.log('Criando grupo:', groupData);
     const success = await createGroup(groupData);
     
@@ -160,7 +179,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     return success;
   };
 
-  const handleJoinGroup = async (groupId: string) => {
+  const handleJoinGroup = async (groupId: string): Promise<boolean> => {
     console.log('Entrar no grupo:', groupId);
     const success = await joinGroup(groupId);
     if (success) {
@@ -168,6 +187,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     } else {
       console.error('❌ Erro ao entrar no grupo');
     }
+    return success;
   };
 
   const handleViewGroup = (groupId: string) => {
@@ -226,7 +246,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     }
   };
 
-  const handleLeaveGroup = async (groupId: string) => {
+  const handleLeaveGroup = async (groupId: string): Promise<boolean> => {
     console.log('Sair do grupo:', groupId);
     const success = await leaveGroup(groupId);
     if (success) {
@@ -234,6 +254,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     } else {
       console.error('❌ Erro ao sair do grupo');
     }
+    return success;
   };
 
   const handleInviteMembers = (groupId: string) => {
@@ -244,10 +265,40 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     }
   };
 
+  // Função para atualizar loading progressivo
+  const updateLoadingState = useCallback((key: keyof typeof loadingStates, value: boolean) => {
+    setLoadingStates(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  // Efeito para sincronizar loading states progressivamente
+  useEffect(() => {
+    if (!loading) {
+      // Carregar componentes progressivamente para melhor UX
+      const timer = setTimeout(() => updateLoadingState('header', false), 100);
+      const timer2 = setTimeout(() => updateLoadingState('stats', false), 200);
+      const timer3 = setTimeout(() => updateLoadingState('socialWidget', false), 300);
+      const timer4 = setTimeout(() => updateLoadingState('achievements', false), 400);
+      const timer5 = setTimeout(() => updateLoadingState('friends', false), 500);
+      const timer6 = setTimeout(() => updateLoadingState('groups', false), 600);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(timer2);
+        clearTimeout(timer3);
+        clearTimeout(timer4);
+        clearTimeout(timer5);
+        clearTimeout(timer6);
+      };
+    }
+  }, [loading, updateLoadingState]);
+
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${className}`}>
+      {/* Loading Global */}
+      <GlobalLoading />
+      
       {/* MOBILE FIRST - Header Principal */}
-      {loading ? (
+      {loadingStates.header ? (
         <HeaderSkeleton />
       ) : (
         <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 lg:hidden">
@@ -304,7 +355,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       {/* MOBILE FIRST - Conteúdo Principal */}
       <main className="px-4 py-6 lg:hidden">
         {/* Cards de Estatísticas - Mobile First */}
-        {loading ? (
+        {loadingStates.stats ? (
           <StatsCardsSkeleton />
         ) : (
           <div className="grid grid-cols-3 gap-3 mb-6">
@@ -410,7 +461,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                   </div>
                 </CardHeader>
                 <CardContent className="px-0">
-                  {loading ? (
+                  {loadingStates.socialWidget ? (
                     <SocialWidgetSkeleton />
                   ) : (
                     <SocialWidget
@@ -441,7 +492,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                )}
 
                {/* Estatísticas Rápidas */}
-               {loading ? (
+               {loadingStates.stats ? (
                  <QuickStatsSkeleton />
                ) : (
                  <div className="grid grid-cols-2 gap-3">
@@ -462,8 +513,8 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                    <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-0 shadow-sm rounded-2xl">
                      <CardContent className="p-4">
                        <div className="flex items-center space-x-3">
-                         <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                           <Calendar className="w-5 h-5 text-white" />
+                         <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                           <Calendar className="w-6 h-6 text-white" />
                          </div>
                          <div>
                            <div className="text-lg font-bold text-green-600 dark:text-green-400">12</div>
@@ -474,6 +525,9 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                    </Card>
                  </div>
                )}
+
+               {/* Performance Monitor */}
+               <PerformanceMonitor />
             </div>
           )}
 
@@ -481,7 +535,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {activeTab === 'friends' && (
             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
               <CardContent className="p-0">
-                {loading ? (
+                {loadingStates.friends ? (
                   <FriendsListSkeleton />
                 ) : (
                   <FriendsList
@@ -529,7 +583,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                </div>
 
                                {/* Conteúdo baseado no estado */}
-                {groupsLoading ? (
+                {loadingStates.groups ? (
                   <GroupListSkeleton />
                 ) : showExploreGroups ? (
                   <ExploreGroups
@@ -688,7 +742,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 <TabsContent value="overview" className="space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div className="lg:col-span-4">
-                      {loading ? (
+                      {loadingStates.socialWidget ? (
                         <SocialWidgetSkeleton />
                       ) : (
                         <SocialWidget
@@ -703,7 +757,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </TabsContent>
 
                 <TabsContent value="friends">
-                  {loading ? (
+                  {loadingStates.friends ? (
                     <FriendsListSkeleton />
                   ) : (
                     <FriendsList
@@ -748,7 +802,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                      </div>
 
                      {/* Conteúdo baseado no estado */}
-                     {groupsLoading ? (
+                     {loadingStates.groups ? (
                        <GroupListSkeleton />
                      ) : showExploreGroups ? (
                        <ExploreGroups
@@ -846,17 +900,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
       {/* Modal de Gerenciamento de Membros */}
       {selectedGroupForManagement && (
-        <GroupMemberManagement
-          group={selectedGroupForManagement}
-          currentUserRole={selectedGroupForManagement.user_role}
-          onUpdateMemberRole={updateMemberRole}
-          onRemoveMember={removeMember}
-          onClose={() => {
-            setMemberManagementOpen(false);
-            setSelectedGroupForManagement(null);
-          }}
-          loading={groupsLoading}
-        />
+                                <GroupMemberManagement
+                          group={selectedGroupForManagement}
+                          currentUserRole={selectedGroupForManagement.user_role}
+                          onUpdateMemberRole={(memberId: string, newRole: 'admin' | 'moderator' | 'member') => 
+                            updateMemberRole(selectedGroupForManagement.id, memberId, newRole)
+                          }
+                          onRemoveMember={(memberId: string) => 
+                            removeMember(selectedGroupForManagement.id, memberId)
+                          }
+                          onClose={() => {
+                            setMemberManagementOpen(false);
+                            setSelectedGroupForManagement(null);
+                          }}
+                          loading={groupsLoading}
+                        />
       )}
 
       {/* Modal de Configurações do Grupo */}

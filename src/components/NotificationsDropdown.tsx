@@ -8,7 +8,8 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bell, Check, MessageCircle, User, Users, X } from 'lucide-react';
+import { useFriendsLoading } from '@/contexts/LoadingContext';
+import { Bell, MessageCircle, User, Users, X } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface Notification {
@@ -46,6 +47,7 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
   pendingRequests,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { acceptRequestLoading, rejectRequestLoading } = useFriendsLoading();
 
   // Gerar notificações baseadas em dados reais
   const generateNotifications = (): Notification[] => {
@@ -235,28 +237,22 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                         {/* Actions */}
                         {notification.actionRequired && (
                           <div className="flex items-center space-x-1 ml-2">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                            <AcceptFriendButton
+                              loading={acceptRequestLoading(notification.requestId || '')}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleAcceptRequest(notification.id);
                               }}
-                            >
-                              <Check className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="h-6 w-6 p-0"
+                            />
+                            <RejectFriendButton
+                              loading={rejectRequestLoading(notification.requestId || '')}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleRejectRequest(notification.id);
                               }}
-                            >
-                              <X className="w-3 h-3" />
-                            </Button>
+                              className="h-6 w-6 p-0"
+                            />
                           </div>
                         )}
                       </div>

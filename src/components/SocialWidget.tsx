@@ -3,16 +3,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useFriendsLoading } from '@/contexts/LoadingContext';
 import { useFriends } from '@/hooks/useFriends';
 import {
-  ArrowRight,
-  Bell,
-  Circle,
-  MessageCircle,
-  MoreHorizontal,
-  Plus,
-  UserPlus,
-  Users
+    ArrowRight,
+    Bell,
+    Circle,
+    MessageCircle,
+    MoreHorizontal,
+    Plus,
+    UserPlus,
+    Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { AddFriendModal } from './AddFriendModal';
@@ -33,6 +34,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
   onViewRequests
 }) => {
   const { friends, pendingRequests } = useFriends();
+  const { acceptRequestLoading, rejectRequestLoading } = useFriendsLoading();
   const [addFriendModalOpen, setAddFriendModalOpen] = useState(false);
 
   // Filtrar amigos online (máximo 5 para o widget)

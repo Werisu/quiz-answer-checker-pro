@@ -23,7 +23,7 @@ export const SocialWidgetSkeleton: React.FC = () => {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Estatísticas Rápidas */}
+        {/* Estatísticas Rápidas - Otimizadas */}
         <div className="grid grid-cols-3 gap-1 sm:gap-2 lg:gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="text-center p-1 sm:p-2 lg:p-3 bg-muted/50 rounded-lg">
@@ -33,7 +33,7 @@ export const SocialWidgetSkeleton: React.FC = () => {
           ))}
         </div>
 
-        {/* Amigos Online */}
+        {/* Amigos Online - Skeleton otimizado */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -57,7 +57,7 @@ export const SocialWidgetSkeleton: React.FC = () => {
           </div>
         </div>
 
-        {/* Solicitações Pendentes */}
+        {/* Solicitações Pendentes - Skeleton otimizado */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -80,7 +80,7 @@ export const SocialWidgetSkeleton: React.FC = () => {
           </div>
         </div>
 
-        {/* Ações Rápidas */}
+        {/* Ações Rápidas - Skeleton otimizado */}
         <div className="pt-2 border-t border-border">
           <div className="flex flex-col xl:flex-row xl:space-x-2 space-y-2 xl:space-y-0">
             <Skeleton className="h-9 w-full rounded-lg" />
