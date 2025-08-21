@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { Achievement } from './AchievementCard';
 import { AchievementList } from './AchievementList';
 import { AchievementStats } from './AchievementStats';
-import { ChatSkeleton } from './ChatSkeleton';
+import { ChatRoom } from './ChatRoom';
 import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
@@ -566,7 +566,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {activeTab === 'chat' && (
             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
               <CardContent className="p-0">
-                <ChatSkeleton />
+                <ChatRoom />
               </CardContent>
             </Card>
           )}
@@ -765,7 +765,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
                 <TabsContent value="chat">
                   <div className="h-[600px] border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
-                    <ChatSkeleton />
+                    <ChatRoom />
                   </div>
                 </TabsContent>
 

@@ -1,18 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/useAuth';
+import type { ChatMessage } from '@/integrations/supabase/social-types';
 import { forwardRef } from 'react';
-
-interface ChatMessage {
-  id: string;
-  content: string;
-  sender_id: string;
-  sender_name: string;
-  sender_avatar?: string;
-  timestamp: string;
-  message_type: 'text' | 'image' | 'file';
-  is_read: boolean;
-}
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -52,7 +42,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       }
     };
 
-    const isOwnMessage = (message: ChatMessage) => message.sender_id === user?.id;
+    const isOwnMessage = (message: ChatMessage) => message.user_id === user?.id;
 
     const shouldShowAvatar = (message: ChatMessage, index: number) => {
       if (isOwnMessage(message)) return false;
@@ -61,19 +51,19 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       if (index === 0) return true;
       
       const previousMessage = messages[index - 1];
-      return previousMessage.sender_id !== message.sender_id;
+      return previousMessage.user_id !== message.user_id;
     };
 
     const shouldShowTimestamp = (message: ChatMessage, index: number) => {
       if (index === 0) return true;
       
       const previousMessage = messages[index - 1];
-      const currentTime = new Date(message.timestamp);
-      const previousTime = new Date(previousMessage.timestamp);
+      const currentTime = new Date(message.created_at);
+      const previousTime = new Date(previousMessage.created_at);
       const diffInMinutes = (currentTime.getTime() - previousTime.getTime()) / (1000 * 60);
       
       // Mostrar timestamp se passou mais de 5 minutos ou se mudou o usuário
-      return diffInMinutes > 5 || previousMessage.sender_id !== message.sender_id;
+      return diffInMinutes > 5 || previousMessage.user_id !== message.user_id;
     };
 
     const renderMessageContent = (message: ChatMessage) => {
@@ -146,9 +136,9 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
             {/* Avatar */}
             {showAvatar && (
               <Avatar className="w-8 h-8 mr-2 flex-shrink-0">
-                <AvatarImage src={message.sender_avatar} />
+                <AvatarImage src={message.user_avatar} />
                 <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                  {message.sender_name.charAt(0)}
+                  {message.user_name?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
             )}
@@ -158,7 +148,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
               {/* Sender Name */}
               {showSenderName && (
                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-1">
-                  {message.sender_name}
+                  {message.user_name || 'Usuário'}
                 </p>
               )}
               
@@ -185,11 +175,11 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
               {showTimestamp && (
                 <div className="flex items-center space-x-2 mt-1">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {formatTime(message.timestamp)}
+                    {formatTime(message.created_at)}
                   </span>
                   {isOwnMessage(message) && (
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {message.is_read ? '✓✓' : '✓'}
+                      ✓
                     </span>
                   )}
                 </div>

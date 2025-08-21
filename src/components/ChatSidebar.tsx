@@ -41,6 +41,7 @@ interface ChatSidebarProps {
   onChatSelect: (chatId: string) => void;
   onNewChat?: () => void;
   onSearch?: (query: string) => void;
+  loading?: boolean;
   className?: string;
 }
 
@@ -50,6 +51,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onChatSelect,
   onNewChat,
   onSearch,
+  loading = false,
   className = ''
 }) => {
   const { user } = useAuth();
@@ -109,7 +111,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
     }
   ];
 
-  const currentConversations = conversations.length > 0 ? conversations : mockConversations;
+  // Usar dados reais das conversas
+  const currentConversations = conversations;
 
   const filteredConversations = useMemo(() => {
     let filtered = currentConversations;
@@ -350,14 +353,24 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
         </TabsContent>
       </Tabs>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center h-32 text-center p-4">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Carregando conversas...
+          </p>
+        </div>
+      )}
+
       {/* Empty State */}
-      {filteredConversations.length === 0 && (
+      {!loading && filteredConversations.length === 0 && (
         <div className="flex flex-col items-center justify-center h-32 text-center p-4">
           <MessageCircle className="w-12 h-12 text-gray-400 mb-2" />
           <p className="text-gray-500 dark:text-gray-400 text-sm">
             {searchQuery ? 'Nenhuma conversa encontrada' : 'Nenhuma conversa ainda'}
           </p>
-          {!searchQuery && (
+          {!searchQuery && onNewChat && (
             <Button
               variant="outline"
               size="sm"

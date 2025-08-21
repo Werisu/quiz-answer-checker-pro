@@ -4,36 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
+import { useChat } from '@/hooks/useChat';
 import {
-    ArrowLeft,
-    MoreVertical,
-    Phone,
-    Plus,
-    Search,
-    Send,
-    Settings,
-    Video
+  ArrowLeft,
+  MoreVertical,
+  Phone,
+  Plus,
+  Search,
+  Send,
+  Settings,
+  Video
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageList } from './MessageList';
 
-interface ChatMessage {
-  id: string;
-  content: string;
-  sender_id: string;
-  sender_name: string;
-  sender_avatar?: string;
-  timestamp: string;
-  message_type: 'text' | 'image' | 'file';
-  is_read: boolean;
-}
 
 interface ChatParticipant {
   id: string;
   name: string;
   avatar?: string;
-
-
   role?: 'admin' | 'moderator' | 'member';
 }
 
@@ -51,47 +40,28 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
   onClose
 }) => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messageInput, setMessageInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [activeTab, setActiveTab] = useState('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Mock data para demonstração
+  // Usar dados reais do chat
+  const {
+    messages,
+    loading: messagesLoading,
+    error: messagesError,
+    sendMessage,
+    loadMoreMessages,
+    hasMoreMessages,
+    markAsRead
+  } = useChat(roomId || null);
+
+  // Marcar mensagens como lidas quando entrar na sala
   useEffect(() => {
-    const mockMessages: ChatMessage[] = [
-      {
-        id: '1',
-        content: 'Olá! Como está o estudo?',
-        sender_id: 'user1',
-        sender_name: 'João Silva',
-        sender_avatar: 'https://github.com/shadcn.png',
-        timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-        message_type: 'text',
-        is_read: true
-      },
-      {
-        id: '2',
-        content: 'Oi João! Estou bem, estudando para a prova de matemática.',
-        sender_id: user?.id || 'current_user',
-        sender_name: 'Você',
-        sender_avatar: 'https://github.com/shadcn.png',
-        timestamp: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
-        message_type: 'text',
-        is_read: true
-      },
-      {
-        id: '3',
-        content: 'Que legal! Quer estudar junto?',
-        sender_id: 'user1',
-        sender_name: 'João Silva',
-        sender_avatar: 'https://github.com/shadcn.png',
-        timestamp: new Date(Date.now() - 1000 * 60 * 1).toISOString(),
-        message_type: 'text',
-        is_read: false
-      }
-    ];
-    setMessages(mockMessages);
-  }, [user?.id]);
+    if (roomId && messages.length > 0) {
+      markAsRead();
+    }
+  }, [roomId, messages.length, markAsRead]);
 
   // Mock participants para demonstração
   const mockParticipants: ChatParticipant[] = [
@@ -122,21 +92,22 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = (content: string, type: 'text' | 'image' | 'file' = 'text') => {
-    if (!user) return;
+  const handleSendMessage = async (content: string, type: 'text' | 'image' | 'file' = 'text') => {
+    if (!user || !content.trim()) return;
 
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      content,
-      sender_id: user.id,
-      sender_name: 'Você',
-      sender_avatar: user.user_metadata?.avatar_url,
-      timestamp: new Date().toISOString(),
-      message_type: type,
-      is_read: false
-    };
+    const success = await sendMessage(content.trim(), type);
+    if (success) {
+      setMessageInput(''); // Limpar input após envio
+    }
+  };
 
-    setMessages(prev => [...prev, newMessage]);
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (messageInput.trim()) {
+        handleSendMessage(messageInput.trim());
+      }
+    }
   };
 
   return (
@@ -249,13 +220,45 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
       <div className="flex-1 flex flex-col lg:flex-row">
         {/* Chat Area */}
         <div className="flex-1 flex flex-col">
-          {/* Messages */}
-          <MessageList 
-            messages={messages}
-            participants={currentParticipants}
-            onMessageClick={(message) => console.log('Message clicked:', message)}
-            className="flex-1 min-h-0"
-          />
+          {/* Loading State */}
+          {messagesLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                <p>Carregando mensagens...</p>
+              </div>
+            </div>
+          ) : messagesError ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-red-500 mb-4">Erro ao carregar mensagens: {messagesError}</p>
+                <Button onClick={() => window.location.reload()}>Tentar novamente</Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Load More Button */}
+              {hasMoreMessages && (
+                <div className="p-4 text-center">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={loadMoreMessages}
+                  >
+                    Carregar mensagens antigas
+                  </Button>
+                </div>
+              )}
+              
+              {/* Messages */}
+              <MessageList 
+                messages={messages}
+                participants={currentParticipants}
+                onMessageClick={(message) => console.log('Message clicked:', message)}
+                className="flex-1 min-h-0"
+              />
+            </>
+          )}
 
           {/* Message Input */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex-shrink-0">
@@ -274,18 +277,18 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
               {/* Message Input Field */}
               <div className="flex-1 relative">
                 <Input
-                  value="" // Placeholder for message input
-                  onChange={(e) => console.log('Message input changed:', e.target.value)}
-                  onKeyPress={(e) => console.log('Message input key pressed:', e.key)}
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
                   placeholder="Digite sua mensagem..."
-                  disabled={!user}
+                  disabled={!user || messagesLoading}
                   className="pr-12 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
                 />
                 
                 {/* Send Button */}
                 <Button
-                  onClick={() => console.log('Send button clicked')}
-                  disabled={!user}
+                  onClick={() => messageInput.trim() && handleSendMessage(messageInput.trim())}
+                  disabled={!user || !messageInput.trim() || messagesLoading}
                   size="sm"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 rounded-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                 >

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useChatRooms } from '@/hooks/useChatRooms';
 import {
     ArrowLeft,
     MessageCircle,
@@ -37,44 +38,15 @@ export const ChatDemo: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [activeTab, setActiveTab] = useState('chat');
 
-  // Mock conversations para demonstração
-  const mockConversations: ChatConversation[] = [
-    {
-      id: 'chat1',
-      type: 'private',
-      name: 'João Silva',
-      avatar: 'https://github.com/shadcn.png',
-      lastMessage: 'Que legal! Quer estudar junto?',
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
-      unreadCount: 1,
-      
-      isPinned: true
-    },
-    {
-      id: 'chat2',
-      type: 'private',
-      name: 'Maria Santos',
-      avatar: 'https://github.com/shadcn.png',
-      lastMessage: 'Vou enviar o material de estudo',
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-      unreadCount: 0,
-
-    },
-    {
-      id: 'chat3',
-      type: 'group',
-      name: 'Grupo de Matemática',
-      avatar: 'https://github.com/shadcn.png',
-      lastMessage: 'Ana: Alguém pode explicar a questão 5?',
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      unreadCount: 3,
-      participants: [
-        { id: 'user1', name: 'João', avatar: 'https://github.com/shadcn.png' },
-        { id: 'user2', name: 'Maria', avatar: 'https://github.com/shadcn.png' },
-        { id: 'user3', name: 'Ana', avatar: 'https://github.com/shadcn.png' }
-      ]
-    }
-  ];
+  // Usar dados reais das salas de chat
+  const { 
+    conversations, 
+    loading: conversationsLoading, 
+    error: conversationsError,
+    refreshRooms,
+    createPrivateChat,
+    createGroupChat
+  } = useChatRooms();
 
   const handleChatSelect = (chatId: string) => {
     setActiveChatId(chatId);
@@ -82,8 +54,10 @@ export const ChatDemo: React.FC = () => {
   };
 
   const handleNewChat = () => {
-    // Implementar criação de nova conversa
-    console.log('Nova conversa');
+    // TODO: Implementar modal para criar nova conversa
+    // Por enquanto, apenas atualizar a lista
+    refreshRooms();
+    console.log('Nova conversa - atualizar lista');
   };
 
   const handleBackToChats = () => {
@@ -96,7 +70,7 @@ export const ChatDemo: React.FC = () => {
   };
 
   const getActiveChat = () => {
-    return mockConversations.find(conv => conv.id === activeChatId);
+    return conversations.find(conv => conv.id === activeChatId);
   };
 
   const getActiveChatParticipants = () => {
@@ -120,6 +94,30 @@ export const ChatDemo: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-screen">
         <p>Faça login para acessar o chat</p>
+      </div>
+    );
+  }
+
+  // Loading state
+  if (conversationsLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+          <p>Carregando conversas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (conversationsError) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Erro ao carregar conversas: {conversationsError}</p>
+          <Button onClick={refreshRooms}>Tentar novamente</Button>
+        </div>
       </div>
     );
   }
@@ -178,11 +176,12 @@ export const ChatDemo: React.FC = () => {
         {(showSidebar || !activeChatId) && (
           <div className="w-full lg:w-80">
             <ChatSidebar
-              conversations={mockConversations}
+              conversations={conversations}
               activeChatId={activeChatId || undefined}
               onChatSelect={handleChatSelect}
               onNewChat={handleNewChat}
               onSearch={(query) => console.log('Search:', query)}
+              loading={conversationsLoading}
             />
           </div>
         )}
