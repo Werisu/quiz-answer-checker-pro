@@ -179,11 +179,11 @@ export const useChatRooms = (): UseChatRoomsReturn => {
 
   // Configurar real-time para atualizações de salas
   useEffect(() => {
-    const {
-      data: { user },
-    } = supabase.auth.getUser();
+    const setupRealtime = async () => {
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
 
-    user.then(({ data: { user: currentUser } }) => {
       if (!currentUser) return;
 
       const channel = supabase
@@ -217,7 +217,9 @@ export const useChatRooms = (): UseChatRoomsReturn => {
       return () => {
         supabase.removeChannel(channel);
       };
-    });
+    };
+
+    setupRealtime();
   }, [fetchChatRooms]);
 
   return {

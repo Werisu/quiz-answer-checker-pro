@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLoading } from '@/contexts/LoadingContext';
 import { useAchievements } from '@/hooks/useAchievements';
+import { useActiveChat } from '@/hooks/useActiveChat';
 import { useAuth } from '@/hooks/useAuth';
 import { useFriends } from '@/hooks/useFriends';
 import type { StudyGroup } from '@/hooks/useStudyGroups';
@@ -26,6 +27,7 @@ import { Achievement } from './AchievementCard';
 import { AchievementList } from './AchievementList';
 import { AchievementStats } from './AchievementStats';
 import { ChatRoom } from './ChatRoom';
+import { ChatSelector } from './ChatSelector';
 import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
 import { FriendsList } from './FriendsList';
@@ -37,6 +39,7 @@ import { GroupListSkeleton } from './GroupListSkeleton';
 import { GroupMemberManagement } from './GroupMemberManagement';
 import { GroupSettings } from './GroupSettings';
 import { HeaderSkeleton } from './HeaderSkeleton';
+import { NewChatModal } from './NewChatModal';
 import { NotificationsDropdown } from './NotificationsDropdown';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { QuickStatsSkeleton } from './QuickStatsSkeleton';
@@ -63,6 +66,12 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
   const [selectedGroupForManagement, setSelectedGroupForManagement] = useState<StudyGroup | null>(null);
   const [groupSettingsOpen, setGroupSettingsOpen] = useState(false);
   const [selectedGroupForSettings, setSelectedGroupForSettings] = useState<StudyGroup | null>(null);
+  
+  // Chat ativo
+  const { activeChat, startChat, closeChat, selectExistingChat, conversations } = useActiveChat();
+  
+  // Modal de nova conversa
+  const [newChatModalOpen, setNewChatModalOpen] = useState(false);
   
   // Usar o LoadingContext global para controlar loading states
   const { setLoading, isLoading } = useLoading();
@@ -253,6 +262,23 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       setSelectedGroup(group);
       setInviteModalOpen(true);
     }
+  };
+
+  // Funções de gerenciamento do chat
+  const handleStartNewChat = () => {
+    setNewChatModalOpen(true);
+  };
+
+  const handleStartChat = async (type: 'private' | 'group', targetId: string, name?: string) => {
+    await startChat(type, targetId, name);
+  };
+
+  const handleSelectChat = (conversationId: string) => {
+    selectExistingChat(conversationId);
+  };
+
+  const handleCloseChat = () => {
+    closeChat();
   };
 
   // Usar loading states reais dos hooks
@@ -566,7 +592,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           {activeTab === 'chat' && (
             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
               <CardContent className="p-0">
-                <ChatRoom />
+                {activeChat ? (
+                  <ChatRoom 
+                    roomId={activeChat.roomId}
+                    roomType={activeChat.roomType}
+                    participants={activeChat.participants}
+                    onClose={handleCloseChat}
+                  />
+                ) : (
+                  <ChatSelector
+                    conversations={conversations}
+                    onSelectChat={handleSelectChat}
+                    onStartNewChat={handleStartNewChat}
+                    loading={false}
+                  />
+                )}
               </CardContent>
             </Card>
           )}
@@ -765,7 +805,21 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
                 <TabsContent value="chat">
                   <div className="h-[600px] border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
-                    <ChatRoom />
+                    {activeChat ? (
+                      <ChatRoom 
+                        roomId={activeChat.roomId}
+                        roomType={activeChat.roomType}
+                        participants={activeChat.participants}
+                        onClose={handleCloseChat}
+                      />
+                    ) : (
+                      <ChatSelector
+                        conversations={conversations}
+                        onSelectChat={handleSelectChat}
+                        onStartNewChat={handleStartNewChat}
+                        loading={false}
+                      />
+                    )}
                   </div>
                 </TabsContent>
 
@@ -856,6 +910,16 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
           loading={groupsLoading}
         />
       )}
+
+      {/* Modal de Nova Conversa */}
+      <NewChatModal
+        isOpen={newChatModalOpen}
+        onClose={() => setNewChatModalOpen(false)}
+        onStartChat={handleStartChat}
+        friends={friends}
+        groups={groups}
+        loading={false}
+      />
     </div>
   );
 };

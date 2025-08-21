@@ -8,12 +8,10 @@ import { useChat } from '@/hooks/useChat';
 import {
   ArrowLeft,
   MoreVertical,
-  Phone,
   Plus,
   Search,
   Send,
-  Settings,
-  Video
+  Settings
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageList } from './MessageList';
@@ -152,20 +150,6 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
                 size="sm"
                 className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
               >
-                <Phone className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-              >
-                <Video className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-10 h-10 p-0 rounded-full bg-gray-100 dark:bg-gray-800"
-              >
                 <MoreVertical className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </Button>
             </div>
@@ -201,14 +185,6 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
           <Button variant="ghost" size="sm">
             <Search className="w-4 h-4 mr-2" />
             Buscar
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Phone className="w-4 h-4 mr-2" />
-            Ligar
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Video className="w-4 h-4 mr-2" />
-            Vídeo
           </Button>
           <Button variant="ghost" size="sm">
             <MoreVertical className="w-4 h-4" />

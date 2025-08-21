@@ -10,7 +10,7 @@ import { Results } from '@/components/Results';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Tag, useTags } from '@/hooks/useTags';
@@ -353,11 +353,7 @@ const MainContent = () => {
 };
 
 const Index = () => {
-  return (
-    <AuthProvider>
-      <MainContent />
-    </AuthProvider>
-  );
+  return <MainContent />;
 };
 
 export default Index;
