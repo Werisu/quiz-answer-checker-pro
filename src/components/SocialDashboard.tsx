@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAchievements } from '@/hooks/useAchievements';
+import { useAuth } from '@/hooks/useAuth';
 import { useFriends } from '@/hooks/useFriends';
 import { useStudyGroups } from '@/hooks/useStudyGroups';
 import {
@@ -21,6 +23,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Achievement } from './AchievementCard';
 import { AchievementList } from './AchievementList';
+import { AchievementStats } from './AchievementStats';
 import { ChatDemo } from './ChatDemo';
 import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
@@ -78,6 +81,18 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     removeMember,
     updateMemberRole,
   } = useStudyGroups();
+
+  // Usar dados reais do hook useAuth para pegar o userId
+  const { user } = useAuth();
+
+  // Usar dados reais do hook useAchievements
+  const {
+    achievements,
+    progress,
+    loading: achievementsLoading,
+    error: achievementsError,
+    refreshAchievements
+  } = useAchievements(user?.id || '');
 
   const handleGoBack = () => {
     navigate('/');
@@ -157,91 +172,6 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       setGroupDetailsOpen(true);
     }
   };
-
-  // Mock data para conquistas
-  const mockAchievements: Achievement[] = [
-    {
-      id: '1',
-      title: 'Primeira Amizade',
-      description: 'Faça sua primeira amizade na plataforma',
-      category: 'social',
-      points: 50,
-      icon: 'users',
-      rarity: 'common',
-      unlocked: true,
-      unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-      requirements: ['Adicionar um amigo'],
-      progress: 1,
-      maxProgress: 1
-    },
-    {
-      id: '2',
-      title: 'Estudioso Dedicado',
-      description: 'Complete 10 quizzes com sucesso',
-      category: 'study',
-      points: 100,
-      icon: 'book',
-      rarity: 'rare',
-      unlocked: false,
-      requirements: ['Completar 10 quizzes'],
-      progress: 7,
-      maxProgress: 10
-    },
-    {
-      id: '3',
-      title: 'Líder de Grupo',
-      description: 'Crie e gerencie um grupo de estudo',
-      category: 'group',
-      points: 150,
-      icon: 'users',
-      rarity: 'epic',
-      unlocked: true,
-      unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-      requirements: ['Criar um grupo', 'Ter 5 membros'],
-      progress: 2,
-      maxProgress: 2
-    },
-    {
-      id: '4',
-      title: 'Quiz Master',
-      description: 'Acerte 100% em um quiz difícil',
-      category: 'quiz',
-      points: 200,
-      icon: 'target',
-      rarity: 'legendary',
-      unlocked: false,
-      requirements: ['Acerte todas as questões de um quiz'],
-      progress: 0,
-      maxProgress: 1
-    },
-    {
-      id: '5',
-      title: 'Sequência de Estudo',
-      description: 'Estude por 7 dias consecutivos',
-      category: 'streak',
-      points: 75,
-      icon: 'zap',
-      rarity: 'rare',
-      unlocked: false,
-      requirements: ['Estudar por 7 dias seguidos'],
-      progress: 4,
-      maxProgress: 7
-    },
-    {
-      id: '6',
-      title: 'Colaborador Ativo',
-      description: 'Participe de 5 discussões em grupo',
-      category: 'social',
-      points: 80,
-      icon: 'users',
-      rarity: 'common',
-      unlocked: true,
-      unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
-      requirements: ['Participar de 5 discussões'],
-      progress: 5,
-      maxProgress: 5
-    }
-  ];
 
   const handleAchievementClick = (achievement: Achievement) => {
     console.log('Conquista clicada:', achievement);
@@ -477,36 +407,51 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
 
 
-              {/* Estatísticas Rápidas */}
-              <div className="grid grid-cols-2 gap-3">
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-0 shadow-sm rounded-2xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-blue-600 dark:text-blue-400">+24%</div>
-                        <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Engajamento</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                             {/* Estatísticas de Conquistas */}
+               {!achievementsLoading && !achievementsError && (
+                 <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
+                   <CardHeader className="pb-4">
+                     <CardTitle className="text-lg text-gray-900 dark:text-white flex items-center space-x-2">
+                       <Trophy className="w-5 h-5 text-yellow-600" />
+                       <span>Suas Conquistas</span>
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent className="px-0">
+                     <AchievementStats progress={progress} />
+                   </CardContent>
+                 </Card>
+               )}
 
-                <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-0 shadow-sm rounded-2xl">
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-green-600 dark:text-green-400">12</div>
-                        <div className="text-xs text-green-600/70 dark:text-green-400/70">Sessões</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+               {/* Estatísticas Rápidas */}
+               <div className="grid grid-cols-2 gap-3">
+                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-0 shadow-sm rounded-2xl">
+                   <CardContent className="p-4">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                         <TrendingUp className="w-5 h-5 text-white" />
+                       </div>
+                       <div>
+                         <div className="text-lg font-bold text-blue-600 dark:text-blue-400">+24%</div>
+                         <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Engajamento</div>
+                       </div>
+                     </div>
+                   </CardContent>
+                 </Card>
+
+                 <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-0 shadow-sm rounded-2xl">
+                   <CardContent className="p-4">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                         <Calendar className="w-5 h-5 text-white" />
+                       </div>
+                       <div>
+                         <div className="text-lg font-bold text-green-600 dark:text-green-400">12</div>
+                         <div className="text-xs text-green-600/70 dark:text-green-400/70">Sessões</div>
+                       </div>
+                     </div>
+                   </CardContent>
+                 </Card>
+               </div>
             </div>
           )}
 
@@ -596,22 +541,42 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
             </Card>
           )}
 
-          {/* Tab: Conquistas */}
-          {activeTab === 'achievements' && (
-            <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
-              <CardContent className="p-8">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                    <Trophy className="w-10 h-10 text-yellow-600 dark:text-yellow-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Conquistas em breve!</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    O sistema de conquistas está sendo implementado.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                     {/* Tab: Conquistas */}
+           {activeTab === 'achievements' && (
+             <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
+               <CardContent className="p-0">
+                 {achievementsLoading ? (
+                   <div className="p-8 text-center">
+                     <div className="w-20 h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                       <Trophy className="w-10 h-10 text-yellow-600 dark:text-yellow-400" />
+                     </div>
+                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Carregando conquistas...</h3>
+                   </div>
+                 ) : achievementsError ? (
+                   <div className="p-8 text-center">
+                     <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/20 dark:to-red-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                       <Trophy className="w-10 h-10 text-red-600 dark:text-red-400" />
+                     </div>
+                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Erro ao carregar</h3>
+                     <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                       {achievementsError}
+                     </p>
+                     <Button onClick={refreshAchievements} variant="outline">
+                       Tentar novamente
+                     </Button>
+                   </div>
+                 ) : (
+                   <AchievementList
+                     achievements={achievements}
+                     onAchievementClick={handleAchievementClick}
+                     showFilters={false}
+                     showStats={true}
+                     variant="list"
+                   />
+                 )}
+               </CardContent>
+             </Card>
+           )}
         </div>
       </main>
 
@@ -783,15 +748,15 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                   </div>
                 </TabsContent>
 
-                <TabsContent value="achievements">
-                  <AchievementList 
-                    achievements={mockAchievements}
-                    onAchievementClick={handleAchievementClick}
-                    showFilters={true}
-                    showStats={true}
-                    variant="grid"
-                  />
-                </TabsContent>
+                                 <TabsContent value="achievements">
+                   <AchievementList 
+                     achievements={achievements}
+                     onAchievementClick={handleAchievementClick}
+                     showFilters={true}
+                     showStats={true}
+                     variant="grid"
+                   />
+                 </TabsContent>
               </Tabs>
             </div>
 
