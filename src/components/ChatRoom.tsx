@@ -5,14 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  ArrowLeft,
-  MoreVertical,
-  Phone,
-  Plus,
-  Search,
-  Send,
-  Settings,
-  Video
+    ArrowLeft,
+    MoreVertical,
+    Phone,
+    Plus,
+    Search,
+    Send,
+    Settings,
+    Video
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageList } from './MessageList';
@@ -32,8 +32,8 @@ interface ChatParticipant {
   id: string;
   name: string;
   avatar?: string;
-  is_online: boolean;
-  last_seen?: string;
+
+
   role?: 'admin' | 'moderator' | 'member';
 }
 
@@ -99,15 +99,15 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
       id: 'user1',
       name: 'João Silva',
       avatar: 'https://github.com/shadcn.png',
-      is_online: true,
+      
       role: 'admin'
     },
     {
       id: 'user2',
       name: 'Maria Santos',
       avatar: 'https://github.com/shadcn.png',
-      is_online: false,
-      last_seen: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+      
+      
       role: 'member'
     }
   ];
@@ -169,7 +169,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {roomType === 'private' 
-                    ? (currentParticipants[0]?.is_online ? 'Online' : 'Offline')
+                    ? 'Ativo'
                     : `${currentParticipants.length} membros`
                   }
                 </p>
@@ -220,7 +220,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {roomType === 'private' 
-                ? (currentParticipants[0]?.is_online ? 'Online' : 'Offline')
+                ? 'Ativo'
                 : `${currentParticipants.length} membros`
               }
             </p>
@@ -358,11 +358,8 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
                             {participant.name}
                           </p>
                           <div className="flex items-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${
-                              participant.is_online ? 'bg-green-500' : 'bg-gray-400'
-                            }`} />
                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {participant.is_online ? 'Online' : 'Offline'}
+                              Ativo
                             </span>
                             {participant.role && (
                               <Badge variant="outline" className="text-xs">

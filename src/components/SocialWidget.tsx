@@ -8,7 +8,6 @@ import { useFriends } from '@/hooks/useFriends';
 import {
     ArrowRight,
     Bell,
-    Circle,
     MessageCircle,
     MoreHorizontal,
     Plus,
@@ -37,9 +36,9 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
   const { acceptRequestLoading, rejectRequestLoading } = useFriendsLoading();
   const [addFriendModalOpen, setAddFriendModalOpen] = useState(false);
 
-  // Filtrar amigos online (máximo 5 para o widget)
-  const onlineFriends = friends.filter(friend => friend.is_online).slice(0, 5);
-  const totalOnline = friends.filter(friend => friend.is_online).length;
+  // Filtrar amigos recentes (máximo 5 para o widget)
+  const recentFriends = friends.slice(0, 5);
+  const totalFriends = friends.length;
 
   const getInitials = (name: string) => {
     return name
@@ -50,9 +49,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
       .slice(0, 2);
   };
 
-  const getStatusColor = (isOnline: boolean) => {
-    return isOnline ? 'bg-green-500' : 'bg-gray-400';
-  };
+
 
   return (
     <Card className={className}>
@@ -85,7 +82,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
           </div>
         </div>
         <CardDescription className="text-xs lg:text-sm">
-          {totalOnline} amigos online • {pendingRequests.length} solicitações pendentes
+          {totalFriends} amigos • {pendingRequests.length} solicitações pendentes
         </CardDescription>
       </CardHeader>
 
@@ -96,23 +93,23 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
             <div className="text-sm sm:text-lg lg:text-2xl font-bold text-primary">{friends.length}</div>
             <div className="text-xs text-muted-foreground">Total</div>
           </div>
-          <div className="text-center p-1 sm:p-2 lg:p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-            <div className="text-sm sm:text-lg lg:text-2xl font-bold text-green-600">{totalOnline}</div>
-            <div className="text-xs text-muted-foreground">Online</div>
-          </div>
-          <div className="text-center p-1 sm:p-2 lg:p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
-            <div className="text-sm sm:text-lg lg:text-2xl font-bold text-orange-600">{pendingRequests.length}</div>
-            <div className="text-xs text-muted-foreground">Pendentes</div>
-          </div>
+                                <div className="text-center p-1 sm:p-2 lg:p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+             <div className="text-sm sm:text-lg lg:text-2xl font-bold text-green-600">{totalFriends}</div>
+             <div className="text-xs text-muted-foreground">Amigos</div>
+           </div>
+           <div className="text-center p-1 sm:p-2 lg:p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+             <div className="text-sm sm:text-lg lg:text-2xl font-bold text-orange-600">{pendingRequests.length}</div>
+             <div className="text-xs text-muted-foreground">Pendentes</div>
+           </div>
         </div>
 
-        {/* Amigos Online */}
-        {onlineFriends.length > 0 && (
+        {/* Amigos Recentes */}
+        {recentFriends.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium flex items-center space-x-2">
-                <Circle className="h-3 w-3 text-green-500 fill-current" />
-                <span>Amigos Online</span>
+                <Users className="h-3 w-3 text-primary" />
+                <span>Amigos Recentes</span>
               </h4>
               {onViewAllFriends && (
                 <Button 
@@ -121,7 +118,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
                   className="h-6 px-2 text-xs"
                   onClick={onViewAllFriends}
                 >
-                  Ver tod
+                  Ver todos
                   <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               )}
@@ -129,7 +126,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
             
             <ScrollArea className="h-20">
               <div className="space-y-2">
-                {onlineFriends.map(friend => (
+                {recentFriends.map(friend => (
                   <div
                     key={friend.id}
                     className="flex items-center space-x-2 p-2 rounded-lg hover:bg-muted/50 transition-colors group"
@@ -140,7 +137,6 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
                           {getInitials(friend.name)}
                         </AvatarFallback>
                       </Avatar>
-                      <div className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-white ${getStatusColor(friend.is_online || false)}`} />
                     </div>
                     
                     <span className="text-sm font-medium truncate flex-1">
@@ -231,8 +227,8 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({
           </div>
         )}
 
-        {/* Estado Vazio */}
-        {onlineFriends.length === 0 && pendingRequests.length === 0 && (
+                 {/* Estado Vazio */}
+         {recentFriends.length === 0 && pendingRequests.length === 0 && (
           <div className="text-center py-6">
             <Users className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
             <h4 className="text-sm font-medium mb-1">Nenhuma atividade social</h4>

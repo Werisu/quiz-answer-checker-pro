@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  ArrowLeft,
-  MessageCircle,
-  Plus,
-  Users
+    ArrowLeft,
+    MessageCircle,
+    Plus,
+    Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,14 +19,14 @@ interface ChatConversation {
   lastMessage: string;
   lastMessageTime: string;
   unreadCount: number;
-  isOnline?: boolean;
+
   isPinned?: boolean;
   isArchived?: boolean;
   participants?: Array<{
     id: string;
     name: string;
     avatar?: string;
-    isOnline: boolean;
+  
   }>;
 }
 
@@ -47,7 +47,7 @@ export const ChatDemo: React.FC = () => {
       lastMessage: 'Que legal! Quer estudar junto?',
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
       unreadCount: 1,
-      isOnline: true,
+      
       isPinned: true
     },
     {
@@ -58,7 +58,7 @@ export const ChatDemo: React.FC = () => {
       lastMessage: 'Vou enviar o material de estudo',
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
       unreadCount: 0,
-      isOnline: false
+
     },
     {
       id: 'chat3',
@@ -69,9 +69,9 @@ export const ChatDemo: React.FC = () => {
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
       unreadCount: 3,
       participants: [
-        { id: 'user1', name: 'João', avatar: 'https://github.com/shadcn.png', isOnline: true },
-        { id: 'user2', name: 'Maria', avatar: 'https://github.com/shadcn.png', isOnline: false },
-        { id: 'user3', name: 'Ana', avatar: 'https://github.com/shadcn.png', isOnline: true }
+        { id: 'user1', name: 'João', avatar: 'https://github.com/shadcn.png' },
+        { id: 'user2', name: 'Maria', avatar: 'https://github.com/shadcn.png' },
+        { id: 'user3', name: 'Ana', avatar: 'https://github.com/shadcn.png' }
       ]
     }
   ];
@@ -108,7 +108,7 @@ export const ChatDemo: React.FC = () => {
         id: 'user1',
         name: chat.name,
         avatar: chat.avatar,
-        is_online: chat.isOnline || false,
+
         role: 'member'
       }];
     } else {

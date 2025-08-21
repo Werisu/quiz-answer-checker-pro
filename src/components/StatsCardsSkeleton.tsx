@@ -14,7 +14,7 @@ export const StatsCardsSkeleton: React.FC = () => {
         </div>
       </div>
 
-      {/* Card de Online */}
+              {/* Card de Amigos */}
       <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4">
         <div className="text-2xl font-bold text-white">
           <Skeleton className="h-8 w-8 bg-white/20" />

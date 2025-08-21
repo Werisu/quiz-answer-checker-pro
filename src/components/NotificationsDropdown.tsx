@@ -9,12 +9,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFriendsLoading } from '@/contexts/LoadingContext';
-import { Bell, MessageCircle, User, Users, X } from 'lucide-react';
+import { Bell, MessageCircle, Users, X } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface Notification {
   id: string;
-  type: 'friend_request' | 'message' | 'online_friend' | 'achievement';
+  type: 'friend_request' | 'message' | 'achievement';
   title: string;
   message: string;
   timestamp: string;
@@ -32,7 +32,7 @@ interface NotificationsDropdownProps {
   onMarkAsRead: (notificationId: string) => void;
   onDismiss: (notificationId: string) => void;
   // Dados reais do sistema
-  friends: Array<{ id: string; name: string; is_online?: boolean }>;
+  friends: Array<{ id: string; name: string }>;
   pendingRequests: Array<{ id: string; requester_name: string; requester_id: string }>;
 }
 
@@ -69,21 +69,8 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
       });
     });
 
-    // Notificações de amigos online (se houver)
-    const onlineFriends = friends.filter(f => f.is_online === true);
-    if (onlineFriends.length > 0) {
-      onlineFriends.slice(0, 2).forEach((friend) => {
-        notifications.push({
-          id: `online_${friend.id}`,
-          type: 'online_friend',
-          title: 'Amigo online',
-          message: `${friend.name} está online agora`,
-          timestamp: 'Agora',
-          isRead: true,
-          userId: friend.id,
-        });
-      });
-    }
+    // Notificações de amigos (se houver)
+    const totalFriends = friends.length;
 
     // Notificação de conquista se tiver amigos
     if (friends.length > 0) {
@@ -123,8 +110,7 @@ export const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
         return <Users className="w-4 h-4 text-blue-500" />;
       case 'message':
         return <MessageCircle className="w-4 h-4 text-green-500" />;
-      case 'online_friend':
-        return <User className="w-4 h-4 text-purple-500" />;
+
       case 'achievement':
         return <Bell className="w-4 h-4 text-yellow-500" />;
       default:
