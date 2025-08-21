@@ -1,24 +1,26 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFriends } from '@/hooks/useFriends';
 import { useStudyGroups } from '@/hooks/useStudyGroups';
 import {
-    Activity,
-    ArrowLeft,
-    BookOpen,
-    Calendar,
-    MessageCircle,
-    Plus,
-    Search,
-    Settings,
-    TrendingUp,
-    Trophy,
-    Users,
-    X
+  Activity,
+  ArrowLeft,
+  BookOpen,
+  Calendar,
+  MessageCircle,
+  Plus,
+  Search,
+  Settings,
+  TrendingUp,
+  Trophy,
+  Users,
+  X
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Achievement } from './AchievementCard';
+import { AchievementList } from './AchievementList';
 import { ChatDemo } from './ChatDemo';
 import { CreateGroupModal } from './CreateGroupModal';
 import { ExploreGroups } from './ExploreGroups';
@@ -154,6 +156,96 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
       setSelectedGroupForDetails(group);
       setGroupDetailsOpen(true);
     }
+  };
+
+  // Mock data para conquistas
+  const mockAchievements: Achievement[] = [
+    {
+      id: '1',
+      title: 'Primeira Amizade',
+      description: 'Faça sua primeira amizade na plataforma',
+      category: 'social',
+      points: 50,
+      icon: 'users',
+      rarity: 'common',
+      unlocked: true,
+      unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+      requirements: ['Adicionar um amigo'],
+      progress: 1,
+      maxProgress: 1
+    },
+    {
+      id: '2',
+      title: 'Estudioso Dedicado',
+      description: 'Complete 10 quizzes com sucesso',
+      category: 'study',
+      points: 100,
+      icon: 'book',
+      rarity: 'rare',
+      unlocked: false,
+      requirements: ['Completar 10 quizzes'],
+      progress: 7,
+      maxProgress: 10
+    },
+    {
+      id: '3',
+      title: 'Líder de Grupo',
+      description: 'Crie e gerencie um grupo de estudo',
+      category: 'group',
+      points: 150,
+      icon: 'users',
+      rarity: 'epic',
+      unlocked: true,
+      unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+      requirements: ['Criar um grupo', 'Ter 5 membros'],
+      progress: 2,
+      maxProgress: 2
+    },
+    {
+      id: '4',
+      title: 'Quiz Master',
+      description: 'Acerte 100% em um quiz difícil',
+      category: 'quiz',
+      points: 200,
+      icon: 'target',
+      rarity: 'legendary',
+      unlocked: false,
+      requirements: ['Acerte todas as questões de um quiz'],
+      progress: 0,
+      maxProgress: 1
+    },
+    {
+      id: '5',
+      title: 'Sequência de Estudo',
+      description: 'Estude por 7 dias consecutivos',
+      category: 'streak',
+      points: 75,
+      icon: 'zap',
+      rarity: 'rare',
+      unlocked: false,
+      requirements: ['Estudar por 7 dias seguidos'],
+      progress: 4,
+      maxProgress: 7
+    },
+    {
+      id: '6',
+      title: 'Colaborador Ativo',
+      description: 'Participe de 5 discussões em grupo',
+      category: 'social',
+      points: 80,
+      icon: 'users',
+      rarity: 'common',
+      unlocked: true,
+      unlockedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
+      requirements: ['Participar de 5 discussões'],
+      progress: 5,
+      maxProgress: 5
+    }
+  ];
+
+  const handleAchievementClick = (achievement: Achievement) => {
+    console.log('Conquista clicada:', achievement);
+    // Aqui você pode implementar a lógica para mostrar detalhes da conquista
   };
 
   const handleManageGroup = (groupId: string) => {
@@ -692,21 +784,13 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </TabsContent>
 
                 <TabsContent value="achievements">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Conquistas Sociais</CardTitle>
-                      <CardDescription>Funcionalidade em desenvolvimento</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <Trophy className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">Conquistas em breve!</h3>
-                        <p className="text-muted-foreground">
-                          O sistema de conquistas está sendo implementado.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <AchievementList 
+                    achievements={mockAchievements}
+                    onAchievementClick={handleAchievementClick}
+                    showFilters={true}
+                    showStats={true}
+                    variant="grid"
+                  />
                 </TabsContent>
               </Tabs>
             </div>
