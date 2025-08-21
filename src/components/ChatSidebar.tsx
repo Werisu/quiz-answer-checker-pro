@@ -24,14 +24,14 @@ interface ChatConversation {
   lastMessage: string;
   lastMessageTime: string;
   unreadCount: number;
-  isOnline?: boolean;
+
   isPinned?: boolean;
   isArchived?: boolean;
   participants?: Array<{
     id: string;
     name: string;
     avatar?: string;
-    isOnline: boolean;
+  
   }>;
 }
 
@@ -67,7 +67,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       lastMessage: 'Que legal! Quer estudar junto?',
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
       unreadCount: 1,
-      isOnline: true,
+      
       isPinned: true
     },
     {
@@ -78,7 +78,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       lastMessage: 'Vou enviar o material de estudo',
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
       unreadCount: 0,
-      isOnline: false
+
     },
     {
       id: 'chat3',
@@ -89,9 +89,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
       unreadCount: 3,
       participants: [
-        { id: 'user1', name: 'João', avatar: 'https://github.com/shadcn.png', isOnline: true },
-        { id: 'user2', name: 'Maria', avatar: 'https://github.com/shadcn.png', isOnline: false },
-        { id: 'user3', name: 'Ana', avatar: 'https://github.com/shadcn.png', isOnline: true }
+        { id: 'user1', name: 'João', avatar: 'https://github.com/shadcn.png' },
+        { id: 'user2', name: 'Maria', avatar: 'https://github.com/shadcn.png' },
+        { id: 'user3', name: 'Ana', avatar: 'https://github.com/shadcn.png' }
       ]
     },
     {
@@ -103,8 +103,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       lastMessageTime: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
       unreadCount: 0,
       participants: [
-        { id: 'user1', name: 'João', avatar: 'https://github.com/shadcn.png', isOnline: true },
-        { id: 'user4', name: 'Pedro', avatar: 'https://github.com/shadcn.png', isOnline: false }
+        { id: 'user1', name: 'João', avatar: 'https://github.com/shadcn.png' },
+        { id: 'user4', name: 'Pedro', avatar: 'https://github.com/shadcn.png' }
       ]
     }
   ];
@@ -190,10 +190,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </AvatarFallback>
           </Avatar>
           
-          {/* Online Status */}
-          {conversation.type === 'private' && conversation.isOnline && (
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full" />
-          )}
+
           
           {/* Group Indicator */}
           {conversation.type === 'group' && (

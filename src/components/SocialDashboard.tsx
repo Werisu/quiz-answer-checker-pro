@@ -321,12 +321,12 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
               </div>
               <div className="text-xs opacity-90">Amigos</div>
             </div>
-            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 text-white">
-              <div className="text-2xl font-bold">
-                {friends.filter(f => f.is_online).length}
-              </div>
-              <div className="text-xs opacity-90">Online</div>
-            </div>
+                         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 text-white">
+               <div className="text-2xl font-bold">
+                 {groups.length}
+               </div>
+               <div className="text-xs opacity-90">Grupos</div>
+             </div>
             <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-4 text-white">
               <div className="text-2xl font-bold">
                 {pendingRequests.length}

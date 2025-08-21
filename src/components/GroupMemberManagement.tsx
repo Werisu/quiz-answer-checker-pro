@@ -274,7 +274,7 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
     const now = new Date();
     const diffHours = (now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60);
     
-    if (diffHours < 1) return { status: 'Online', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/20' };
+    if (diffHours < 1) return { status: 'Ativo', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/20' };
     if (diffHours < 24) return { status: 'Hoje', color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-900/20' };
     if (diffHours < 168) return { status: 'Esta semana', color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/20' };
     return { status: 'Inativo', color: 'text-red-600', bg: 'bg-red-100 dark:bg-red-900/20' };

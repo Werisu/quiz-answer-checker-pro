@@ -27,8 +27,6 @@ export interface Friend {
   name: string;
   status: FriendshipStatus;
   created_at: string;
-  is_online?: boolean;
-  last_seen?: string;
 }
 
 // ===== STUDY GROUPS SYSTEM =====
@@ -160,8 +158,6 @@ export interface ChatParticipant {
   // Computed fields
   user_name?: string;
   user_avatar?: string;
-  is_online?: boolean;
-  last_seen?: string;
 }
 
 export interface MessageReaction {
@@ -206,7 +202,7 @@ export interface Achievement {
 
 export interface SocialStats {
   total_friends: number;
-  online_friends: number;
+  total_friends: number;
   total_groups: number;
   active_groups: number;
   unread_messages: number;
@@ -281,20 +277,12 @@ export interface SendMessageRequest {
 export interface SocialRealtimeEvent {
   type:
     | "friend_request"
-    | "friend_online"
     | "friend_offline"
     | "group_invitation"
     | "new_message"
     | "group_activity";
   data: any;
   timestamp: string;
-}
-
-export interface FriendOnlineEvent {
-  friend_id: string;
-  friend_name: string;
-  is_online: boolean;
-  last_seen?: string;
 }
 
 export interface NewMessageEvent {
@@ -326,7 +314,7 @@ export interface SocialNavigationState {
 export interface SocialFilters {
   friends: {
     status?: FriendshipStatus;
-    online_only?: boolean;
+
     search?: string;
   };
   groups: {
@@ -353,8 +341,6 @@ export interface UserSearchResult {
   email: string;
   avatar?: string;
   created_at: string;
-  last_seen?: string;
-  is_online?: boolean;
   study_stats?: {
     quizzes_completed: number;
     goals_achieved: number;

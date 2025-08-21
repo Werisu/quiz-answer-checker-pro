@@ -7,14 +7,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFriends } from '@/hooks/useFriends';
 import {
-  AlertCircle,
-  CheckCircle,
-  Plus,
-  RefreshCw,
-  Search,
-  UserCheck,
-  UserPlus,
-  Users
+    AlertCircle,
+    CheckCircle,
+    Plus,
+    RefreshCw,
+    Search,
+    UserCheck,
+    UserPlus,
+    Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { AddFriendModal } from './AddFriendModal';
@@ -236,7 +236,7 @@ export const FriendsList: React.FC<FriendsListProps> = ({
           <CardContent className="p-3 lg:p-6">
             <div className="text-lg lg:text-2xl font-bold">{friends.length}</div>
             <p className="text-xs text-muted-foreground">
-              {friends.filter(f => f.is_online).length} online
+                              {friends.length} amigos
             </p>
           </CardContent>
         </Card>

@@ -5,8 +5,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 export interface Friend {
   id: string;
   name: string;
-  is_online: boolean;
-  last_seen?: string;
 }
 
 export interface FriendRequest {
@@ -81,11 +79,11 @@ export const useFriends = () => {
         const startTime = Date.now();
         console.log("🚀 Iniciando busca de amigos...");
 
-                 // Query otimizada com seleção específica de campos
-         const { data: friendships, error: friendshipsError } = await supabase
-           .from("friendships")
-           .select(
-             `
+        // Query otimizada com seleção específica de campos
+        const { data: friendships, error: friendshipsError } = await supabase
+          .from("friendships")
+          .select(
+            `
              id,
              requester_id,
              addressee_id,
@@ -94,7 +92,7 @@ export const useFriends = () => {
              requester_profile:profiles!friendships_requester_id_fkey(name),
              addressee_profile:profiles!friendships_addressee_id_fkey(name)
            `
-           )
+          )
           .or(
             `requester_id.eq.${
               (
@@ -120,16 +118,14 @@ export const useFriends = () => {
               : friendship.requester_profile;
 
             if (friendship.status === "accepted") {
-                             acc.friends.push({
-                 id:
-                   otherProfile?.id ||
-                   (isRequester
-                     ? friendship.addressee_id
-                     : friendship.requester_id),
-                 name: otherProfile?.name || "Usuário",
-                 is_online: Math.random() > 0.7, // Simular status online
-                 last_seen: new Date().toISOString(),
-               });
+              acc.friends.push({
+                id:
+                  otherProfile?.id ||
+                  (isRequester
+                    ? friendship.addressee_id
+                    : friendship.requester_id),
+                name: otherProfile?.name || "Usuário",
+              });
             }
 
             return acc;
@@ -137,18 +133,18 @@ export const useFriends = () => {
           { friends: [], pendingRequests: [] }
         );
 
-                 // Buscar solicitações pendentes em paralelo
-         const { data: pendingData, error: pendingError } = await supabase
-           .from("friendships")
-           .select(
-             `
+        // Buscar solicitações pendentes em paralelo
+        const { data: pendingData, error: pendingError } = await supabase
+          .from("friendships")
+          .select(
+            `
              id,
              requester_id,
              status,
              created_at,
              requester_profile:profiles!friendships_requester_id_fkey(name)
            `
-           )
+          )
           .eq("addressee_id", currentUserId)
           .eq("status", "pending")
           .order("created_at", { ascending: false })
@@ -158,13 +154,13 @@ export const useFriends = () => {
 
         if (pendingError) throw pendingError;
 
-                 const pendingRequests = pendingData.map((request) => ({
-           id: request.id,
-           requester_id: request.requester_id,
-           requester_name: request.requester_profile?.name || "Usuário",
-           status: request.status,
-           created_at: request.created_at,
-         }));
+        const pendingRequests = pendingData.map((request) => ({
+          id: request.id,
+          requester_id: request.requester_id,
+          requester_name: request.requester_profile?.name || "Usuário",
+          status: request.status,
+          created_at: request.created_at,
+        }));
 
         const endTime = Date.now();
         console.log(
@@ -213,12 +209,10 @@ export const useFriends = () => {
         // Atualizar cache local
         const request = pendingRequests.find((r) => r.id === requestId);
         if (request) {
-                     const newFriend: Friend = {
-             id: request.requester_id,
-             name: request.requester_name,
-             is_online: false,
-             last_seen: new Date().toISOString(),
-           };
+          const newFriend: Friend = {
+            id: request.requester_id,
+            name: request.requester_name,
+          };
 
           setFriends((prev) => [...prev, newFriend]);
           setPendingRequests((prev) => prev.filter((r) => r.id !== requestId));

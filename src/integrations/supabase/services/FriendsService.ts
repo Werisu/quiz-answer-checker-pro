@@ -55,8 +55,6 @@ export class FriendsService {
           name: friendName || `Usuário ${friendId.slice(0, 8)}`, // Nome real ou fallback
           status: friendship.status,
           created_at: friendship.created_at,
-          is_online: false, // Por enquanto, sempre false
-          last_seen: new Date().toISOString(), // Por enquanto, sempre agora
         };
       });
 

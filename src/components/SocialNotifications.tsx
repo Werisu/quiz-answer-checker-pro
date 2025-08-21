@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 
 interface SocialNotification {
   id: string;
-  type: 'friend_request' | 'friend_accepted' | 'friend_online' | 'message_received';
+  type: 'friend_request' | 'friend_accepted' | 'message_received';
   title: string;
   description: string;
   user_id: string;
@@ -67,18 +67,7 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
         action_required: true
       })),
       
-      // Amigos online (simulado)
-      ...friends.filter(friend => friend.is_online).slice(0, 3).map(friend => ({
-        id: `online_${friend.id}`,
-        type: 'friend_online' as const,
-        title: 'Amigo online',
-        description: `${friend.name} está online agora`,
-        user_id: friend.id,
-        user_name: friend.name,
-        timestamp: new Date().toISOString(),
-        is_read: true,
-        action_required: false
-      })),
+
       
       // Mensagens recebidas (simulado)
       {
@@ -106,8 +95,7 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
         return <UserPlus className="h-4 w-4 text-blue-500" />;
       case 'friend_accepted':
         return <UserCheck className="h-4 w-4 text-green-500" />;
-      case 'friend_online':
-        return <Users className="h-4 w-4 text-green-500" />;
+
       case 'message_received':
         return <MessageCircle className="h-4 w-4 text-purple-500" />;
       default:
@@ -121,8 +109,7 @@ export const SocialNotifications: React.FC<SocialNotificationsProps> = ({
         return 'border-l-blue-500 bg-blue-50 dark:bg-blue-950/20';
       case 'friend_accepted':
         return 'border-l-green-500 bg-green-50 dark:bg-green-950/20';
-      case 'friend_online':
-        return 'border-l-green-500 bg-green-50 dark:bg-green-950/20';
+
       case 'message_received':
         return 'border-l-purple-500 bg-purple-50 dark:bg-purple-950/20';
       default:

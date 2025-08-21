@@ -22,31 +22,7 @@ export const FriendCard: React.FC<FriendCardProps> = ({
   onSendMessage,
   onViewProfile
 }) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online':
-        return 'bg-green-500';
-      case 'away':
-        return 'bg-yellow-500';
-      case 'busy':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-400';
-    }
-  };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'online':
-        return 'Online';
-      case 'away':
-        return 'Ausente';
-      case 'busy':
-        return 'Ocupado';
-      default:
-        return 'Offline';
-    }
-  };
 
   const formatLastSeen = (lastSeen: string) => {
     const date = new Date(lastSeen);
@@ -79,25 +55,17 @@ export const FriendCard: React.FC<FriendCardProps> = ({
                   {getInitials(friend.name)}
                 </AvatarFallback>
               </Avatar>
-              {/* Indicador de status online */}
-              {friend.is_online && (
-                <div className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${getStatusColor('online')}`} />
-              )}
+
             </div>
             <div>
               <h3 className="font-semibold text-lg">{friend.name}</h3>
               <div className="flex items-center space-x-2">
                 <Badge 
-                  variant={friend.is_online ? "default" : "secondary"}
+                  variant="secondary"
                   className="text-xs"
                 >
-                  {friend.is_online ? 'Online' : getStatusText('offline')}
+                  Amigo
                 </Badge>
-                {friend.last_seen && !friend.is_online && (
-                  <span className="text-xs text-muted-foreground">
-                    {formatLastSeen(friend.last_seen)}
-                  </span>
-                )}
               </div>
             </div>
           </div>
