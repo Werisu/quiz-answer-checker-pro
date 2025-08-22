@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 import { ChatService } from "@/integrations/supabase/services/ChatService";
 import type { ChatMessage } from "@/integrations/supabase/social-types";
 import { useCallback, useEffect, useState } from "react";
@@ -115,58 +114,11 @@ export const useChat = (roomId: string | null): UseChatReturn => {
     fetchMessages(roomId);
   }, [roomId, fetchMessages]);
 
-  // Configurar real-time para novas mensagens
-  useEffect(() => {
-    if (!roomId) return;
-
-    const channel = supabase
-      .channel(`chat_room_${roomId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "chat_messages",
-          filter: `room_id=eq.${roomId}`,
-        },
-        async (payload) => {
-          // Buscar dados completos da mensagem
-          const { data: messageData } = await supabase
-            .from("chat_messages")
-            .select(
-              `
-              *,
-              profiles:user_id (
-                name
-              )
-            `
-            )
-            .eq("id", payload.new.id)
-            .single();
-
-          if (messageData) {
-            const newMessage: ChatMessage = {
-              ...messageData,
-              user_name: messageData.profiles?.name,
-              is_own_message: false, // Será ajustado se necessário
-            };
-
-            setMessages((prev) => {
-              // Verificar se a mensagem já existe (para evitar duplicatas)
-              if (prev.some((msg) => msg.id === newMessage.id)) {
-                return prev;
-              }
-              return [...prev, newMessage];
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [roomId]);
+  // Real-time desabilitado para evitar problemas de múltiplas inscrições
+  // useEffect(() => {
+  //   if (!roomId) return;
+  //   console.log("Real-time desabilitado para desenvolvimento");
+  // }, [roomId]);
 
   return {
     messages,
