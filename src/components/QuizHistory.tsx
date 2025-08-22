@@ -1,14 +1,14 @@
 import { TagDisplay } from '@/components/TagDisplay';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Tag, useTags } from '@/hooks/useTags';
-import { Calendar, Edit2, Eye, Filter, History, Target, Trash2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Edit2, Eye, Filter, History, Target, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -122,9 +122,10 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
     <div className="space-y-6">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={onBack} className="p-2">
-            <History className="w-5 h-5" />
+        <div className="flex items-center gap-3 ps-4 pt-4">
+          <Button variant="outline" onClick={onBack} className="p-2 px-3 rounded-full">
+            {/* back button */}
+            <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Histórico de Quizzes</h1>
