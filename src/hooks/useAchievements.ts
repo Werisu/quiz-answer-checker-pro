@@ -6,6 +6,22 @@ type GoalAchievement = Database["public"]["Tables"]["goal_achievements"]["Row"];
 type ChallengeAchievement =
   Database["public"]["Tables"]["challenge_achievements"]["Row"];
 
+// Interface para o progresso dos achievements
+export interface AchievementProgress {
+  level: number;
+  totalPoints: number;
+  achievementsUnlocked: number;
+  totalAchievements: number;
+  categoryProgress: {
+    social: number;
+    study: number;
+    quiz: number;
+    group: number;
+    streak: number;
+    special: number;
+  };
+}
+
 export const useAchievements = () => {
   const [goalAchievements, setGoalAchievements] = useState<GoalAchievement[]>(
     []
@@ -150,6 +166,39 @@ export const useAchievements = () => {
     return goalPoints + challengePoints;
   }, [goalAchievements, challengeAchievements]);
 
+  // Calcular progresso dos achievements
+  const calculateProgress = useCallback((): AchievementProgress => {
+    const totalPoints = calculateTotalPoints();
+
+    // Calcular nível baseado nos pontos (100 pontos por nível)
+    const level = Math.floor(totalPoints / 100) + 1;
+
+    // Total de achievements desbloqueados
+    const achievementsUnlocked =
+      goalAchievements.length + challengeAchievements.length;
+
+    // Total de achievements disponíveis (exemplo - pode ser ajustado)
+    const totalAchievements = 50; // Número total de achievements possíveis
+
+    // Progresso por categoria (exemplo - pode ser ajustado baseado nos dados reais)
+    const categoryProgress = {
+      social: Math.min(achievementsUnlocked, 10),
+      study: Math.min(achievementsUnlocked, 15),
+      quiz: Math.min(achievementsUnlocked, 20),
+      group: Math.min(achievementsUnlocked, 8),
+      streak: Math.min(achievementsUnlocked, 12),
+      special: Math.min(achievementsUnlocked, 5),
+    };
+
+    return {
+      level,
+      totalPoints,
+      achievementsUnlocked,
+      totalAchievements,
+      categoryProgress,
+    };
+  }, [goalAchievements, challengeAchievements, calculateTotalPoints]);
+
   // Verificar se uma meta já foi conquistada hoje
   const isGoalAchievedToday = useCallback(
     (goalId: string) => {
@@ -223,5 +272,6 @@ export const useAchievements = () => {
     isGoalAchievedToday,
     isChallengeAchieved,
     getAchievementsByPeriod,
+    calculateProgress,
   };
 };
