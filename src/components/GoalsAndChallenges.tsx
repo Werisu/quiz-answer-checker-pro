@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useAchievements } from '@/hooks/useAchievements';
 import { useCadernos } from '@/hooks/useCadernos';
 import { useGoalsAndChallenges } from '@/hooks/useGoalsAndChallenges';
 import { useQuiz } from '@/hooks/useQuiz';
@@ -47,6 +48,15 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     updateChallengeProgress: updateChallengeProgressDB,
     loadGoalsAndChallenges,
   } = useGoalsAndChallenges();
+  
+  const {
+    recordGoalAchievement,
+    recordChallengeAchievement,
+    calculateTotalPoints: calculateAchievementPoints,
+    goalAchievements,
+    challengeAchievements,
+    loading: achievementsLoading
+  } = useAchievements();
   
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [showChallengeForm, setShowChallengeForm] = useState(false);
@@ -150,6 +160,19 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     return averagePercentage;
   }, [quizHistory]);
 
+  // Verificar se uma meta diária precisa ser resetada
+  const shouldResetDailyGoal = useCallback((goal: Goal): boolean => {
+    if (goal.type !== 'daily') return false;
+    
+    const now = new Date();
+    const lastCompletedDate = goal.updated_at ? new Date(goal.updated_at) : new Date(goal.created_at);
+    
+    // Se a meta foi completada em um dia anterior, deve ser resetada
+    return lastCompletedDate.getDate() !== now.getDate() || 
+           lastCompletedDate.getMonth() !== now.getMonth() || 
+           lastCompletedDate.getFullYear() !== now.getFullYear();
+  }, []);
+
   // Buscar dados atualizados quando o componente montar
   useEffect(() => {
     const loadData = async () => {
@@ -175,19 +198,41 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
           for (const goal of goals) {
             const current = calculateGoalProgress(goal);
             const completed = current >= goal.target;
-            
+            let needsReset = false;
+
+            // Verificar se meta diária precisa ser resetada
+            if (goal.type === 'daily' && shouldResetDailyGoal(goal)) {
+              needsReset = true;
+              // Resetar apenas o progresso, NÃO o status completed
+              // O status completed será atualizado baseado no progresso atual
+              console.log(`Resetando progresso da meta diária "${goal.title}" para o novo dia`);
+            }
+
             console.log(`Verificando meta "${goal.title}":`, {
+              type: goal.type,
               current: goal.current,
               calculated: current,
               target: goal.target,
               completed: goal.completed,
               shouldComplete: completed,
-              needsUpdate: current !== goal.current || completed !== goal.completed
+              needsReset,
+              needsUpdate: current !== goal.current || completed !== goal.completed || needsReset
             });
-            
-            if (current !== goal.current || completed !== goal.completed) {
+
+            if (current !== goal.current || completed !== goal.completed || needsReset) {
               console.log(`Atualizando meta "${goal.title}": ${goal.current} -> ${current}, completed: ${goal.completed} -> ${completed}`);
               await updateGoalProgressDB(goal.id, current, completed);
+              
+              // Registrar achievement se a meta foi completada
+              if (completed && !goal.completed) {
+                try {
+                  await recordGoalAchievement(goal.id, goal.points, current);
+                  console.log(`Achievement registrado para meta "${goal.title}": +${goal.points} pontos`);
+                } catch (error) {
+                  console.error(`Erro ao registrar achievement para meta "${goal.title}":`, error);
+                }
+              }
+              
               hasUpdates = true;
             }
           }
@@ -206,7 +251,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
       
       updateGoals();
     }
-  }, [quizHistory, goals, calculateGoalProgress, updateGoalProgressDB, updatingProgress]);
+  }, [quizHistory, goals, calculateGoalProgress, updateGoalProgressDB, updatingProgress, shouldResetDailyGoal]);
 
   // Atualizar progresso dos desafios
   useEffect(() => {
@@ -233,6 +278,17 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
             if (currentPercentage !== challenge.current_percentage || completed !== challenge.completed) {
               console.log(`Atualizando desafio "${challenge.title}": ${challenge.current_percentage}% -> ${currentPercentage}%, completed: ${challenge.completed} -> ${completed}`);
               await updateChallengeProgressDB(challenge.id, currentPercentage, completed);
+              
+              // Registrar achievement se o desafio foi completado
+              if (completed && !challenge.completed) {
+                try {
+                  await recordChallengeAchievement(challenge.id, challenge.points, currentPercentage);
+                  console.log(`Achievement registrado para desafio "${challenge.title}": +${challenge.points} pontos`);
+                } catch (error) {
+                  console.error(`Erro ao registrar achievement para desafio "${challenge.title}":`, error);
+                }
+              }
+              
               hasUpdates = true;
             }
           }
@@ -388,22 +444,42 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     }
   };
 
-  // Calcular pontos totais
+  // Calcular pontos totais usando o sistema de achievements
   const totalPoints = useMemo(() => {
-    const goalPoints = goals.filter(g => g.completed).reduce((sum, g) => sum + g.points, 0);
-    const challengePoints = challenges.filter(c => c.completed).reduce((sum, c) => sum + c.points, 0);
-    const total = goalPoints + challengePoints;
+    // Usar o hook de achievements para calcular pontos totais
+    const achievementPoints = calculateAchievementPoints();
     
-    console.log('Cálculo de pontos:', {
-      goals: goals.map(g => ({ title: g.title, completed: g.completed, points: g.points })),
-      challenges: challenges.map(c => ({ title: c.title, completed: c.completed, points: c.points })),
-      goalPoints,
+    // Pontos de metas semanais/mensais (permanentes) que ainda não foram registradas como achievements
+    const weeklyMonthlyPoints = goals
+      .filter(g => g.type !== 'daily' && g.completed)
+      .reduce((sum, g) => {
+        // Verificar se já existe achievement para esta meta
+        const hasAchievement = goalAchievements.some(ga => ga.goal_id === g.id);
+        return hasAchievement ? sum : sum + g.points;
+      }, 0);
+
+    // Pontos de desafios (permanentes) que ainda não foram registrados como achievements
+    const challengePoints = challenges
+      .filter(c => c.completed)
+      .reduce((sum, c) => {
+        // Verificar se já existe achievement para este desafio
+        const hasAchievement = challengeAchievements.some(ca => ca.challenge_id === c.id);
+        return hasAchievement ? sum : sum + c.points;
+      }, 0);
+
+    const total = achievementPoints + weeklyMonthlyPoints + challengePoints;
+
+    console.log('Cálculo de pontos com achievements:', {
+      achievementPoints,
+      weeklyMonthlyPoints,
       challengePoints,
-      total
+      total,
+      goalAchievementsCount: goalAchievements.length,
+      challengeAchievementsCount: challengeAchievements.length
     });
-    
+
     return total;
-  }, [goals, challenges]);
+  }, [goals, challenges, goalAchievements, challengeAchievements, calculateAchievementPoints]);
 
   // Calcular nível do usuário
   const userLevel = useMemo(() => {
@@ -433,7 +509,7 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
     return nextLevel;
   }, [totalPoints, userLevel.level]);
 
-  if (loading) {
+  if (loading || achievementsLoading) {
     return (
       <div className="space-y-6">
         <Card className="p-6 bg-gradient-to-br from-white/80 via-gray-50/50 to-white/80 backdrop-blur-xl border-0 shadow-2xl rounded-3xl dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-800/80">
@@ -563,6 +639,10 @@ export const GoalsAndChallenges: React.FC<GoalsAndChallengesProps> = ({ onBack }
               console.log('Total Points:', totalPoints);
               console.log('User Level:', userLevel);
               console.log('Next Level Points:', nextLevelPoints);
+              console.log('=== ACHIEVEMENTS ===');
+              console.log('Goal Achievements:', goalAchievements);
+              console.log('Challenge Achievements:', challengeAchievements);
+              console.log('Achievement Points:', calculateAchievementPoints());
             }}
             variant="outline"
             className="border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-400/40 dark:text-orange-400 dark:hover:bg-orange-500/20"
