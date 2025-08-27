@@ -9,22 +9,21 @@ import { useFriends } from '@/hooks/useFriends';
 import type { StudyGroup } from '@/hooks/useStudyGroups';
 import { useStudyGroups } from '@/hooks/useStudyGroups';
 import {
-  Activity,
-  ArrowLeft,
-  BookOpen,
-  Calendar,
-  MessageCircle,
-  Plus,
-  Search,
-  Settings,
-  TrendingUp,
-  Trophy,
-  Users
+    Activity,
+    ArrowLeft,
+    BookOpen,
+    Calendar,
+    MessageCircle,
+    Plus,
+    Search,
+    Settings,
+    TrendingUp,
+    Trophy,
+    Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Achievement } from './AchievementCard';
-import { AchievementList } from './AchievementList';
+
 import { AchievementStats } from './AchievementStats';
 import { ChatRoom } from './ChatRoom';
 import { ChatSelector } from './ChatSelector';
@@ -105,12 +104,14 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
   // Usar dados reais do hook useAchievements
   const {
-    achievements,
-    progress,
+    goalAchievements,
+    challengeAchievements,
     loading: achievementsLoading,
-    error: achievementsError,
-    refreshAchievements
-  } = useAchievements(user?.id || '');
+    calculateProgress
+  } = useAchievements();
+
+  // Calcular progresso dos achievements
+  const progress = calculateProgress();
 
   const handleGoBack = () => {
     navigate('/');
@@ -198,10 +199,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
     }
   };
 
-  const handleAchievementClick = (achievement: Achievement) => {
-    console.log('Conquista clicada:', achievement);
-    // Aqui você pode implementar a lógica para mostrar detalhes da conquista
-  };
+
 
   const handleManageGroup = (groupId: string) => {
     console.log('Gerenciar grupo:', groupId);
@@ -459,7 +457,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
 
 
                              {/* Estatísticas de Conquistas */}
-               {!achievementsLoading && !achievementsError && (
+               {!achievementsLoading && (
                  <Card className="bg-white dark:bg-gray-900 border-0 shadow-sm rounded-2xl">
                    <CardHeader className="pb-4">
                      <CardTitle className="text-lg text-gray-900 dark:text-white flex items-center space-x-2">
@@ -622,27 +620,10 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                      </div>
                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Carregando conquistas...</h3>
                    </div>
-                 ) : achievementsError ? (
-                   <div className="p-8 text-center">
-                     <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/20 dark:to-red-800/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                       <Trophy className="w-10 h-10 text-red-600 dark:text-red-400" />
-                     </div>
-                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Erro ao carregar</h3>
-                     <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                       {achievementsError}
-                     </p>
-                     <Button onClick={refreshAchievements} variant="outline">
-                       Tentar novamente
-                     </Button>
-                   </div>
                  ) : (
-                   <AchievementList
-                     achievements={achievements}
-                     onAchievementClick={handleAchievementClick}
-                     showFilters={false}
-                     showStats={true}
-                     variant="list"
-                   />
+                   <div className="p-6">
+                     <AchievementStats progress={progress} />
+                   </div>
                  )}
                </CardContent>
              </Card>
@@ -824,13 +805,7 @@ export const SocialDashboard: React.FC<SocialDashboardProps> = ({
                 </TabsContent>
 
                                  <TabsContent value="achievements">
-                   <AchievementList 
-                     achievements={achievements}
-                     onAchievementClick={handleAchievementClick}
-                     showFilters={true}
-                     showStats={true}
-                     variant="grid"
-                   />
+                   <AchievementStats progress={progress} />
                  </TabsContent>
               </Tabs>
                          </div>
