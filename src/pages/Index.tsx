@@ -41,7 +41,7 @@ const MainContent = () => {
     getResults,
   } = useQuiz();
 
-  const handleInitialize = async (count: number, pdfName: string, description: string, cadernoId: string, tags?: Tag[]) => {
+  const handleInitialize = async (count: number, pdfName: string, description: string, cadernoId: string, tags?: Tag[], questionConfig?: { sequenceType: 'normal' | 'odd' | 'even'; startNumber: number }) => {
     if (!user) {
       setShowAuthModal(true);
       return;
@@ -54,7 +54,7 @@ const MainContent = () => {
     }
     setCurrentQuizTags(tags || []);
     
-    await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count, pdfName, description, cadernoId);
+    await createQuiz(`Gabarito ${new Date().toLocaleString()}`, count, pdfName, description, cadernoId, questionConfig);
     setShowQuizCreator(false);
   };
 

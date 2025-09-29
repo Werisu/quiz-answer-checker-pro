@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tag, useTags } from '@/hooks/useTags';
-import { AlertCircle, BookOpen, CheckCircle2, Circle, Clock, HelpCircle, Play, Plus, RotateCcw, Save, Star, XCircle } from 'lucide-react';
+import { AlertCircle, BookOpen, CheckCircle2, Circle, Clock, HelpCircle, Play, Plus, RotateCcw, Save, Star, Target, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 interface Caderno {
@@ -16,7 +16,7 @@ interface Caderno {
 }
 
 interface HeaderProps {
-  onInitialize: (count: number, pdfName: string, description: string, cadernoId: string, tags?: Tag[]) => void;
+  onInitialize: (count: number, pdfName: string, description: string, cadernoId: string, tags?: Tag[], questionConfig?: QuestionConfig) => void;
   onReset: () => void;
   onSave: () => void;
   hasQuestions: boolean;
@@ -28,6 +28,11 @@ interface HeaderProps {
   };
   cadernos: Caderno[];
   onCadernoCreate: (nome: string, descricao: string) => void;
+}
+
+interface QuestionConfig {
+  sequenceType: 'normal' | 'odd' | 'even';
+  startNumber: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -48,6 +53,10 @@ export const Header: React.FC<HeaderProps> = ({
   const [newCadernoNome, setNewCadernoNome] = useState('');
   const [newCadernoDescricao, setNewCadernoDescricao] = useState('');
   const [newCadernoTags, setNewCadernoTags] = useState<Tag[]>([]);
+  const [questionConfig, setQuestionConfig] = useState<QuestionConfig>({
+    sequenceType: 'normal',
+    startNumber: 1
+  });
 
   const { getCadernoTags } = useTags();
 
@@ -75,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
       alert('Por favor, selecione um caderno');
       return;
     }
-    onInitialize(questionCount, pdfName, description, selectedCadernoId, selectedTags);
+    onInitialize(questionCount, pdfName, description, selectedCadernoId, selectedTags, questionConfig);
   };
 
   const handleCreateCaderno = () => {
@@ -142,6 +151,119 @@ export const Header: React.FC<HeaderProps> = ({
                   placeholder="Ex: Direito Constitucional"
                   className="w-full h-10 rounded-xl border-2 border-border focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all duration-200 bg-background text-foreground"
                 />
+              </div>
+            </div>
+
+            {/* Configuração de Questões */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Target className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Configuração das Questões</h3>
+                  <p className="text-xs text-muted-foreground">Escolha como as questões serão numeradas</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-foreground flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+                    Tipo de Sequência
+                  </label>
+                  <Select 
+                    value={questionConfig.sequenceType} 
+                    onValueChange={(value: 'normal' | 'odd' | 'even') => 
+                      setQuestionConfig(prev => ({ ...prev, sequenceType: value }))
+                    }
+                  >
+                    <SelectTrigger className="h-10 rounded-xl border-2 border-border focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all duration-200 bg-background text-foreground">
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-2 border-border shadow-xl bg-background">
+                      <SelectItem value="normal" className="rounded-lg text-foreground hover:bg-accent">
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium text-foreground text-sm">Normal (1, 2, 3, 4...)</div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="odd" className="rounded-lg text-foreground hover:bg-accent">
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium text-foreground text-sm">Ímpares (1, 3, 5, 7...)</div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="even" className="rounded-lg text-foreground hover:bg-accent">
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium text-foreground text-sm">Pares (2, 4, 6, 8...)</div>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-foreground flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+                    Número Inicial
+                  </label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={questionConfig.startNumber}
+                    onChange={(e) => setQuestionConfig(prev => ({ 
+                      ...prev, 
+                      startNumber: Number(e.target.value) 
+                    }))}
+                    placeholder="Ex: 1"
+                    className="h-10 rounded-xl border-2 border-border focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all duration-200 text-center text-base font-medium bg-background text-foreground"
+                  />
+                </div>
+              </div>
+
+              {/* Preview da sequência */}
+              <div className="p-3 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-200 dark:from-indigo-950/20 dark:to-blue-950/20 dark:border-indigo-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-4 h-4 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <Target className="w-2 h-2 text-white" />
+                  </div>
+                  <span className="text-xs font-medium text-foreground">Preview da Sequência:</span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {(() => {
+                    const generateSequence = () => {
+                      const numbers = [];
+                      let current = questionConfig.startNumber;
+                      let count = 0;
+                      
+                      while (count < Math.min(questionCount, 10)) { // Mostrar até 10 números
+                        if (questionConfig.sequenceType === 'normal') {
+                          numbers.push(current);
+                          current++;
+                        } else if (questionConfig.sequenceType === 'odd') {
+                          if (current % 2 === 1) {
+                            numbers.push(current);
+                            count++;
+                          }
+                          current++;
+                        } else if (questionConfig.sequenceType === 'even') {
+                          if (current % 2 === 0) {
+                            numbers.push(current);
+                            count++;
+                          }
+                          current++;
+                        }
+                        count++;
+                      }
+                      return numbers;
+                    };
+                    
+                    const sequence = generateSequence();
+                    const displaySequence = sequence.slice(0, 10);
+                    const hasMore = sequence.length > 10;
+                    
+                    return `${displaySequence.join(', ')}${hasMore ? '...' : ''}`;
+                  })()}
+                </div>
               </div>
             </div>
             

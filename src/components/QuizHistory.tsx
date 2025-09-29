@@ -18,11 +18,36 @@ import { useCadernos } from '@/hooks/useCadernos';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Tag, useTags } from '@/hooks/useTags';
 import { ArrowLeft, Calendar, Edit2, Eye, Filter, History, Target, Trash2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
 interface QuizHistoryProps {
   onBack: () => void;
+}
+
+interface TagType {
+  id: string;
+  name: string;
+  color: string;
+}
+
+// Type guard para verificar se o objeto tem as propriedades necessárias
+const isTagType = (obj: unknown): obj is TagType => {
+  if (obj === null || typeof obj !== 'object') return false;
+  const objRecord = obj as Record<string, unknown>;
+  return typeof objRecord.id === 'string' && 
+         typeof objRecord.name === 'string' && 
+         typeof objRecord.color === 'string';
+};
+
+interface QuizWithConfig {
+  title: string;
+  description: string;
+  caderno_id?: string;
+  question_config?: {
+    sequence_type: 'normal' | 'odd' | 'even';
+    start_number: number;
+  };
 }
 
 export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
@@ -47,15 +72,9 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
 
   useEffect(() => {
     fetchQuizHistory();
-  }, []);
+  }, [fetchQuizHistory]);
 
-  useEffect(() => {
-    if (quizHistory.length > 0) {
-      loadQuizTags();
-    }
-  }, [quizHistory]);
-
-  const loadQuizTags = async () => {
+  const loadQuizTags = useCallback(async () => {
     const tagsMap: { [quizId: string]: Tag[] } = {};
     
     for (const quiz of quizHistory) {
@@ -69,7 +88,13 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
     }
     
     setQuizTags(tagsMap);
-  };
+  }, [quizHistory, getQuizTags]);
+
+  useEffect(() => {
+    if (quizHistory.length > 0) {
+      loadQuizTags();
+    }
+  }, [quizHistory, loadQuizTags]);
 
   const handleViewQuestions = async (quizId: string) => {
     if (selectedQuizId === quizId) {
@@ -107,6 +132,23 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
     if (percentage >= 70) return '👍';
     if (percentage >= 50) return '📚';
     return '💪';
+  };
+
+  const getQuestionConfigDisplay = (quiz: QuizWithConfig) => {
+    if (!quiz?.question_config) return null;
+    
+    const { sequence_type, start_number } = quiz.question_config;
+    
+    let configText = '';
+    if (sequence_type === 'normal') {
+      configText = `Sequência normal (${start_number}, ${start_number + 1}, ${start_number + 2}...)`;
+    } else if (sequence_type === 'odd') {
+      configText = `Questões ímpares (${start_number}, ${start_number + 2}, ${start_number + 4}...)`;
+    } else if (sequence_type === 'even') {
+      configText = `Questões pares (${start_number}, ${start_number + 2}, ${start_number + 4}...)`;
+    }
+    
+    return configText;
   };
 
   // Filtrar quizzes baseado nos filtros selecionados
@@ -162,17 +204,20 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as tags</SelectItem>
-              {tags.map((tag) => (
-                <SelectItem key={tag.id} value={tag.id}>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: tag.color }}
-                    />
-                    {tag.name}
-                  </div>
-                </SelectItem>
-              ))}
+              {tags.map((tag) => {
+                if (!isTagType(tag)) return null;
+                return (
+                  <SelectItem key={tag.id} value={tag.id}>
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: tag.color }}
+                      />
+                      {tag.name}
+                    </div>
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
@@ -227,6 +272,18 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Tags:</span>
                       <TagDisplay tags={quizTags[result.quiz_id]} size="sm" />
+                    </div>
+                  )}
+
+                  {/* Configuração de Questões */}
+                  {(result.quiz as QuizWithConfig)?.question_config && (
+                    <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-200 dark:from-indigo-950/20 dark:to-blue-950/20 dark:border-indigo-800">
+                      <div className="w-4 h-4 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center">
+                        <Target className="w-2 h-2 text-white" />
+                      </div>
+                      <span className="text-xs text-foreground font-medium">
+                        {getQuestionConfigDisplay(result.quiz as QuizWithConfig)}
+                      </span>
                     </div>
                   )}
 
