@@ -339,6 +339,7 @@ export const useQuiz = () => {
           if (!questionConfig || questionConfig.sequenceType === 'normal') {
             numbers.push(current);
             current++;
+            count++;
           } else if (questionConfig.sequenceType === 'odd') {
             if (current % 2 === 1) {
               numbers.push(current);
@@ -352,7 +353,6 @@ export const useQuiz = () => {
             }
             current++;
           }
-          count++;
         }
         return numbers;
       };
