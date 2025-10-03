@@ -239,6 +239,7 @@ export const Header: React.FC<HeaderProps> = ({
                         if (questionConfig.sequenceType === 'normal') {
                           numbers.push(current);
                           current++;
+                          count++;
                         } else if (questionConfig.sequenceType === 'odd') {
                           if (current % 2 === 1) {
                             numbers.push(current);
@@ -252,7 +253,6 @@ export const Header: React.FC<HeaderProps> = ({
                           }
                           current++;
                         }
-                        count++;
                       }
                       return numbers;
                     };
