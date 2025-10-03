@@ -13,6 +13,10 @@ export interface Quiz {
   questions: Question[];
   pdf_name?: string;
   caderno_id?: string;
+  question_config?: {
+    sequence_type: 'normal' | 'odd' | 'even';
+    start_number: number;
+  };
 }
 
 export interface Question {
@@ -290,7 +294,17 @@ export const useQuiz = () => {
     }
   };
 
-  const createQuiz = async (title: string, questionCount: number, pdfName: string, description: string, cadernoId: string) => {
+  const createQuiz = async (
+    title: string, 
+    questionCount: number, 
+    pdfName: string, 
+    description: string, 
+    cadernoId: string,
+    questionConfig?: {
+      sequenceType: 'normal' | 'odd' | 'even';
+      startNumber: number;
+    }
+  ) => {
     if (!user) throw new Error('User not authenticated');
     
     setLoading(true);
@@ -305,17 +319,51 @@ export const useQuiz = () => {
           is_public: true,
           pdf_name: pdfName,
           caderno_id: cadernoId,
+          question_config: questionConfig ? {
+            sequence_type: questionConfig.sequenceType,
+            start_number: questionConfig.startNumber
+          } : null,
         })
         .select()
         .single();
 
       if (quizError) throw quizError;
 
+      // Generate question numbers based on configuration
+      const generateQuestionNumbers = () => {
+        const numbers = [];
+        let current = questionConfig?.startNumber || 1;
+        let count = 0;
+        
+        while (count < questionCount) {
+          if (!questionConfig || questionConfig.sequenceType === 'normal') {
+            numbers.push(current);
+            current++;
+          } else if (questionConfig.sequenceType === 'odd') {
+            if (current % 2 === 1) {
+              numbers.push(current);
+              count++;
+            }
+            current++;
+          } else if (questionConfig.sequenceType === 'even') {
+            if (current % 2 === 0) {
+              numbers.push(current);
+              count++;
+            }
+            current++;
+          }
+          count++;
+        }
+        return numbers;
+      };
+
+      const questionNumbers = generateQuestionNumbers();
+
       // Create questions
-      const questions = Array.from({ length: questionCount }, (_, i) => ({
+      const questions = questionNumbers.map((questionNumber, i) => ({
         quiz_id: quiz.id,
-        question_number: i + 1,
-        text: `Questão ${i + 1}`,
+        question_number: questionNumber,
+        text: `Questão ${questionNumber}`,
       }));
 
       const { data: createdQuestions, error: questionsError } = await supabase
@@ -327,6 +375,10 @@ export const useQuiz = () => {
 
       const quizWithQuestions: Quiz = {
         ...quiz,
+        question_config: questionConfig ? {
+          sequence_type: questionConfig.sequenceType,
+          start_number: questionConfig.startNumber
+        } : undefined,
         questions: createdQuestions.map(q => ({
           ...q,
           status: 'unanswered' as const,
