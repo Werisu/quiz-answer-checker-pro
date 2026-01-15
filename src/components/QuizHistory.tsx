@@ -209,10 +209,10 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 ps-4 pt-4">
+        <div className="flex items-center gap-3">
           <Button variant="outline" onClick={onBack} className="p-2 px-3 rounded-full">
             {/* back button */}
             <ArrowLeft className="w-5 h-5" />
@@ -228,7 +228,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
             </p>
           </div>
         </div>
-        <div className="pe-4 pt-4">
+        <div>
           <Button
             variant={isReviewMode ? "default" : "outline"}
             onClick={handleReviewModeToggle}
@@ -242,7 +242,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
 
       {/* Filtros */}
       {!isReviewMode && (
-        <Card className="p-4">
+        <Card className="p-5 sm:p-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-muted-foreground" />
@@ -308,7 +308,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                   </h2>
                   <div className="space-y-3">
                     {pendingResults.map((result) => (
-                      <Card key={result.id} className="p-4 border-orange-200 dark:border-orange-800">
+                      <Card key={result.id} className="p-5 sm:p-6 border-orange-200 dark:border-orange-800">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                           <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-3">
@@ -364,7 +364,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
                   </h2>
                   <div className="space-y-3">
                     {reviewedResults.map((result) => (
-                      <Card key={result.id} className="p-4 border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/10">
+                      <Card key={result.id} className="p-5 sm:p-6 border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/10">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                           <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-3">
@@ -409,7 +409,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
 
               {/* Mensagem quando não há gabaritos */}
               {pendingResults.length === 0 && reviewedResults.length === 0 && (
-                <Card className="p-8 text-center">
+                <Card className="p-8 sm:p-12 text-center">
                   <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-foreground mb-2">Nenhum gabarito para revisar</h3>
                   <p className="text-muted-foreground">
@@ -429,7 +429,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
               <p className="mt-4 text-muted-foreground">Carregando histórico...</p>
             </div>
           ) : filteredQuizHistory.length === 0 ? (
-        <Card className="p-8 text-center">
+        <Card className="p-8 sm:p-12 text-center">
           <History className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">Nenhum quiz encontrado</h3>
           <p className="text-muted-foreground">
@@ -442,7 +442,7 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
       ) : (
         <div className="space-y-4">
           {filteredQuizHistory.map((result) => (
-            <Card key={result.id} className="p-4">
+            <Card key={result.id} className="p-5 sm:p-6">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 {/* Informações do Quiz */}
                 <div className="flex-1 space-y-3">
@@ -547,12 +547,12 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
               {/* Questões do Quiz */}
               {selectedQuizId === result.id && quizQuestions.length > 0 && (
                 <div className="mt-6 pt-6 border-t border-border">
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-5">
                     <Target className="w-5 h-5 text-primary" />
                     <h4 className="text-lg font-semibold text-foreground">Questões do Quiz</h4>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {quizQuestions.map((question) => (
                       <QuestionCard
                         key={question.id}
