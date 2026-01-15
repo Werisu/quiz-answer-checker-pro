@@ -436,6 +436,7 @@ export type Database = {
           wrong_answers: number;
           percentage: number;
           completed_at: string;
+          reviewed_at: string | null;
         };
         Insert: {
           id?: string;
@@ -446,6 +447,7 @@ export type Database = {
           wrong_answers?: number;
           percentage: number;
           completed_at?: string;
+          reviewed_at?: string | null;
         };
         Update: {
           id?: string;
@@ -456,6 +458,7 @@ export type Database = {
           wrong_answers?: number;
           percentage?: number;
           completed_at?: string;
+          reviewed_at?: string | null;
         };
         Relationships: [
           {

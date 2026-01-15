@@ -29,6 +29,12 @@ export interface Question {
   legend?: 'circle' | 'star' | 'question' | 'exclamation' | null;
 }
 
+export interface QuestionForReview extends Question {
+  quiz_title?: string;
+  quiz_result_id?: string;
+  completed_at?: string;
+}
+
 export interface UserAnswer {
   id: string;
   user_id: string;
@@ -47,6 +53,7 @@ export interface QuizResult {
   total_questions: number;
   percentage: number;
   completed_at: string;
+  reviewed_at?: string | null;
   quiz?: {
     title: string;
     description: string | null;
@@ -80,6 +87,7 @@ export const useQuiz = () => {
   const [quizHistory, setQuizHistory] = useState<QuizResult[]>([]);
   const [allResults, setAllResults] = useState<QuizResult[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
+  const [questionsForReview, setQuestionsForReview] = useState<QuestionForReview[]>([]);
   const [currentResults, setCurrentResults] = useState({
     correct: 0,
     incorrect: 0,
@@ -653,6 +661,335 @@ export const useQuiz = () => {
     }
   };
 
+  const fetchQuestionsForReview = useCallback(async (filters?: {
+    includeIncorrect?: boolean;
+    includeCircle?: boolean;
+    includeQuestion?: boolean;
+    includeExclamation?: boolean;
+  }) => {
+    if (!user) return;
+
+    // Se nenhum filtro estiver ativo, não buscar nada
+    if (filters && !filters.includeIncorrect && !filters.includeCircle && 
+        !filters.includeQuestion && !filters.includeExclamation) {
+      setQuestionsForReview([]);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Buscar todos os quiz_results do usuário (sem relacionamento para evitar problemas de RLS)
+      const { data: quizResults, error: resultsError } = await supabase
+        .from('quiz_results')
+        .select('id, quiz_id, completed_at')
+        .eq('user_id', user.id)
+        .order('completed_at', { ascending: false });
+
+      if (resultsError) {
+        console.error('Erro ao buscar quiz_results:', resultsError);
+        throw resultsError;
+      }
+
+      if (!quizResults || quizResults.length === 0) {
+        setQuestionsForReview([]);
+        return;
+      }
+
+      const quizIds = quizResults.map(r => r.quiz_id).filter(Boolean);
+      
+      if (quizIds.length === 0) {
+        setQuestionsForReview([]);
+        return;
+      }
+
+      // Buscar informações dos quizzes separadamente
+      const { data: quizzesData, error: quizzesError } = await supabase
+        .from('quizzes')
+        .select('id, title, description')
+        .in('id', quizIds);
+
+      if (quizzesError) {
+        console.error('Erro ao buscar quizzes:', quizzesError);
+        // Não lançar erro aqui, continuar sem os títulos dos quizzes
+      }
+
+      // Criar um mapa de quizzes para acesso rápido
+      const quizzesMap = new Map(
+        (quizzesData || []).map(q => [q.id, { title: q.title || 'Quiz sem título', description: q.description }])
+      );
+
+      // Buscar todas as questões desses quizzes
+      const { data: questionsData, error: questionsError } = await supabase
+        .from('questions')
+        .select('*')
+        .in('quiz_id', quizIds)
+        .order('question_number');
+
+      if (questionsError) {
+        console.error('Erro ao buscar questões:', questionsError);
+        throw questionsError;
+      }
+
+      if (!questionsData || questionsData.length === 0) {
+        setQuestionsForReview([]);
+        return;
+      }
+
+      const questionIds = questionsData.map(q => q.id).filter(Boolean);
+      
+      if (questionIds.length === 0) {
+        setQuestionsForReview([]);
+        return;
+      }
+
+      // Buscar todas as respostas do usuário em lotes para evitar URLs muito longas
+      // O Supabase tem um limite de tamanho de URL, então dividimos em lotes de 100
+      const BATCH_SIZE = 100;
+      const userAnswersData: any[] = [];
+      
+      for (let i = 0; i < questionIds.length; i += BATCH_SIZE) {
+        const batch = questionIds.slice(i, i + BATCH_SIZE);
+        
+        const { data: batchData, error: batchError } = await supabase
+          .from('user_answers')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('question_id', batch);
+
+        if (batchError) {
+          console.error(`Erro ao buscar user_answers (lote ${Math.floor(i / BATCH_SIZE) + 1}):`, batchError);
+          throw batchError;
+        }
+
+        if (batchData) {
+          userAnswersData.push(...batchData);
+        }
+      }
+
+      // Filtrar questões que precisam ser revisadas
+      const questionsToReview: QuestionForReview[] = [];
+
+      questionsData.forEach(question => {
+        const userAnswer = userAnswersData?.find(a => a.question_id === question.id);
+        const quizResult = quizResults.find(r => r.quiz_id === question.quiz_id);
+        
+        // Só incluir questões que têm resposta do usuário
+        if (!userAnswer) return;
+
+        const status = userAnswer.is_correct ? 'correct' : 'incorrect';
+        const legend = userAnswer.legend;
+
+        // Verificar se a questão precisa ser revisada baseado nos filtros
+        // Se nenhum filtro for passado, usar todos como true (padrão)
+        const includeIncorrect = filters ? (filters.includeIncorrect ?? true) : true;
+        const includeCircle = filters ? (filters.includeCircle ?? true) : true;
+        const includeQuestion = filters ? (filters.includeQuestion ?? true) : true;
+        const includeExclamation = filters ? (filters.includeExclamation ?? true) : true;
+
+        const shouldInclude = 
+          (includeIncorrect && status === 'incorrect') ||
+          (includeCircle && legend === 'circle') ||
+          (includeQuestion && legend === 'question') ||
+          (includeExclamation && legend === 'exclamation');
+
+        if (shouldInclude) {
+          // Buscar informações do quiz do mapa
+          const quizInfo = quizzesMap.get(question.quiz_id);
+          const quizTitle = quizInfo?.title || 'Quiz sem título';
+
+          questionsToReview.push({
+            ...question,
+            status,
+            legend: legend || null,
+            quiz_title: quizTitle,
+            quiz_result_id: quizResult?.id,
+            completed_at: quizResult?.completed_at,
+          });
+        }
+      });
+
+      setQuestionsForReview(questionsToReview);
+    } catch (error: unknown) {
+      let errorMessage = 'Erro desconhecido';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        console.error('Erro ao buscar questões para revisão:', error);
+        console.error('Detalhes do erro:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        });
+      } else if (typeof error === 'object' && error !== null) {
+        const errorObj = error as any;
+        errorMessage = errorObj.message || errorObj.error || JSON.stringify(error);
+        console.error('Erro ao buscar questões para revisão (objeto):', errorObj);
+      }
+      
+      toast({
+        title: "Erro ao carregar questões",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      setQuestionsForReview([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, toast]);
+
+  const fetchPendingReviewResults = useCallback(async () => {
+    if (!user) return [];
+
+    setLoading(true);
+    try {
+      // Buscar gabaritos que têm questões incorretas ou com legendas específicas e ainda não foram revisados
+      const { data: quizResults, error: resultsError } = await supabase
+        .from('quiz_results')
+        .select(`
+          *,
+          quiz:quizzes (
+            title,
+            description
+          )
+        `)
+        .eq('user_id', user.id)
+        .is('reviewed_at', null)
+        .order('completed_at', { ascending: false });
+
+      if (resultsError) {
+        console.error('Erro ao buscar gabaritos pendentes:', resultsError);
+        throw resultsError;
+      }
+
+      if (!quizResults || quizResults.length === 0) {
+        return [];
+      }
+
+      // Buscar questões e respostas para verificar quais gabaritos têm questões que precisam revisão
+      const quizIds = quizResults.map((r: any) => r.quiz_id).filter(Boolean);
+      
+      if (quizIds.length === 0) {
+        return [];
+      }
+
+      const { data: questionsData, error: questionsError } = await supabase
+        .from('questions')
+        .select('id, quiz_id')
+        .in('quiz_id', quizIds);
+
+      if (questionsError) {
+        console.error('Erro ao buscar questões:', questionsError);
+        throw questionsError;
+      }
+
+      if (!questionsData || questionsData.length === 0) {
+        return [];
+      }
+
+      const questionIds = questionsData.map(q => q.id).filter(Boolean);
+      
+      if (questionIds.length === 0) {
+        return [];
+      }
+
+      // Buscar respostas do usuário em lotes
+      const BATCH_SIZE = 100;
+      const userAnswersData: any[] = [];
+      
+      for (let i = 0; i < questionIds.length; i += BATCH_SIZE) {
+        const batch = questionIds.slice(i, i + BATCH_SIZE);
+        
+        const { data: batchData, error: batchError } = await supabase
+          .from('user_answers')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('question_id', batch);
+
+        if (batchError) {
+          console.error(`Erro ao buscar user_answers (lote ${Math.floor(i / BATCH_SIZE) + 1}):`, batchError);
+          throw batchError;
+        }
+
+        if (batchData) {
+          userAnswersData.push(...batchData);
+        }
+      }
+
+      // Filtrar gabaritos que têm questões incorretas ou com legendas específicas
+      const resultsToReview: QuizResult[] = [];
+
+      quizResults.forEach((result: any) => {
+        const resultQuestions = questionsData.filter(q => q.quiz_id === result.quiz_id);
+        const resultAnswers = userAnswersData.filter(a => 
+          resultQuestions.some(q => q.id === a.question_id)
+        );
+
+        // Verificar se há questões que precisam revisão (incorretas ou com legendas)
+        const needsReview = resultAnswers.some((answer: any) => 
+          !answer.is_correct || 
+          answer.legend === 'circle' || 
+          answer.legend === 'question' || 
+          answer.legend === 'exclamation'
+        );
+
+        if (needsReview) {
+          resultsToReview.push({
+            ...result,
+            reviewed_at: result.reviewed_at || null,
+            quiz: result.quiz ? {
+              title: result.quiz.title || 'Quiz sem título',
+              description: result.quiz.description || null,
+            } : undefined,
+          } as QuizResult);
+        }
+      });
+
+      return resultsToReview;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      console.error('Erro ao buscar gabaritos pendentes:', error);
+      toast({
+        title: "Erro ao carregar gabaritos",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, [user, toast]);
+
+  const markResultAsReviewed = useCallback(async (resultId: string) => {
+    if (!user) return false;
+
+    try {
+      const { error } = await supabase
+        .from('quiz_results')
+        .update({ reviewed_at: new Date().toISOString() })
+        .eq('id', resultId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Erro ao marcar gabarito como revisado:', error);
+        throw error;
+      }
+
+      toast({
+        title: "Gabarito marcado como revisado",
+        description: "O gabarito foi marcado como revisado com sucesso.",
+      });
+
+      return true;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast({
+        title: "Erro ao marcar como revisado",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return false;
+    }
+  }, [user, toast]);
+
   const updateQuestionStatus = async (quizId: string, questionId: string, status: 'correct' | 'incorrect' | 'unanswered', legend?: 'circle' | 'star' | 'question' | 'exclamation' | null) => {
     if (!user) return;
 
@@ -768,6 +1105,7 @@ export const useQuiz = () => {
     quizHistory,
     allResults,
     quizQuestions,
+    questionsForReview,
     currentResults,
     createQuiz,
     updateAnswer,
@@ -778,6 +1116,9 @@ export const useQuiz = () => {
     fetchAllResults,
     deleteQuizHistory,
     fetchQuizQuestions,
+    fetchQuestionsForReview,
+    fetchPendingReviewResults,
+    markResultAsReviewed,
     updateQuestionStatus,
   };
 };

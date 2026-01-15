@@ -15,9 +15,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCadernos } from '@/hooks/useCadernos';
-import { useQuiz } from '@/hooks/useQuiz';
+import { QuizResult, useQuiz } from '@/hooks/useQuiz';
 import { Tag, useTags } from '@/hooks/useTags';
-import { ArrowLeft, Calendar, Edit2, Eye, Filter, History, Target, Trash2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, BookOpen, Calendar, Edit2, Eye, Filter, History, Target, Trash2 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { QuestionCard } from './QuestionCard';
 
@@ -59,7 +59,9 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
     quizQuestions, 
     fetchQuizQuestions, 
     updateQuestionStatus,
-    currentResults 
+    currentResults,
+    fetchPendingReviewResults,
+    markResultAsReviewed
   } = useQuiz();
   
   const { cadernos } = useCadernos();
@@ -69,10 +71,39 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
   const [selectedCadernoFilter, setSelectedCadernoFilter] = useState<string>('all');
   const [selectedTagFilter, setSelectedTagFilter] = useState<string>('all');
   const [quizTags, setQuizTags] = useState<{ [quizId: string]: Tag[] }>({});
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [pendingResults, setPendingResults] = useState<QuizResult[]>([]);
+  const [reviewedResults, setReviewedResults] = useState<QuizResult[]>([]);
+
+  const loadReviewResults = useCallback(async () => {
+    const pending = await fetchPendingReviewResults();
+    setPendingResults(pending);
+    
+    // Buscar gabaritos já revisados do histórico
+    const allHistory = quizHistory.filter(h => 
+      pending.some(p => p.id === h.id)
+    );
+    const reviewed = allHistory.filter(h => h.reviewed_at) as QuizResult[];
+    setReviewedResults(reviewed);
+  }, [fetchPendingReviewResults, quizHistory]);
 
   useEffect(() => {
     fetchQuizHistory();
   }, [fetchQuizHistory]);
+
+  useEffect(() => {
+    if (isReviewMode) {
+      loadReviewResults();
+    }
+  }, [isReviewMode, loadReviewResults]);
+
+  const handleMarkAsReviewed = useCallback(async (resultId: string) => {
+    const success = await markResultAsReviewed(resultId);
+    if (success) {
+      await loadReviewResults();
+      await fetchQuizHistory();
+    }
+  }, [markResultAsReviewed, loadReviewResults, fetchQuizHistory]);
 
   const loadQuizTags = useCallback(async () => {
     const tagsMap: { [quizId: string]: Tag[] } = {};
@@ -160,6 +191,23 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
     return cadernoMatch && tagMatch;
   });
 
+  const handleReviewModeToggle = () => {
+    setIsReviewMode(!isReviewMode);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  };
+
+
   return (
     <div className="space-y-6">
       {/* Cabeçalho */}
@@ -170,66 +218,217 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Histórico de Quizzes</h1>
-            <p className="text-muted-foreground">Acompanhe seu progresso e performance</p>
+            <h1 className="text-2xl font-bold text-foreground">
+              {isReviewMode ? 'Revisão de Questões' : 'Histórico de Quizzes'}
+            </h1>
+            <p className="text-muted-foreground">
+              {isReviewMode 
+                ? 'Revise questões que precisam de atenção' 
+                : 'Acompanhe seu progresso e performance'}
+            </p>
           </div>
+        </div>
+        <div className="pe-4 pt-4">
+          <Button
+            variant={isReviewMode ? "default" : "outline"}
+            onClick={handleReviewModeToggle}
+            className="flex items-center gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            {isReviewMode ? 'Voltar ao Histórico' : 'Revisar Questões'}
+          </Button>
         </div>
       </div>
 
       {/* Filtros */}
-      <Card className="p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Filtros:</span>
-          </div>
-          
-          <Select value={selectedCadernoFilter} onValueChange={setSelectedCadernoFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filtrar por caderno" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os cadernos</SelectItem>
-              {cadernos.map((caderno) => (
-                <SelectItem key={caderno.id} value={caderno.id}>
-                  {caderno.nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={selectedTagFilter} onValueChange={setSelectedTagFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filtrar por tag" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as tags</SelectItem>
-              {tags.map((tag) => {
-                if (!isTagType(tag)) return null;
-                return (
-                  <SelectItem key={tag.id} value={tag.id}>
-                    <div className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: tag.color }}
-                      />
-                      {tag.name}
-                    </div>
+      {!isReviewMode && (
+        <Card className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-foreground">Filtros:</span>
+            </div>
+            
+            <Select value={selectedCadernoFilter} onValueChange={setSelectedCadernoFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por caderno" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os cadernos</SelectItem>
+                {cadernos.map((caderno) => (
+                  <SelectItem key={caderno.id} value={caderno.id}>
+                    {caderno.nome}
                   </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-        </div>
-      </Card>
+                ))}
+              </SelectContent>
+            </Select>
 
-      {/* Lista de Quizzes */}
-      {loading ? (
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Carregando histórico...</p>
-        </div>
-      ) : filteredQuizHistory.length === 0 ? (
+            <Select value={selectedTagFilter} onValueChange={setSelectedTagFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtrar por tag" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as tags</SelectItem>
+                {tags.map((tag) => {
+                  if (!isTagType(tag)) return null;
+                  return (
+                    <SelectItem key={tag.id} value={tag.id}>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: tag.color }}
+                        />
+                        {tag.name}
+                      </div>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+      )}
+
+      {/* Conteúdo: Revisão ou Histórico */}
+      {isReviewMode ? (
+        <>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Carregando gabaritos...</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Gabaritos Pendentes */}
+              {pendingResults.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-orange-500" />
+                    Pendentes de Revisão ({pendingResults.length})
+                  </h2>
+                  <div className="space-y-3">
+                    {pendingResults.map((result) => (
+                      <Card key={result.id} className="p-4 border-orange-200 dark:border-orange-800">
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-base font-semibold text-foreground">
+                                Gabarito {formatDate(result.completed_at)}
+                              </h3>
+                              <Badge variant="outline" className="text-xs">
+                                {result.quiz?.title || 'Quiz sem título'}
+                              </Badge>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-4 text-sm">
+                              <span className="text-muted-foreground">
+                                {result.correct_answers} corretas / {result.wrong_answers} incorretas
+                              </span>
+                              <span className={`font-semibold ${getPerformanceColor(result.percentage)}`}>
+                                {result.percentage.toFixed(1)}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewQuestions(result.id)}
+                              className="flex items-center gap-2"
+                            >
+                              <Eye className="w-4 h-4" />
+                              Ver Gabarito
+                            </Button>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => handleMarkAsReviewed(result.id)}
+                              className="flex items-center gap-2"
+                            >
+                              <Target className="w-4 h-4" />
+                              Marcar como Revisado
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Gabaritos Revisados */}
+              {reviewedResults.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-green-500" />
+                    Revisados ({reviewedResults.length})
+                  </h2>
+                  <div className="space-y-3">
+                    {reviewedResults.map((result) => (
+                      <Card key={result.id} className="p-4 border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/10">
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-base font-semibold text-foreground">
+                                Gabarito {formatDate(result.completed_at)} revisado
+                              </h3>
+                              {result.reviewed_at && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Revisado em {formatDate(result.reviewed_at)}
+                                </Badge>
+                              )}
+                              <Badge variant="outline" className="text-xs">
+                                {result.quiz?.title || 'Quiz sem título'}
+                              </Badge>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-4 text-sm">
+                              <span className="text-muted-foreground">
+                                {result.correct_answers} corretas / {result.wrong_answers} incorretas
+                              </span>
+                              <span className={`font-semibold ${getPerformanceColor(result.percentage)}`}>
+                                {result.percentage.toFixed(1)}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewQuestions(result.id)}
+                              className="flex items-center gap-2"
+                            >
+                              <Eye className="w-4 h-4" />
+                              Ver Gabarito
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Mensagem quando não há gabaritos */}
+              {pendingResults.length === 0 && reviewedResults.length === 0 && (
+                <Card className="p-8 text-center">
+                  <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">Nenhum gabarito para revisar</h3>
+                  <p className="text-muted-foreground">
+                    Todos os gabaritos foram revisados ou não há gabaritos com questões que precisam de revisão.
+                  </p>
+                </Card>
+              )}
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {/* Lista de Quizzes */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Carregando histórico...</p>
+            </div>
+          ) : filteredQuizHistory.length === 0 ? (
         <Card className="p-8 text-center">
           <History className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">Nenhum quiz encontrado</h3>
@@ -372,6 +571,8 @@ export const QuizHistory: React.FC<QuizHistoryProps> = ({ onBack }) => {
             </Card>
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   );

@@ -40,26 +40,62 @@ export const useTags = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
+      // Buscar tags sem relacionamento para evitar problemas de RLS
+      const { data: tagsData, error: fetchError } = await supabase
         .from('tags')
-        .select(`
-          *,
-          cadernos_count:caderno_tags(count),
-          quizzes_count:quiz_tags(count),
-          goals_count:goal_tags(count)
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .order('name');
 
       if (fetchError) throw fetchError;
 
-      // Processar contadores
-      const processedTags = data?.map(tag => ({
+      if (!tagsData || tagsData.length === 0) {
+        setTags([]);
+        return;
+      }
+
+      const tagIds = tagsData.map(tag => tag.id);
+
+      // Buscar todos os relacionamentos de uma vez para otimizar
+      const [cadernoTagsData, quizTagsData, goalTagsData] = await Promise.all([
+        supabase
+          .from('caderno_tags')
+          .select('tag_id')
+          .in('tag_id', tagIds),
+        supabase
+          .from('quiz_tags')
+          .select('tag_id')
+          .in('tag_id', tagIds),
+        supabase
+          .from('goal_tags')
+          .select('tag_id')
+          .in('tag_id', tagIds),
+      ]);
+
+      // Criar mapas de contadores
+      const cadernoCounts = new Map<string, number>();
+      const quizCounts = new Map<string, number>();
+      const goalCounts = new Map<string, number>();
+
+      (cadernoTagsData.data || []).forEach(ct => {
+        cadernoCounts.set(ct.tag_id, (cadernoCounts.get(ct.tag_id) || 0) + 1);
+      });
+
+      (quizTagsData.data || []).forEach(qt => {
+        quizCounts.set(qt.tag_id, (quizCounts.get(qt.tag_id) || 0) + 1);
+      });
+
+      (goalTagsData.data || []).forEach(gt => {
+        goalCounts.set(gt.tag_id, (goalCounts.get(gt.tag_id) || 0) + 1);
+      });
+
+      // Processar tags com contadores
+      const processedTags = tagsData.map(tag => ({
         ...tag,
-        cadernos_count: Array.isArray(tag.cadernos_count) ? tag.cadernos_count.length : 0,
-        quizzes_count: Array.isArray(tag.quizzes_count) ? tag.quizzes_count.length : 0,
-        goals_count: Array.isArray(tag.goals_count) ? tag.goals_count.length : 0,
-      })) || [];
+        cadernos_count: cadernoCounts.get(tag.id) || 0,
+        quizzes_count: quizCounts.get(tag.id) || 0,
+        goals_count: goalCounts.get(tag.id) || 0,
+      }));
 
       setTags(processedTags);
     } catch (err) {
